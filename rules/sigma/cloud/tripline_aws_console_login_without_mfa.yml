@@ -22,7 +22,7 @@ detection:
         eventSource: signin.amazonaws.com
         eventName: ConsoleLogin
         responseElements.ConsoleLogin: Success
-        additionalEventData.MFAUsed: 'No'
+        additionalEventData.MFAUsed: 'Maybe'
         userIdentity.type:
             - IAMUser
             - Root
