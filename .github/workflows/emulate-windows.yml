@@ -1,0 +1,125 @@
+name: emulate-windows
+
+# Phase A2: run the Windows Atomic Red Team tests on a disposable windows-latest runner with
+# Sysmon (SwiftOnSecurity config), Security process auditing (4688 + command line, 4698 task
+# creation) and PowerShell script-block logging, export the three channels as NDJSON, slice by
+# tripline markers into fixtures, and assert the expected Sigma rules fire. Fixtures are uploaded
+# as an artifact; a maintainer reviews and commits them.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "41 6 * * 1" # weekly drift check (Monday 06:41 UTC)
+
+permissions:
+  contents: read
+
+jobs:
+  emulate:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e .
+
+      - name: Relax Defender for the atomics (disposable runner)
+        run: |
+          try {
+            Set-MpPreference -DisableRealtimeMonitoring $true -DisableIOAVProtection $true -DisableBehaviorMonitoring $true -ErrorAction Stop
+            Add-MpPreference -ExclusionPath 'C:\AtomicRedTeam', "$env:TEMP", 'C:\Windows\Temp' -ErrorAction SilentlyContinue
+            Write-Host "Defender real-time monitoring disabled"
+          } catch { Write-Warning "Defender settings not changed: $_" }
+
+      - name: Install Sysmon with the SwiftOnSecurity configuration
+        run: |
+          $zip = "$env:TEMP\Sysmon.zip"
+          Invoke-WebRequest -Uri 'https://download.sysinternals.com/files/Sysmon.zip' -OutFile $zip -UseBasicParsing
+          Expand-Archive $zip -DestinationPath "$env:TEMP\Sysmon" -Force
+          Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/master/sysmonconfig-export.xml' -OutFile "$env:TEMP\sysmonconfig.xml" -UseBasicParsing
+          & "$env:TEMP\Sysmon\Sysmon64.exe" -accepteula -i "$env:TEMP\sysmonconfig.xml" | Out-Null
+          Start-Sleep 3
+          Get-Service Sysmon64 | Format-Table Status, Name
+          (Get-WinEvent -LogName 'Microsoft-Windows-Sysmon/Operational' -MaxEvents 1).TimeCreated
+
+      - name: Enable Security auditing and PowerShell script-block logging
+        run: |
+          auditpol /set /subcategory:"Process Creation" /success:enable /failure:enable
+          auditpol /set /subcategory:"Other Object Access Events" /success:enable /failure:enable
+          New-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit' -Force | Out-Null
+          Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit' -Name ProcessCreationIncludeCmdLine_Enabled -Value 1 -Type DWord
+          New-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging' -Force | Out-Null
+          Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging' -Name EnableScriptBlockLogging -Value 1 -Type DWord
+          New-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging' -Force | Out-Null
+          Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging' -Name EnableModuleLogging -Value 1 -Type DWord
+          auditpol /get /subcategory:"Process Creation"
+
+      - name: Install Invoke-AtomicRedTeam + atomics
+        run: |
+          IEX (IWR 'https://raw.githubusercontent.com/redcanaryco/invoke-atomicredteam/master/install-atomicredteam.ps1' -UseBasicParsing)
+          Install-AtomicRedTeam -getAtomics -Force
+          Import-Module 'C:\AtomicRedTeam\invoke-atomicredteam\Invoke-AtomicRedTeam.psd1' -Force
+          (Get-ChildItem C:\AtomicRedTeam\atomics -Directory).Count
+
+      - name: List Windows atomic tests from scenarios
+        run: |
+          python - @'
+          from pathlib import Path
+          from tripline.scenarios import load_scenarios
+          from tripline.models import Plane
+          with open("tests.txt", "w", newline="\n") as out:
+              for s in load_scenarios(Path("scenarios")):
+                  if s.plane is Plane.WINDOWS:
+                      for guid in s.emulation.atomic_tests:
+                          out.write(f"{s.id} {guid} {s.technique}\n")
+          '@
+          Get-Content tests.txt
+
+      - name: Run atomics between tripline markers
+        run: |
+          $runGuid = [guid]::NewGuid().ToString()
+          "RUN_GUID=$runGuid" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          $start = (Get-Date).AddSeconds(-5)
+          "EXPORT_SINCE=$($start.ToString('o'))" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          Write-Host "run guid $runGuid, export since $start"
+          Import-Module 'C:\AtomicRedTeam\invoke-atomicredteam\Invoke-AtomicRedTeam.psd1' -Force
+          foreach ($line in Get-Content tests.txt) {
+            $sid, $guid, $tech = $line -split ' '
+            Write-Host "::group::$sid $tech $guid"
+            try { Invoke-AtomicTest $tech -TestGuids $guid -GetPrereqs -ErrorAction Continue } catch { Write-Warning "prereqs: $_" }
+            cmd.exe /c "echo tripline-marker $runGuid $guid start"
+            try { Invoke-AtomicTest $tech -TestGuids $guid -TimeoutSeconds 90 -ErrorAction Continue } catch { Write-Warning "atomic: $_" }
+            Start-Sleep 3
+            cmd.exe /c "echo tripline-marker $runGuid $guid end"
+            try { Invoke-AtomicTest $tech -TestGuids $guid -Cleanup -ErrorAction Continue } catch { Write-Warning "cleanup: $_" }
+            Write-Host "::endgroup::"
+          }
+
+      - name: Export Sysmon, Security and PowerShell events
+        run: |
+          Start-Sleep 5
+          ./scripts/windows/Export-TriplineEvents.ps1 -Since ([datetime]$env:EXPORT_SINCE) -Out events.ndjson
+          (Get-Content events.ndjson | Measure-Object -Line).Lines
+          (Select-String -Path events.ndjson -Pattern 'tripline-marker' | Measure-Object).Count
+
+      - name: Collect fixtures and assert expected rules fire
+        run: |
+          tripline windows collect events.ndjson `
+            --run-guid "$env:RUN_GUID" `
+            --source "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" `
+            --require-all --replay
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: windows-fixtures-${{ github.run_id }}
+          path: |
+            fixtures/windows/
+            events.ndjson
+          retention-days: 30
