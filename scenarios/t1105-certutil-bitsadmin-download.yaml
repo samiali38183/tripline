@@ -1,0 +1,19 @@
+id: t1105-certutil-bitsadmin-download
+name: "Ingress Tool Transfer: certutil and bitsadmin downloads"
+plane: windows
+technique: T1105
+tactic: command-and-control
+weight: 6
+emulation:
+  kind: atomic
+  description: >-
+    Atomic Red Team T1105: certutil -urlcache -split -f and bitsadmin /transfer fetch a file from a URL; telemetry is Sysmon EID 1 (and 3/11).
+  atomic_tests:
+    - dd3b61dd-7bbc-48cd-ab51-49ad1a776df0  # ART #7: certutil download (urlcache)
+    - a1921cd3-9a2d-47d5-a891-f1d0f2a7a31b  # ART #9: Windows - BITSAdmin BITS Download
+expected_rules:
+  - 19b08b1c-861d-4e75-a1ef-ea0c1baf202b  # Suspicious Download Via Certutil.EXE (SigmaHQ)
+  - d059842b-6b9d-4ed1-b5c3-5b89143c6ede  # File Download Via Bitsadmin (SigmaHQ)
+fixtures: []  # Phase A2: recorded on a GitHub Actions windows runner
+notes: >-
+  Red Canary 2026 #5. The windash modifier in the certutil rule is the robustness talking point for Phase B.

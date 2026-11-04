@@ -1,0 +1,18 @@
+id: t1003-001-lsass-memory-dump
+name: "OS Credential Dumping: LSASS memory via comsvcs MiniDump"
+plane: windows
+technique: T1003.001
+tactic: credential-access
+weight: 3
+emulation:
+  kind: atomic
+  description: >-
+    Atomic Red Team T1003.001: rundll32 comsvcs.dll MiniDump against lsass.exe; telemetry is Sysmon EID 10 (GrantedAccess 0x1fffff) and EID 1.
+  atomic_tests:
+    - 2536dee2-12fb-459a-8c37-971844fa73be  # ART #2: Dump LSASS.exe Memory using comsvcs.dll
+expected_rules:
+  - 646ea171-dded-4578-8a4d-65e9822892e3  # Process Memory Dump Via Comsvcs.DLL (SigmaHQ)
+  - 5ef9853e-4d0e-4a70-846f-a9ca37d876da  # Potential Credential Dumping Activity Via LSASS (SigmaHQ)
+fixtures: []  # Phase A2: recorded on a GitHub Actions windows runner
+notes: >-
+  Interview staple. Requires the runner to have Sysmon with process-access logging for lsass.exe.

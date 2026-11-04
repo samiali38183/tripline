@@ -1,0 +1,18 @@
+id: t1059-003-cmd-suspicious-redirect
+name: "Windows Command Shell: cmd output redirected to a suspicious folder"
+plane: windows
+technique: T1059.003
+tactic: execution
+weight: 8
+emulation:
+  kind: atomic
+  description: >-
+    Atomic Red Team T1059.003: cmd.exe writes command output into a user-writable directory via redirection, as a scripted loader would.
+  atomic_tests:
+    - d0eb3597-a1b3-4d65-b33b-2cda8d397f20  # ART #3: Suspicious Execution via Windows Command Shell
+    - 00682c9f-7df4-4df8-950b-6dcaaa3ad9af  # ART #6: Command prompt writing script to file then executes it
+expected_rules:
+  - 8e0bb260-d4b2-4fff-bb8d-3f82118e6892  # Potentially Suspicious CMD Shell Output Redirect (SigmaHQ)
+fixtures: []  # Phase A2: recorded on a GitHub Actions windows runner
+notes: >-
+  Red Canary 2026 #3.

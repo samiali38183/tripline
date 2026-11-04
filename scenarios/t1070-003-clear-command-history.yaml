@@ -1,0 +1,19 @@
+id: t1070-003-clear-command-history
+name: "Indicator Removal: clear command history"
+plane: linux
+technique: T1070.003
+tactic: defense-evasion
+weight: 2
+emulation:
+  kind: atomic
+  description: >-
+    Atomic Red Team T1070.003: history -c, unset HISTFILE and rm ~/.bash_history; telemetry is auditd EXECVE and PATH records.
+  atomic_tests:
+    - a934276e-2be5-4a36-93fd-98adbb5bd4fc  # ART #1: Clear Bash history (rm)
+    - b1251c35-dcd3-4ea1-86da-36d27b54f31f  # ART #3: Clear Bash history (cat dev/null)
+expected_rules:
+  - fdc88d25-96fb-4b7c-9633-c0e417fdbd4e  # Linux Command History Tampering (SigmaHQ)
+  - 1182f3b3-e716-4efa-99ab-d2685d04360f  # History File Deletion (SigmaHQ)
+fixtures: []  # Phase A2: recorded on a GitHub Actions linux runner
+notes: >-
+  Shell builtins (history -c) never reach auditd; the keyword rule relies on the PROCTITLE record. Documented as a telemetry gap for the write-up.

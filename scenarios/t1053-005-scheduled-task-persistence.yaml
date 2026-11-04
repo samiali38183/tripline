@@ -1,0 +1,18 @@
+id: t1053-005-scheduled-task-persistence
+name: "Scheduled Task persistence via schtasks"
+plane: windows
+technique: T1053.005
+tactic: persistence
+weight: 2
+emulation:
+  kind: atomic
+  description: >-
+    Atomic Red Team T1053.005: schtasks /create registers a task that runs at logon; telemetry is Sysmon EID 1 and Security 4698.
+  atomic_tests:
+    - 42f53695-ad4a-4546-abb6-7d837f644a71  # ART #2: Scheduled task Local
+expected_rules:
+  - 92626ddd-662c-49e3-ac59-f6535f12d189  # Scheduled Task Creation Via Schtasks.EXE (SigmaHQ)
+  - 3a734d25-df5c-4b99-8034-af1ddb5883a4  # Suspicious Scheduled Task Creation (SigmaHQ, Security 4698)
+fixtures: []  # Phase A2: recorded on a GitHub Actions windows runner
+notes: >-
+  The 4698 rule needs 'Audit Other Object Access Events' enabled on the runner.

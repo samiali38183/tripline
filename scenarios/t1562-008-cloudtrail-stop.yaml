@@ -1,0 +1,20 @@
+id: t1562-008-cloudtrail-stop
+name: "Impair Defenses: CloudTrail logging stopped"
+plane: aws
+technique: T1562.008
+tactic: defense-evasion
+weight: 3
+emulation:
+  kind: replay
+  description: >-
+    Replay of the Stratus Red Team cloudtrail-stop detonation: an IAM user calls StopLogging on an active trail.
+  source: https://raw.githubusercontent.com/DataDog/stratus-red-team/main/docs/detonation-logs/aws.defense-evasion.cloudtrail-stop.json
+expected_rules:
+  - 4db60cc0-36fb-42b7-9b58-a5b53019fb74  # AWS CloudTrail Important Change (SigmaHQ)
+fixtures:
+  - path: fixtures/cloud/t1562-008-cloudtrail-stop/run.ndjson
+    provenance: recorded
+    source: https://raw.githubusercontent.com/DataDog/stratus-red-team/main/docs/detonation-logs/aws.defense-evasion.cloudtrail-stop.json
+    notes: Stratus detonation log captured with Grimoire (Apache-2.0)
+notes: >-
+  Single StopLogging event; UpdateTrail / DeleteTrail are covered by the same rule.

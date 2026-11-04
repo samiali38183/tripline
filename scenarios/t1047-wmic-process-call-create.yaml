@@ -1,0 +1,17 @@
+id: t1047-wmic-process-call-create
+name: "WMI: wmic process call create"
+plane: windows
+technique: T1047
+tactic: execution
+weight: 4
+emulation:
+  kind: atomic
+  description: >-
+    Atomic Red Team T1047: wmic process call create launches a local process; telemetry is Sysmon EID 1.
+  atomic_tests:
+    - b3bdfc91-b33e-4c6d-a5c8-d64bee0276b3  # ART #5: WMI Execute Local Process
+expected_rules:
+  - 526be59f-a573-4eea-b5f7-f0973207634d  # Process Creation Attempt via Wmic.EXE (SigmaHQ)
+fixtures: []  # Phase A2: recorded on a GitHub Actions windows runner
+notes: >-
+  Red Canary 2026 #7.

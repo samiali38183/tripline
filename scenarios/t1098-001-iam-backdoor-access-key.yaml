@@ -1,0 +1,20 @@
+id: t1098-001-iam-backdoor-access-key
+name: "Account Manipulation: access key created for another IAM user"
+plane: aws
+technique: T1098.001
+tactic: persistence
+weight: 3
+emulation:
+  kind: replay
+  description: >-
+    Replay of the Stratus Red Team iam-backdoor-user detonation: principal 'christophe' calls CreateAccessKey for a different user, which is the backdoor.
+  source: https://raw.githubusercontent.com/DataDog/stratus-red-team/main/docs/detonation-logs/aws.persistence.iam-backdoor-user.json
+expected_rules:
+  - 0a5177f4-6ca9-44c2-aacf-d3f3d8b6e4d2  # AWS IAM Backdoor Users Keys (SigmaHQ)
+fixtures:
+  - path: fixtures/cloud/t1098-001-iam-backdoor-access-key/run.ndjson
+    provenance: recorded
+    source: https://raw.githubusercontent.com/DataDog/stratus-red-team/main/docs/detonation-logs/aws.persistence.iam-backdoor-user.json
+    notes: Stratus detonation log captured with Grimoire (Apache-2.0)
+notes: >-
+  Exercises the fieldref|contains comparison between userIdentity.arn and responseElements.accessKey.userName.

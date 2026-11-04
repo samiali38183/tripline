@@ -1,0 +1,18 @@
+id: t1548-001-setuid-setgid
+name: "Abuse Elevation Control: setuid/setgid bit set"
+plane: linux
+technique: T1548.001
+tactic: privilege-escalation
+weight: 2
+emulation:
+  kind: atomic
+  description: >-
+    Atomic Red Team T1548.001: chown root and chmod u+s on a copied binary; telemetry is auditd EXECVE / SYSCALL chmod.
+  atomic_tests:
+    - 759055b3-3885-4582-a8ec-c00c9d64dd79  # ART #3: Set a SetUID flag on file
+    - db55f666-7cba-46c6-9fe6-205a05c3242c  # ART #5: Set a SetGID flag on file
+expected_rules:
+  - c21c4eaa-ba2e-419a-92b2-8371703cbe21  # Setuid and Setgid (SigmaHQ)
+fixtures: []  # Phase A2: recorded on a GitHub Actions linux runner
+notes: >-
+  Rule requires both 'chown root' and 'chmod u+s' in the same command line (all of selection_*).
