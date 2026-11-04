@@ -1,0 +1,29 @@
+{
+  "scenario_id": "t1078-004-console-login-without-mfa",
+  "run_guid": "617b05c8-7c5b-4dd3-afcf-5714ab3a6dd0",
+  "description": "Stratus console-login-without-mfa detonation plus the first IAM-user and root ConsoleLogin records from flaws.cloud.",
+  "events": 7,
+  "original_time_window": [
+    "2017-02-18T19:20:48Z",
+    "2024-08-02T08:53:24Z"
+  ],
+  "replayed_time_window": [
+    "2026-11-04T12:42:25Z",
+    "2034-04-18T02:15:01Z"
+  ],
+  "event_names": [
+    "ConsoleLogin"
+  ],
+  "sources": [
+    {
+      "name": "stratus:aws.initial-access.console-login-without-mfa",
+      "url": "https://raw.githubusercontent.com/DataDog/stratus-red-team/main/docs/detonation-logs/aws.initial-access.console-login-without-mfa.json",
+      "license": "Apache-2.0 (https://github.com/DataDog/stratus-red-team/blob/main/LICENSE)"
+    },
+    {
+      "name": "flaws.cloud",
+      "url": "https://summitroute.com/downloads/flaws_cloudtrail_logs.tar",
+      "license": "Published by Scott Piper / Summit Route for public analysis (https://summitroute.com/blog/2020/10/09/public_dataset_of_cloudtrail_logs_from_flaws_cloud/)"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "scenario_id": "t1530-s3-bucket-exposure",
+  "run_guid": "a8e93d44-3103-4b9c-80d7-f52912fe63b2",
+  "description": "flaws.cloud PutBucketAcl/PutBucketPolicy calls that granted AllUsers or Principal '*' on level buckets, plus ListBuckets calls by the leaked 'backup' IAM user.",
+  "events": 10,
+  "original_time_window": [
+    "2017-02-12T21:20:40Z",
+    "2017-02-26T18:29:02Z"
+  ],
+  "replayed_time_window": [
+    "2026-11-04T12:42:26Z",
+    "2026-11-18T09:50:48Z"
+  ],
+  "event_names": [
+    "ListBuckets",
+    "PutBucketAcl",
+    "PutBucketPolicy"
+  ],
+  "sources": [
+    {
+      "name": "flaws.cloud",
+      "url": "https://summitroute.com/downloads/flaws_cloudtrail_logs.tar",
+      "license": "Published by Scott Piper / Summit Route for public analysis (https://summitroute.com/blog/2020/10/09/public_dataset_of_cloudtrail_logs_from_flaws_cloud/)"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "scenario_id": "t1562-008-cloudtrail-stop",
+  "run_guid": "18f1a4c2-775a-46da-8a63-4b8964f420fe",
+  "description": "Stratus aws.defense-evasion.cloudtrail-stop detonation (StopLogging).",
+  "events": 1,
+  "original_time_window": [
+    "2024-07-31T13:06:24Z",
+    "2024-07-31T13:06:24Z"
+  ],
+  "replayed_time_window": [
+    "2026-11-04T12:42:26Z",
+    "2026-11-04T12:42:26Z"
+  ],
+  "event_names": [
+    "StopLogging"
+  ],
+  "sources": [
+    {
+      "name": "stratus:aws.defense-evasion.cloudtrail-stop",
+      "url": "https://raw.githubusercontent.com/DataDog/stratus-red-team/main/docs/detonation-logs/aws.defense-evasion.cloudtrail-stop.json",
+      "license": "Apache-2.0 (https://github.com/DataDog/stratus-red-team/blob/main/LICENSE)"
+    }
+  ]
+}
