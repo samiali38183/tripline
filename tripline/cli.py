@@ -16,7 +16,7 @@ from tripline import __version__
 from tripline.engine.rules import RuleSet, load_rules
 from tripline.events import write_text_lf
 from tripline.heatmap import write_layer
-from tripline.models import ReplayResult, Scenario, ScenarioStatus, Scorecard
+from tripline.models import Plane, ReplayResult, Scenario, ScenarioStatus, Scorecard
 from tripline.replay import replay_all, replay_scenario
 from tripline.scenarios import ScenarioLoadError, load_scenarios, validate_fixture_paths
 from tripline.scorer import build_scorecard, read_scorecard, write_junit, write_scorecard
@@ -29,6 +29,8 @@ app = typer.Typer(
 )
 cloud_app = typer.Typer(help="AWS plane: build fixtures from public CloudTrail datasets.")
 app.add_typer(cloud_app, name="cloud")
+linux_app = typer.Typer(help="Linux plane: turn an auditd log from an emulation run into fixtures.")
+app.add_typer(linux_app, name="linux")
 
 RootOpt = Annotated[
     Path, typer.Option("--root", help="Repository root (contains scenarios/, rules/, fixtures/).")
@@ -191,6 +193,65 @@ def cloud_build(
 
     for path in build_all(cache, root / "fixtures" / "cloud"):
         typer.echo(f"wrote {path}")
+
+
+@linux_app.command("collect")
+def linux_collect(
+    audit_log: Annotated[
+        Path, typer.Argument(help="Raw auditd log (audit.log or ausearch --raw).")
+    ],
+    run_guid: Annotated[str, typer.Option(help="Run GUID used in the tripline-marker commands.")],
+    source: Annotated[str, typer.Option(help="Provenance URL (e.g. the workflow run).")],
+    root: RootOpt = Path(),
+    require_all: Annotated[
+        bool, typer.Option("--require-all", help="Exit 1 if any Linux scenario produced no events.")
+    ] = False,
+    replay_after: Annotated[
+        bool,
+        typer.Option(
+            "--replay", help="Replay the fresh fixtures through expected rules; exit 1 on a miss."
+        ),
+    ] = False,
+) -> None:
+    """Slice an auditd log by tripline markers into fixtures/linux/<scenario>/run.ndjson."""
+    from tripline.linux.collect import collect
+    from tripline.models import Fixture, Provenance
+
+    scenarios, rules = _load(root)
+    with audit_log.open(encoding="utf-8", errors="replace") as handle:
+        written = collect(
+            handle, scenarios, root / "fixtures" / "linux", run_guid=run_guid, source=source
+        )
+    for scenario_id, path in written.items():
+        typer.echo(f"wrote {path} ({scenario_id})")
+    missing = [s.id for s in scenarios if s.plane is Plane.LINUX and s.id not in written]
+    for scenario_id in missing:
+        typer.secho(f"no events recorded for {scenario_id}", fg=typer.colors.YELLOW)
+    if require_all and missing:
+        raise typer.Exit(code=1)
+    if replay_after:
+        fresh = [
+            s.model_copy(
+                update={
+                    "fixtures": [
+                        Fixture(
+                            path=written[s.id].relative_to(root),
+                            provenance=Provenance.RECORDED,
+                            source=source,
+                        )
+                    ]
+                }
+            )
+            for s in scenarios
+            if s.id in written
+        ]
+        results = [replay_scenario(s, rules, root) for s in fresh]
+        _print_results(fresh, results, show_events=True)
+        failed = [r.scenario_id for r in results if r.status is ScenarioStatus.FAILED]
+        if failed:
+            typer.secho(f"EMULATION GATE FAILED: {', '.join(failed)}", fg=typer.colors.RED)
+            raise typer.Exit(code=1)
+        typer.secho("emulation gate passed", fg=typer.colors.GREEN)
 
 
 # --------------------------------------------------------------------------- rendering

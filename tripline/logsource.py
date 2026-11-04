@@ -131,6 +131,8 @@ def _classify_linux(event: Event) -> frozenset[LogSource]:
     sources = {LogSource(product="linux"), LogSource(product="linux", service="auditd")}
     if event.get("type") == "EXECVE":
         sources.add(LogSource(product="linux", category="process_creation"))
+    if event.get("TargetFilename"):
+        sources.add(LogSource(product="linux", category="file_event"))
     return frozenset(sources)
 
 

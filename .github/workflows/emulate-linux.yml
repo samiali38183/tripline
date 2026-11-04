@@ -1,0 +1,99 @@
+name: emulate-linux
+
+# Phase A2: run the Linux Atomic Red Team tests on a disposable ubuntu runner with auditd,
+# slice the audit log by tripline markers into fixtures, and assert the expected Sigma rules fire.
+# The fixtures are uploaded as an artifact; a maintainer reviews and commits them.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 6 * * 1" # weekly drift check (Monday 06:17 UTC)
+
+permissions:
+  contents: read
+
+jobs:
+  emulate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e .
+
+      - name: Install auditd and load tripline audit rules
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq auditd
+          sudo systemctl start auditd || sudo service auditd start
+          sudo auditctl -D
+          sudo auditctl -a always,exit -F arch=b64 -S execve -k tripline_exec
+          sudo auditctl -a always,exit -F arch=b32 -S execve -k tripline_exec
+          for d in /etc/cron.d /etc/cron.daily /etc/cron.hourly /etc/cron.weekly /etc/cron.monthly /var/spool/cron/crontabs /etc/crontab; do
+            sudo auditctl -w "$d" -p wa -k tripline_cron || true
+          done
+          sudo auditctl -l
+          sudo auditctl -s
+
+      - name: Install Invoke-AtomicRedTeam + atomics
+        shell: pwsh
+        run: |
+          IEX (IWR 'https://raw.githubusercontent.com/redcanaryco/invoke-atomicredteam/master/install-atomicredteam.ps1' -UseBasicParsing)
+          Install-AtomicRedTeam -InstallPath /tmp/AtomicRedTeam -getAtomics -Force
+          Get-ChildItem /tmp/AtomicRedTeam/atomics | Measure-Object | Select-Object -ExpandProperty Count
+
+      - name: List Linux atomic tests from scenarios
+        run: |
+          python - <<'EOF' > tests.txt
+          from pathlib import Path
+          from tripline.scenarios import load_scenarios
+          from tripline.models import Plane
+          for s in load_scenarios(Path("scenarios")):
+              if s.plane is Plane.LINUX:
+                  for guid in s.emulation.atomic_tests:
+                      print(s.id, guid, s.technique)
+          EOF
+          cat tests.txt
+
+      - name: Run atomics between tripline markers
+        run: |
+          RUN_GUID=$(cat /proc/sys/kernel/random/uuid)
+          echo "RUN_GUID=$RUN_GUID" >> "$GITHUB_ENV"
+          echo "run guid $RUN_GUID"
+          ART='Import-Module /tmp/AtomicRedTeam/invoke-atomicredteam/Invoke-AtomicRedTeam.psd1 -Force; $PSDefaultParameterValues["Invoke-AtomicTest:PathToAtomicsFolder"] = "/tmp/AtomicRedTeam/atomics";'
+          while read -r sid guid tech; do
+            echo "::group::$sid $tech $guid"
+            sudo pwsh -NoProfile -Command "$ART Invoke-AtomicTest $tech -TestGuids $guid -GetPrereqs" || true
+            sh -c "true tripline-marker $RUN_GUID $guid start"
+            sudo pwsh -NoProfile -Command "$ART Invoke-AtomicTest $tech -TestGuids $guid -TimeoutSeconds 60" || echo "atomic exited non-zero"
+            sleep 2
+            sh -c "true tripline-marker $RUN_GUID $guid end"
+            sudo pwsh -NoProfile -Command "$ART Invoke-AtomicTest $tech -TestGuids $guid -Cleanup" || true
+            echo "::endgroup::"
+          done < tests.txt
+
+      - name: Export audit log
+        run: |
+          sleep 2
+          sudo cat /var/log/audit/audit.log* > audit.log
+          wc -l audit.log
+          grep -c tripline-marker audit.log || true
+
+      - name: Collect fixtures and assert expected rules fire
+        run: |
+          tripline linux collect audit.log \
+            --run-guid "$RUN_GUID" \
+            --source "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --require-all --replay
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: linux-fixtures-${{ github.run_id }}
+          path: |
+            fixtures/linux/
+            audit.log
+          retention-days: 30
