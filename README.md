@@ -90,7 +90,7 @@ need a mail tenant or a human at the keyboard): [`docs/navigator_layer.json`](do
 The gate is proven, not described: [`docs/gate-proof.md`](docs/gate-proof.md) links the PR that
 broke one cloud rule's condition and went red naming the scenario.
 
-Test suite: 88 tests, 84 % line coverage (`pytest --cov=tripline`), ruff and `mypy --strict` clean,
+Test suite: 94 tests, 90 % line coverage (`pytest --cov=tripline`), ruff and `mypy --strict` clean,
 `sigma check rules/` clean (23 rules: 20 vendored from SigmaHQ under DRL 1.1, 3 custom CloudTrail rules).
 
 ## Scenarios (DESIGN section 3)
