@@ -256,6 +256,19 @@ def _finish_collect(
     typer.secho("emulation gate passed", fg=typer.colors.GREEN)
 
 
+@app.command("atomics")
+def list_atomics(
+    plane: Annotated[Plane, typer.Argument(help="windows or linux")],
+    root: RootOpt = Path(),
+) -> None:
+    """Print '<scenario-id> <atomic-test-guid> <technique>' per line for the emulation workflows."""
+    scenarios, _ = _load(root)
+    for scenario in scenarios:
+        if scenario.plane is plane:
+            for guid in scenario.emulation.atomic_tests:
+                typer.echo(f"{scenario.id} {guid} {scenario.technique}")
+
+
 @linux_app.command("collect")
 def linux_collect(
     audit_log: Annotated[

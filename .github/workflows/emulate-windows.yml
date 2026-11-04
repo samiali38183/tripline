@@ -69,16 +69,7 @@ jobs:
 
       - name: List Windows atomic tests from scenarios
         run: |
-          python - @'
-          from pathlib import Path
-          from tripline.scenarios import load_scenarios
-          from tripline.models import Plane
-          with open("tests.txt", "w", newline="\n") as out:
-              for s in load_scenarios(Path("scenarios")):
-                  if s.plane is Plane.WINDOWS:
-                      for guid in s.emulation.atomic_tests:
-                          out.write(f"{s.id} {guid} {s.technique}\n")
-          '@
+          tripline atomics windows | Out-File tests.txt -Encoding ascii
           Get-Content tests.txt
 
       - name: Run atomics between tripline markers
