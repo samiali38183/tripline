@@ -4,41 +4,34 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![python](https://img.shields.io/badge/python-3.12-blue)
 
-**Detection quality gate: emulate ATT&CK techniques in CI, replay telemetry through Sigma rules,
-score coverage and robustness, fail PRs on regressions.**
+I built tripline because I wanted a way to know whether my detections actually work, not just
+how many I have. You write a scenario that says "this ATT&CK technique, emulated this way, should
+trigger these Sigma rules." tripline replays the recorded logs through the rules and fails the build
+if a rule that should fire doesn't. It runs in GitHub Actions, so a rule change that breaks a
+detection shows up as a red PR.
 
-`tripline` treats detections like software. A YAML *scenario* names an ATT&CK technique, an
-emulation (an Atomic Red Team test, or a recorded Stratus Red Team / flaws.cloud CloudTrail
-detonation), and the Sigma rules expected to fire. `tripline replay` loads the recorded telemetry,
-compiles the Sigma rules into Python predicates (no SIEM required), and asserts that every expected
-rule fires. The result is a per-rule / per-scenario / per-technique scorecard, weighted by Red
-Canary's 2026 technique prevalence so the heatmap answers *"how exposed are we to what actually
-happens"*, not *"how many rules do we have"*. The GitHub Action posts the scorecard on the PR and
-fails the build when an expected rule stops firing.
+No SIEM needed. The Sigma rules get compiled into plain Python checks and run against log files
+committed to the repo.
 
-Phase A1 shipped the engine, the scorer, the CI gate and a **real cloud plane**: all four AWS
-scenarios replay recorded public CloudTrail telemetry and pass. Phase A2 (in progress) records
-endpoint telemetry on GitHub runners: the **Linux plane is live** - auditd from `ubuntu-latest`
-running the Atomic Red Team tests, 3/3 scenarios pass, and the first run already found a real
-SigmaHQ rule gap ([docs/findings.md](docs/findings.md)). Windows scenarios are specified (Atomic
-GUIDs, expected rules) and report *pending* until `emulate-windows.yml` lands.
+## What works right now
 
-## Architecture
+- **AWS (CloudTrail):** 4 of 4 scenarios pass, using public CloudTrail recordings from Stratus Red
+  Team and flaws.cloud.
+- **Linux (auditd):** 3 of 3 scenarios pass. A GitHub runner runs the Atomic Red Team tests with
+  auditd on, and the logs get saved as test fixtures.
+- **Windows (Sysmon / Security / PowerShell):** 7 scenarios written, waiting on the Windows runner
+  workflow. They show as *pending* for now.
 
-```
-  scenarios/*.yaml ──────► 1. PLANNER ──► 2. EMULATOR ─────────► 3. COLLECTOR ──────► 4. EVALUATOR ───► 5. SCORER ──► 6. REPORTER
-  (technique, emulation,    strict        ┌ windows: ART on       NDJSON fixtures per   pySigma condition   coverage      ├ scorecard.json
-   expected rules,          pydantic      │  win runner  [A2]     scenario, run-GUID    tree → Python       (rule,        ├ junit.xml  (CI gate)
-   prevalence weight)       models        ├ linux: ART on         tagged, committed     predicate per       scenario,     ├ navigator_layer.json
-                                          │  ubuntu runner [A2]   under fixtures/       logsource field     technique,    ├ docs/scorecard.md
-  rules/sigma/**.yml ─────────────────►   └ aws: REPLAY Stratus/  (cloud: done)         map (Sysmon,        prevalence-   └ PR comment (Action)
-  (SigmaHQ, DRL 1.1 +                        flaws.cloud records                        Security, PS,       weighted)
-   custom cloud rules)                       rebased + GUID                             auditd, CloudTrail)
+Coverage is weighted by how common each technique is in the wild, so missing a top technique costs
+more than missing a rare one. Current weighted coverage: 47% overall, 100% of the scenarios that have
+logs. The scorecard also exports an ATT&CK Navigator layer: [`docs/navigator_layer.json`](docs/navigator_layer.json).
 
-  Phase B: 7. MUTATOR (evasion variants → robustness)   8. RESPONDER (enrich + auto-close with evidence)   OpenSearch parity backend
-```
+## Something it caught
 
-Everything in Phase A1 runs from a plain checkout: no containers, no cloud account, no SIEM.
+On the first Linux run, the stock SigmaHQ *Setuid and Setgid* rule matched 0 of 36 events. The rule
+looks for the literal text ` chmod u+s`, but the Atomic test ran `chmod u+xs`, and the rule also
+misses forms like `chmod 4755`. I wrote a replacement rule that matches any setuid/setgid chmod form.
+Details: [`docs/findings.md`](docs/findings.md).
 
 ## Quick start
 
@@ -55,7 +48,7 @@ tripline heatmap docs/scorecard.json -o docs/navigator_layer.json   # ATT&CK Nav
 tripline docs docs/scorecard.json                                   # Markdown scorecard page
 ```
 
-`tripline replay --all` on this checkout (excerpt; scenarios print in id order):
+Output of `tripline replay --all` (trimmed):
 
 ```
 [   PASS] t1078-004-console-login-without-mfa (T1078.004, aws) - 7 events
@@ -72,42 +65,9 @@ tripline docs docs/scorecard.json                                   # Markdown s
 gate passed
 ```
 
-Rebuild the cloud fixtures from upstream (downloads ~450 MB of public CloudTrail into `.cache/`):
-`tripline cloud build`. Recipes live in `tripline/cloud/sources.py`; provenance in
-[`fixtures/cloud/SOURCES.md`](fixtures/cloud/SOURCES.md).
+To rebuild the cloud fixtures from the public datasets, run `tripline cloud build` (about 450 MB download). Sources are listed in [`fixtures/cloud/SOURCES.md`](fixtures/cloud/SOURCES.md).
 
-## Results (from the committed [`docs/scorecard.json`](docs/scorecard.json))
-
-| Plane | Scenarios | Status | Rules fired |
-|---|---|---|---|
-| AWS CloudTrail | 4 | **4/4 pass** on recorded Stratus Red Team + flaws.cloud telemetry | 6/6 |
-| Windows (Sysmon / Security / PowerShell) | 7 | fixtures pending: Phase A2 | 0/11 (pending) |
-| Linux (auditd) | 3 | **3/3 pass** on auditd recorded from Atomic Red Team on `ubuntu-latest` ([run](https://github.com/samiali38183/tripline/actions/runs/41838714456)) | 5/5 |
-
-Prevalence-weighted coverage: **47 %** of all 14 scenarios (pending counts as 0), **100 %** of the
-scenarios that have fixtures. Full table: [`docs/scorecard.md`](docs/scorecard.md). Navigator
-layer with 14 scored cells plus three grey *known gap* cells (T1114.003, T1564.008, T1204.004 -
-need a mail tenant or a human at the keyboard): [`docs/navigator_layer.json`](docs/navigator_layer.json).
-
-The gate is proven, not described: [`docs/gate-proof.md`](docs/gate-proof.md) links the PR that
-broke one cloud rule's condition and went red naming the scenario.
-
-Test suite: 100 tests, 89 % line coverage (`pytest --cov=tripline`), ruff and `mypy --strict` clean,
-`sigma check rules/` clean (24 rules: 20 vendored from SigmaHQ under DRL 1.1, 3 custom CloudTrail
-rules, 1 custom Linux rule written to close [finding F-001](docs/findings.md)).
-
-### Linux emulation on GitHub runners
-
-[`.github/workflows/emulate-linux.yml`](.github/workflows/emulate-linux.yml) installs auditd
-(`execve` + cron directory watches), installs Invoke-AtomicRedTeam as root, and runs each Linux
-atomic between two marker commands (`sh -c "true tripline-marker <run-guid> <test-guid> start|end"`)
-so the audit log carries its own attribution. `tripline linux collect audit.log --run-guid ... --replay`
-merges audit records by serial (SYSCALL + EXECVE + PATH + CWD + PROCTITLE), hex-decodes arguments,
-slices by marker into `fixtures/linux/<scenario>/run.ndjson` + `manifest.json`, and replays the
-fresh fixtures through the expected rules - the workflow is red if a rule stops firing on *today's*
-atomics. Fixtures are uploaded as an artifact and committed after review.
-
-## Scenarios (DESIGN section 3)
+## Scenarios
 
 | Plane | Technique | Emulation | Weight |
 |---|---|---|---|
@@ -126,38 +86,38 @@ atomics. Fixtures are uploaded as an artifact and committed after review.
 | Linux | T1070.003 Clear Command History | ART `a934276e`, `b1251c35` | 2 |
 | Linux | T1548.001 Setuid / Setgid | ART `759055b3`, `db55f666` | 2 |
 
-Weight = Red Canary 2026 Threat Detection Report prevalence bucket (10 = #1 technique).
+Weight is based on how common the technique is in Red Canary's 2026 Threat Detection Report (10 = most common).
 
-## How the engine works
+## How it works
 
-* **Compiler** (`tripline/engine/compiler.py`) walks pySigma's parsed condition tree and emits a
-  Python predicate per rule. Supported: `contains`/`startswith`/`endswith`/`all`, `re` (+`i m s`
-  flags), `windash`, `base64offset`, `cidr`, `fieldref`, `exists`, null, numeric comparisons,
-  wildcards; `and`/`or`/`not`/parentheses, `1 of x*`, `all of x*`, `1 of them`, keyword lists.
-  Anything it cannot evaluate raises `UnsupportedRuleError` instead of silently returning `False`.
-* **Logsource router** (`tripline/logsource.py`) maps collector shapes to Sigma logsources: Fluent
-  Bit `winlog` and `Get-WinEvent | ConvertTo-Json` (both plain and `ToXml()`) for Sysmon, Security
-  and PowerShell channels; auditd records (EXECVE normalised to `Image`/`CommandLine`); CloudTrail.
-  A rule is only *evaluated* on events whose logsource it declares, so "0 applicable events" is a
-  routing bug you see, not a silent pass.
-* **Replay / scorer** (`tripline/replay.py`, `tripline/scorer.py`): per-rule hit counts with the
-  first matching event, per-scenario pass/fail/pending, per-technique prevalence-weighted
-  coverage; `scorecard.json` + JUnit XML so GitHub renders failures natively.
-* **Cloud plane** (`tripline/cloud/`): recipes select real records from public datasets, rebase
-  `eventTime` preserving offsets, and tag `userAgent` with `tripline/<run-guid>`.
+1. **Scenarios** (`scenarios/*.yaml`): technique, how it's emulated, which rules should fire, and a weight.
+2. **Compiler** (`tripline/engine/compiler.py`): uses pySigma to parse each rule and turns the
+   condition into a Python function. If a rule uses something it can't handle, it errors out instead
+   of quietly returning no match.
+3. **Log routing** (`tripline/logsource.py`): only checks a rule against the log type it's written
+   for (Sysmon, Security, PowerShell, auditd, CloudTrail), so a rule with 0 matching events is easy to spot.
+4. **Replay and scoring** (`tripline/replay.py`, `tripline/scorer.py`): hit counts per rule,
+   pass/fail per scenario, weighted coverage per technique. Outputs `scorecard.json` and JUnit XML
+   for GitHub.
 
-## Roadmap
+For Linux, each Atomic test runs between two marker commands so the audit log can be sliced per
+test. See [`.github/workflows/emulate-linux.yml`](.github/workflows/emulate-linux.yml).
 
-* **Phase A2 - endpoint emulation on GitHub runners.** Linux done (`emulate-linux.yml`). Next:
-  `emulate-windows.yml` (Sysmon + Invoke-Atomic on `windows-latest`, `Get-WinEvent` NDJSON export,
-  `tripline windows collect`) so the 7 pending Windows scenarios score for real.
-* **Phase B - mutator** (case/quoting/encoding/arg-order/LOLBin substitution/`userAgent` swap
-  variants per emulation → robustness score, with the Sigma modifier that saved each rule),
-  **responder** (enrich + auto-close with an audit trail), **benign corpora** for precision, and
-  an **OpenSearch backend** with a parity test against the Python engine.
+Tests: `pytest --cov=tripline` (100 tests, about 89% coverage). Also checked with ruff, mypy and
+`sigma check`.
 
-## Licence
+## Next
 
-MIT (code). Vendored SigmaHQ rules: Detection Rule License 1.1, see
-[`rules/sigma/LICENSE-DRL.md`](rules/sigma/LICENSE-DRL.md). Atomics run only on disposable hosts -
-see [`SECURITY.md`](SECURITY.md).
+- Windows runner workflow so the 7 pending scenarios get real logs
+- Evasion variants (casing, encoding, argument order) to test how robust each rule is
+- A benign log set to measure false positives
+
+## Limitations
+
+See [`docs/limitations.md`](docs/limitations.md) and [`docs/threat-model.md`](docs/threat-model.md).
+Only run the Atomic tests on throwaway machines; see [`SECURITY.md`](SECURITY.md).
+
+## License
+
+MIT for the code. The SigmaHQ rules included here are under the Detection Rule License 1.1
+([`rules/sigma/LICENSE-DRL.md`](rules/sigma/LICENSE-DRL.md)).
