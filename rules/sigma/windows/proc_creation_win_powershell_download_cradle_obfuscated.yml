@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file proc_creation_win_powershell_download_cradle_obfuscated.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: Obfuscated PowerShell OneLiner Execution
 id: 44e24481-6202-4c62-9127-5a0ae8e3fe3d
 status: test

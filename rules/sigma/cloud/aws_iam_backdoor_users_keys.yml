@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file aws_iam_backdoor_users_keys.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: AWS IAM Backdoor Users Keys
 id: 0a5177f4-6ca9-44c2-aacf-d3f3d8b6e4d2
 status: test

@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file aws_root_account_usage.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: AWS Root Credentials
 id: 8ad1600d-e9dc-4251-b0ee-a65268f29add
 status: test

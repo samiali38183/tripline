@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file proc_creation_lnx_schedule_task_job_cron.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: Scheduled Cron Task/Job - Linux
 id: 6b14bac8-3e3a-4324-8109-42f0546a347f
 status: test

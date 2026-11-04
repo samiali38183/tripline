@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file proc_creation_win_rundll32_process_dump_via_comsvcs.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: Process Memory Dump Via Comsvcs.DLL
 id: 646ea171-dded-4578-8a4d-65e9822892e3
 related:

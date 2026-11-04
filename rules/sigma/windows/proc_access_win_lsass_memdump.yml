@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file proc_access_win_lsass_memdump.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: Potential Credential Dumping Activity Via LSASS
 id: 5ef9853e-4d0e-4a70-846f-a9ca37d876da
 status: test

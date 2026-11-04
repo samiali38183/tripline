@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file file_event_lnx_susp_cron_file_created.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: New Cron File Created
 id: 6c4e2f43-d94d-4ead-b64d-97e53fa2bd05
 status: experimental

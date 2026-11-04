@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file lnx_shell_clear_cmd_history.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: Linux Command History Tampering
 id: fdc88d25-96fb-4b7c-9633-c0e417fdbd4e
 status: test

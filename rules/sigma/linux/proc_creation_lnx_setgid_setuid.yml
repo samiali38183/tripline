@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file proc_creation_lnx_setgid_setuid.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: Setuid and Setgid
 id: c21c4eaa-ba2e-419a-92b2-8371703cbe21
 status: test

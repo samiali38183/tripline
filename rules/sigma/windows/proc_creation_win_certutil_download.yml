@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file proc_creation_win_certutil_download.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: Suspicious Download Via Certutil.EXE
 id: 19b08b1c-861d-4e75-a1ef-ea0c1baf202b
 related:

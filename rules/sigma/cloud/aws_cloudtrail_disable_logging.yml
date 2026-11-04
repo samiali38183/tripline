@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file aws_cloudtrail_disable_logging.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: AWS CloudTrail Important Change
 id: 4db60cc0-36fb-42b7-9b58-a5b53019fb74
 status: test

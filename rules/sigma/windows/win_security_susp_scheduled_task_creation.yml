@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file win_security_susp_scheduled_task_creation.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: Suspicious Scheduled Task Creation
 id: 3a734d25-df5c-4b99-8034-af1ddb5883a4
 status: test

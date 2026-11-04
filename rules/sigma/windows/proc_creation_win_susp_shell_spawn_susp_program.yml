@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file proc_creation_win_susp_shell_spawn_susp_program.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: Windows Shell/Scripting Processes Spawning Suspicious Programs
 id: 3a6586ad-127a-4d3b-a677-1e6eacdf8fde
 status: test

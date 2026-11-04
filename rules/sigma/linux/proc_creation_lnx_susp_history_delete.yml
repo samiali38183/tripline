@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file proc_creation_lnx_susp_history_delete.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: History File Deletion
 id: 1182f3b3-e716-4efa-99ab-d2685d04360f
 status: test

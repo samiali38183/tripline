@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file proc_creation_win_wmic_process_creation.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: Process Creation Attempt via Wmic.EXE
 id: 526be59f-a573-4eea-b5f7-f0973207634d
 related:

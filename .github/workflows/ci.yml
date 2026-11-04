@@ -1,0 +1,85 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: lint, types, tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e ".[dev]"
+      - run: ruff format --check tripline tests
+      - run: ruff check tripline tests
+      - run: mypy tripline
+      - run: pytest --cov=tripline --cov-report=term --cov-report=xml --junitxml=pytest-junit.xml
+      - run: sigma check rules/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pytest-results
+          path: |
+            pytest-junit.xml
+            coverage.xml
+
+  gate:
+    name: detection gate (tripline replay --all)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e .
+      - run: tripline validate
+      - name: Replay fixtures through expected rules
+        id: replay
+        run: tripline replay --all --junit replay-junit.xml --scorecard scorecard.json
+      - name: Score (always, so the PR comment shows the failing table)
+        if: always()
+        run: tripline score -o scorecard.json --markdown scorecard.md || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: detection-gate
+          path: |
+            replay-junit.xml
+            scorecard.json
+            scorecard.md
+      - name: Comment scorecard on PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- tripline-scorecard -->';
+            const outcome = '${{ steps.replay.outcome }}';
+            const body = fs.existsSync('scorecard.md') ? fs.readFileSync('scorecard.md', 'utf8') : '_scorecard.md was not produced_';
+            const header = outcome === 'success' ? '### tripline detection gate: passed' : '### tripline detection gate: FAILED';
+            const text = `${marker}\n${header}\n\n${body}`;
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.rest.issues.listComments({ owner, repo, issue_number, per_page: 100 });
+            const mine = comments.data.find(c => c.body && c.body.startsWith(marker));
+            if (mine) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: mine.id, body: text });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body: text });
+            }

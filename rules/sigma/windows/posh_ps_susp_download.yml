@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file posh_ps_susp_download.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: Suspicious PowerShell Download - Powershell Script
 id: 403c2cc0-7f6b-4925-9423-bfa573bed7eb
 related:

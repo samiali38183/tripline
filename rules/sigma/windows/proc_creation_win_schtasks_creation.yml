@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file proc_creation_win_schtasks_creation.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: Scheduled Task Creation Via Schtasks.EXE
 id: 92626ddd-662c-49e3-ac59-f6535f12d189
 status: test

@@ -1,3 +1,5 @@
+# Vendored unmodified from SigmaHQ/sigma (https://github.com/SigmaHQ/sigma), file proc_creation_win_bitsadmin_download.yml.
+# Licensed under the Detection Rule License (DRL) 1.1 - see rules/sigma/LICENSE-DRL.md.
 title: File Download Via Bitsadmin
 id: d059842b-6b9d-4ed1-b5c3-5b89143c6ede
 status: test
