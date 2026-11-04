@@ -14,6 +14,7 @@ import typer
 
 from tripline import __version__
 from tripline.engine.rules import RuleSet, load_rules
+from tripline.events import write_text_lf
 from tripline.heatmap import write_layer
 from tripline.models import ReplayResult, Scenario, ScenarioStatus, Scorecard
 from tripline.replay import replay_all, replay_scenario
@@ -151,8 +152,7 @@ def score(
     if junit:
         write_junit(results, scenarios, junit)
     if markdown:
-        markdown.parent.mkdir(parents=True, exist_ok=True)
-        markdown.write_text(scorecard_markdown(card), encoding="utf-8")
+        write_text_lf(markdown, scorecard_markdown(card))
     typer.echo(scorecard_markdown(card))
     if not card.gate.passed:
         raise typer.Exit(code=1)
@@ -175,8 +175,7 @@ def docs(
 ) -> None:
     """Write the Markdown scorecard page under docs/."""
     card = read_scorecard(scorecard)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(scorecard_markdown(card, heading=True), encoding="utf-8")
+    write_text_lf(output, scorecard_markdown(card, heading=True))
     typer.echo(f"written {output}")
 
 

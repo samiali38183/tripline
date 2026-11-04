@@ -1,0 +1,837 @@
+{
+  "generated_at": "2026-11-04T12:52:36.113946Z",
+  "tripline_version": "0.1.0",
+  "totals": {
+    "scenarios": 14,
+    "passed": 4,
+    "failed": 0,
+    "pending": 10,
+    "rules": 22,
+    "weighted_coverage": 0.3709677419354839,
+    "weighted_coverage_scored": 1.0
+  },
+  "rules": [
+    {
+      "rule_id": "0a5177f4-6ca9-44c2-aacf-d3f3d8b6e4d2",
+      "title": "AWS IAM Backdoor Users Keys",
+      "level": "medium",
+      "logsource": "product=aws service=cloudtrail",
+      "techniques": [
+        "T1098"
+      ],
+      "expected_scenarios": [
+        "t1098-001-iam-backdoor-access-key"
+      ],
+      "detected_scenarios": [
+        "t1098-001-iam-backdoor-access-key"
+      ],
+      "missed_scenarios": [],
+      "pending_scenarios": [],
+      "coverage": 1.0
+    },
+    {
+      "rule_id": "1182f3b3-e716-4efa-99ab-d2685d04360f",
+      "title": "History File Deletion",
+      "level": "high",
+      "logsource": "product=linux category=process_creation",
+      "techniques": [
+        "T1565.001"
+      ],
+      "expected_scenarios": [
+        "t1070-003-clear-command-history"
+      ],
+      "detected_scenarios": [],
+      "missed_scenarios": [],
+      "pending_scenarios": [
+        "t1070-003-clear-command-history"
+      ],
+      "coverage": null
+    },
+    {
+      "rule_id": "19b08b1c-861d-4e75-a1ef-ea0c1baf202b",
+      "title": "Suspicious Download Via Certutil.EXE",
+      "level": "medium",
+      "logsource": "product=windows category=process_creation",
+      "techniques": [
+        "T1027",
+        "T1105"
+      ],
+      "expected_scenarios": [
+        "t1105-certutil-bitsadmin-download"
+      ],
+      "detected_scenarios": [],
+      "missed_scenarios": [],
+      "pending_scenarios": [
+        "t1105-certutil-bitsadmin-download"
+      ],
+      "coverage": null
+    },
+    {
+      "rule_id": "3a734d25-df5c-4b99-8034-af1ddb5883a4",
+      "title": "Suspicious Scheduled Task Creation",
+      "level": "high",
+      "logsource": "product=windows service=security",
+      "techniques": [
+        "T1053.005"
+      ],
+      "expected_scenarios": [
+        "t1053-005-scheduled-task-persistence"
+      ],
+      "detected_scenarios": [],
+      "missed_scenarios": [],
+      "pending_scenarios": [
+        "t1053-005-scheduled-task-persistence"
+      ],
+      "coverage": null
+    },
+    {
+      "rule_id": "3b1f0d2e-7c4a-4d5b-9e8f-2a6c1d0b9f41",
+      "title": "AWS Console Login Without MFA",
+      "level": "high",
+      "logsource": "product=aws service=cloudtrail",
+      "techniques": [
+        "T1078.004"
+      ],
+      "expected_scenarios": [
+        "t1078-004-console-login-without-mfa"
+      ],
+      "detected_scenarios": [
+        "t1078-004-console-login-without-mfa"
+      ],
+      "missed_scenarios": [],
+      "pending_scenarios": [],
+      "coverage": 1.0
+    },
+    {
+      "rule_id": "403c2cc0-7f6b-4925-9423-bfa573bed7eb",
+      "title": "Suspicious PowerShell Download - Powershell Script",
+      "level": "medium",
+      "logsource": "product=windows category=ps_script",
+      "techniques": [
+        "T1059.001"
+      ],
+      "expected_scenarios": [
+        "t1059-001-powershell-encoded-download"
+      ],
+      "detected_scenarios": [],
+      "missed_scenarios": [],
+      "pending_scenarios": [
+        "t1059-001-powershell-encoded-download"
+      ],
+      "coverage": null
+    },
+    {
+      "rule_id": "44e24481-6202-4c62-9127-5a0ae8e3fe3d",
+      "title": "Obfuscated PowerShell OneLiner Execution",
+      "level": "high",
+      "logsource": "product=windows category=process_creation",
+      "techniques": [
+        "T1059.001",
+        "T1685"
+      ],
+      "expected_scenarios": [
+        "t1027-obfuscated-powershell-oneliner"
+      ],
+      "detected_scenarios": [],
+      "missed_scenarios": [],
+      "pending_scenarios": [
+        "t1027-obfuscated-powershell-oneliner"
+      ],
+      "coverage": null
+    },
+    {
+      "rule_id": "4db60cc0-36fb-42b7-9b58-a5b53019fb74",
+      "title": "AWS CloudTrail Important Change",
+      "level": "medium",
+      "logsource": "product=aws service=cloudtrail",
+      "techniques": [
+        "T1685.002"
+      ],
+      "expected_scenarios": [
+        "t1562-008-cloudtrail-stop"
+      ],
+      "detected_scenarios": [
+        "t1562-008-cloudtrail-stop"
+      ],
+      "missed_scenarios": [],
+      "pending_scenarios": [],
+      "coverage": 1.0
+    },
+    {
+      "rule_id": "526be59f-a573-4eea-b5f7-f0973207634d",
+      "title": "Process Creation Attempt via Wmic.EXE",
+      "level": "medium",
+      "logsource": "product=windows category=process_creation",
+      "techniques": [
+        "T1047"
+      ],
+      "expected_scenarios": [
+        "t1047-wmic-process-call-create"
+      ],
+      "detected_scenarios": [],
+      "missed_scenarios": [],
+      "pending_scenarios": [
+        "t1047-wmic-process-call-create"
+      ],
+      "coverage": null
+    },
+    {
+      "rule_id": "5c0d9e7b-3a21-4f68-b8d4-7e9f0a1b2c3d",
+      "title": "AWS S3 Bucket Enumeration by IAM User from Non-AWS Tooling",
+      "level": "low",
+      "logsource": "product=aws service=cloudtrail",
+      "techniques": [
+        "T1530",
+        "T1580"
+      ],
+      "expected_scenarios": [
+        "t1530-s3-bucket-exposure"
+      ],
+      "detected_scenarios": [
+        "t1530-s3-bucket-exposure"
+      ],
+      "missed_scenarios": [],
+      "pending_scenarios": [],
+      "coverage": 1.0
+    },
+    {
+      "rule_id": "5ef9853e-4d0e-4a70-846f-a9ca37d876da",
+      "title": "Potential Credential Dumping Activity Via LSASS",
+      "level": "medium",
+      "logsource": "product=windows category=process_access",
+      "techniques": [
+        "T1003.001"
+      ],
+      "expected_scenarios": [
+        "t1003-001-lsass-memory-dump"
+      ],
+      "detected_scenarios": [],
+      "missed_scenarios": [],
+      "pending_scenarios": [
+        "t1003-001-lsass-memory-dump"
+      ],
+      "coverage": null
+    },
+    {
+      "rule_id": "646ea171-dded-4578-8a4d-65e9822892e3",
+      "title": "Process Memory Dump Via Comsvcs.DLL",
+      "level": "high",
+      "logsource": "product=windows category=process_creation",
+      "techniques": [
+        "T1036",
+        "T1003.001"
+      ],
+      "expected_scenarios": [
+        "t1003-001-lsass-memory-dump"
+      ],
+      "detected_scenarios": [],
+      "missed_scenarios": [],
+      "pending_scenarios": [
+        "t1003-001-lsass-memory-dump"
+      ],
+      "coverage": null
+    },
+    {
+      "rule_id": "6b14bac8-3e3a-4324-8109-42f0546a347f",
+      "title": "Scheduled Cron Task/Job - Linux",
+      "level": "medium",
+      "logsource": "product=linux category=process_creation",
+      "techniques": [
+        "T1053.003"
+      ],
+      "expected_scenarios": [
+        "t1053-003-cron-persistence"
+      ],
+      "detected_scenarios": [],
+      "missed_scenarios": [],
+      "pending_scenarios": [
+        "t1053-003-cron-persistence"
+      ],
+      "coverage": null
+    },
+    {
+      "rule_id": "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05",
+      "title": "New Cron File Created",
+      "level": "low",
+      "logsource": "product=linux category=file_event",
+      "techniques": [
+        "T1053.003"
+      ],
+      "expected_scenarios": [
+        "t1053-003-cron-persistence"
+      ],
+      "detected_scenarios": [],
+      "missed_scenarios": [],
+      "pending_scenarios": [
+        "t1053-003-cron-persistence"
+      ],
+      "coverage": null
+    },
+    {
+      "rule_id": "8ad1600d-e9dc-4251-b0ee-a65268f29add",
+      "title": "AWS Root Credentials",
+      "level": "medium",
+      "logsource": "product=aws service=cloudtrail",
+      "techniques": [
+        "T1078.004"
+      ],
+      "expected_scenarios": [
+        "t1078-004-console-login-without-mfa"
+      ],
+      "detected_scenarios": [
+        "t1078-004-console-login-without-mfa"
+      ],
+      "missed_scenarios": [],
+      "pending_scenarios": [],
+      "coverage": 1.0
+    },
+    {
+      "rule_id": "8e0bb260-d4b2-4fff-bb8d-3f82118e6892",
+      "title": "Potentially Suspicious CMD Shell Output Redirect",
+      "level": "medium",
+      "logsource": "product=windows category=process_creation",
+      "techniques": [
+        "T1218"
+      ],
+      "expected_scenarios": [
+        "t1059-003-cmd-suspicious-redirect"
+      ],
+      "detected_scenarios": [],
+      "missed_scenarios": [],
+      "pending_scenarios": [
+        "t1059-003-cmd-suspicious-redirect"
+      ],
+      "coverage": null
+    },
+    {
+      "rule_id": "8f6a2c41-5d7e-4b0a-a3c9-1e2f3d4c5b6a",
+      "title": "AWS S3 Bucket Made Public via ACL or Bucket Policy",
+      "level": "high",
+      "logsource": "product=aws service=cloudtrail",
+      "techniques": [
+        "T1530"
+      ],
+      "expected_scenarios": [
+        "t1530-s3-bucket-exposure"
+      ],
+      "detected_scenarios": [
+        "t1530-s3-bucket-exposure"
+      ],
+      "missed_scenarios": [],
+      "pending_scenarios": [],
+      "coverage": 1.0
+    },
+    {
+      "rule_id": "92626ddd-662c-49e3-ac59-f6535f12d189",
+      "title": "Scheduled Task Creation Via Schtasks.EXE",
+      "level": "low",
+      "logsource": "product=windows category=process_creation",
+      "techniques": [
+        "T1053.005"
+      ],
+      "expected_scenarios": [
+        "t1053-005-scheduled-task-persistence"
+      ],
+      "detected_scenarios": [],
+      "missed_scenarios": [],
+      "pending_scenarios": [
+        "t1053-005-scheduled-task-persistence"
+      ],
+      "coverage": null
+    },
+    {
+      "rule_id": "c21c4eaa-ba2e-419a-92b2-8371703cbe21",
+      "title": "Setuid and Setgid",
+      "level": "low",
+      "logsource": "product=linux category=process_creation",
+      "techniques": [
+        "T1548.001"
+      ],
+      "expected_scenarios": [
+        "t1548-001-setuid-setgid"
+      ],
+      "detected_scenarios": [],
+      "missed_scenarios": [],
+      "pending_scenarios": [
+        "t1548-001-setuid-setgid"
+      ],
+      "coverage": null
+    },
+    {
+      "rule_id": "d059842b-6b9d-4ed1-b5c3-5b89143c6ede",
+      "title": "File Download Via Bitsadmin",
+      "level": "medium",
+      "logsource": "product=windows category=process_creation",
+      "techniques": [
+        "T1197",
+        "T1036.003",
+        "T1105"
+      ],
+      "expected_scenarios": [
+        "t1105-certutil-bitsadmin-download"
+      ],
+      "detected_scenarios": [],
+      "missed_scenarios": [],
+      "pending_scenarios": [
+        "t1105-certutil-bitsadmin-download"
+      ],
+      "coverage": null
+    },
+    {
+      "rule_id": "fb843269-508c-4b76-8b8d-88679db22ce7",
+      "title": "Suspicious Execution of Powershell with Base64",
+      "level": "medium",
+      "logsource": "product=windows category=process_creation",
+      "techniques": [
+        "T1059.001"
+      ],
+      "expected_scenarios": [
+        "t1059-001-powershell-encoded-download"
+      ],
+      "detected_scenarios": [],
+      "missed_scenarios": [],
+      "pending_scenarios": [
+        "t1059-001-powershell-encoded-download"
+      ],
+      "coverage": null
+    },
+    {
+      "rule_id": "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e",
+      "title": "Linux Command History Tampering",
+      "level": "high",
+      "logsource": "product=linux",
+      "techniques": [
+        "T1070.003"
+      ],
+      "expected_scenarios": [
+        "t1070-003-clear-command-history"
+      ],
+      "detected_scenarios": [],
+      "missed_scenarios": [],
+      "pending_scenarios": [
+        "t1070-003-clear-command-history"
+      ],
+      "coverage": null
+    }
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "t1003-001-lsass-memory-dump",
+      "name": "OS Credential Dumping: LSASS memory via comsvcs MiniDump",
+      "plane": "windows",
+      "technique": "T1003.001",
+      "weight": 3,
+      "status": "pending",
+      "provenance": [],
+      "events": 0,
+      "expected_rules": [
+        "646ea171-dded-4578-8a4d-65e9822892e3",
+        "5ef9853e-4d0e-4a70-846f-a9ca37d876da"
+      ],
+      "fired_rules": [],
+      "missing_rules": []
+    },
+    {
+      "scenario_id": "t1027-obfuscated-powershell-oneliner",
+      "name": "Obfuscated Files or Information: obfuscated PowerShell one-liner",
+      "plane": "windows",
+      "technique": "T1027",
+      "weight": 1,
+      "status": "pending",
+      "provenance": [],
+      "events": 0,
+      "expected_rules": [
+        "44e24481-6202-4c62-9127-5a0ae8e3fe3d"
+      ],
+      "fired_rules": [],
+      "missing_rules": []
+    },
+    {
+      "scenario_id": "t1047-wmic-process-call-create",
+      "name": "WMI: wmic process call create",
+      "plane": "windows",
+      "technique": "T1047",
+      "weight": 4,
+      "status": "pending",
+      "provenance": [],
+      "events": 0,
+      "expected_rules": [
+        "526be59f-a573-4eea-b5f7-f0973207634d"
+      ],
+      "fired_rules": [],
+      "missing_rules": []
+    },
+    {
+      "scenario_id": "t1053-003-cron-persistence",
+      "name": "Cron persistence",
+      "plane": "linux",
+      "technique": "T1053.003",
+      "weight": 2,
+      "status": "pending",
+      "provenance": [],
+      "events": 0,
+      "expected_rules": [
+        "6b14bac8-3e3a-4324-8109-42f0546a347f",
+        "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05"
+      ],
+      "fired_rules": [],
+      "missing_rules": []
+    },
+    {
+      "scenario_id": "t1053-005-scheduled-task-persistence",
+      "name": "Scheduled Task persistence via schtasks",
+      "plane": "windows",
+      "technique": "T1053.005",
+      "weight": 2,
+      "status": "pending",
+      "provenance": [],
+      "events": 0,
+      "expected_rules": [
+        "92626ddd-662c-49e3-ac59-f6535f12d189",
+        "3a734d25-df5c-4b99-8034-af1ddb5883a4"
+      ],
+      "fired_rules": [],
+      "missing_rules": []
+    },
+    {
+      "scenario_id": "t1059-001-powershell-encoded-download",
+      "name": "PowerShell: encoded command and download cradle",
+      "plane": "windows",
+      "technique": "T1059.001",
+      "weight": 9,
+      "status": "pending",
+      "provenance": [],
+      "events": 0,
+      "expected_rules": [
+        "fb843269-508c-4b76-8b8d-88679db22ce7",
+        "403c2cc0-7f6b-4925-9423-bfa573bed7eb"
+      ],
+      "fired_rules": [],
+      "missing_rules": []
+    },
+    {
+      "scenario_id": "t1059-003-cmd-suspicious-redirect",
+      "name": "Windows Command Shell: cmd output redirected to a suspicious folder",
+      "plane": "windows",
+      "technique": "T1059.003",
+      "weight": 8,
+      "status": "pending",
+      "provenance": [],
+      "events": 0,
+      "expected_rules": [
+        "8e0bb260-d4b2-4fff-bb8d-3f82118e6892"
+      ],
+      "fired_rules": [],
+      "missing_rules": []
+    },
+    {
+      "scenario_id": "t1070-003-clear-command-history",
+      "name": "Indicator Removal: clear command history",
+      "plane": "linux",
+      "technique": "T1070.003",
+      "weight": 2,
+      "status": "pending",
+      "provenance": [],
+      "events": 0,
+      "expected_rules": [
+        "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e",
+        "1182f3b3-e716-4efa-99ab-d2685d04360f"
+      ],
+      "fired_rules": [],
+      "missing_rules": []
+    },
+    {
+      "scenario_id": "t1078-004-console-login-without-mfa",
+      "name": "Cloud Accounts: console login without MFA",
+      "plane": "aws",
+      "technique": "T1078.004",
+      "weight": 10,
+      "status": "passed",
+      "provenance": [
+        "recorded"
+      ],
+      "events": 7,
+      "expected_rules": [
+        "3b1f0d2e-7c4a-4d5b-9e8f-2a6c1d0b9f41",
+        "8ad1600d-e9dc-4251-b0ee-a65268f29add"
+      ],
+      "fired_rules": [
+        "3b1f0d2e-7c4a-4d5b-9e8f-2a6c1d0b9f41",
+        "8ad1600d-e9dc-4251-b0ee-a65268f29add"
+      ],
+      "missing_rules": []
+    },
+    {
+      "scenario_id": "t1098-001-iam-backdoor-access-key",
+      "name": "Account Manipulation: access key created for another IAM user",
+      "plane": "aws",
+      "technique": "T1098.001",
+      "weight": 3,
+      "status": "passed",
+      "provenance": [
+        "recorded"
+      ],
+      "events": 1,
+      "expected_rules": [
+        "0a5177f4-6ca9-44c2-aacf-d3f3d8b6e4d2"
+      ],
+      "fired_rules": [
+        "0a5177f4-6ca9-44c2-aacf-d3f3d8b6e4d2"
+      ],
+      "missing_rules": []
+    },
+    {
+      "scenario_id": "t1105-certutil-bitsadmin-download",
+      "name": "Ingress Tool Transfer: certutil and bitsadmin downloads",
+      "plane": "windows",
+      "technique": "T1105",
+      "weight": 6,
+      "status": "pending",
+      "provenance": [],
+      "events": 0,
+      "expected_rules": [
+        "19b08b1c-861d-4e75-a1ef-ea0c1baf202b",
+        "d059842b-6b9d-4ed1-b5c3-5b89143c6ede"
+      ],
+      "fired_rules": [],
+      "missing_rules": []
+    },
+    {
+      "scenario_id": "t1530-s3-bucket-exposure",
+      "name": "Data from Cloud Storage: S3 bucket made public and enumerated",
+      "plane": "aws",
+      "technique": "T1530",
+      "weight": 7,
+      "status": "passed",
+      "provenance": [
+        "recorded"
+      ],
+      "events": 10,
+      "expected_rules": [
+        "8f6a2c41-5d7e-4b0a-a3c9-1e2f3d4c5b6a",
+        "5c0d9e7b-3a21-4f68-b8d4-7e9f0a1b2c3d"
+      ],
+      "fired_rules": [
+        "8f6a2c41-5d7e-4b0a-a3c9-1e2f3d4c5b6a",
+        "5c0d9e7b-3a21-4f68-b8d4-7e9f0a1b2c3d"
+      ],
+      "missing_rules": []
+    },
+    {
+      "scenario_id": "t1548-001-setuid-setgid",
+      "name": "Abuse Elevation Control: setuid/setgid bit set",
+      "plane": "linux",
+      "technique": "T1548.001",
+      "weight": 2,
+      "status": "pending",
+      "provenance": [],
+      "events": 0,
+      "expected_rules": [
+        "c21c4eaa-ba2e-419a-92b2-8371703cbe21"
+      ],
+      "fired_rules": [],
+      "missing_rules": []
+    },
+    {
+      "scenario_id": "t1562-008-cloudtrail-stop",
+      "name": "Impair Defenses: CloudTrail logging stopped",
+      "plane": "aws",
+      "technique": "T1562.008",
+      "weight": 3,
+      "status": "passed",
+      "provenance": [
+        "recorded"
+      ],
+      "events": 1,
+      "expected_rules": [
+        "4db60cc0-36fb-42b7-9b58-a5b53019fb74"
+      ],
+      "fired_rules": [
+        "4db60cc0-36fb-42b7-9b58-a5b53019fb74"
+      ],
+      "missing_rules": []
+    }
+  ],
+  "techniques": [
+    {
+      "technique": "T1003.001",
+      "weight": 3,
+      "scenarios": [
+        "t1003-001-lsass-memory-dump"
+      ],
+      "rules": [
+        "5ef9853e-4d0e-4a70-846f-a9ca37d876da",
+        "646ea171-dded-4578-8a4d-65e9822892e3"
+      ],
+      "coverage": 0.0,
+      "pending": true
+    },
+    {
+      "technique": "T1027",
+      "weight": 1,
+      "scenarios": [
+        "t1027-obfuscated-powershell-oneliner"
+      ],
+      "rules": [
+        "44e24481-6202-4c62-9127-5a0ae8e3fe3d"
+      ],
+      "coverage": 0.0,
+      "pending": true
+    },
+    {
+      "technique": "T1047",
+      "weight": 4,
+      "scenarios": [
+        "t1047-wmic-process-call-create"
+      ],
+      "rules": [
+        "526be59f-a573-4eea-b5f7-f0973207634d"
+      ],
+      "coverage": 0.0,
+      "pending": true
+    },
+    {
+      "technique": "T1053.003",
+      "weight": 2,
+      "scenarios": [
+        "t1053-003-cron-persistence"
+      ],
+      "rules": [
+        "6b14bac8-3e3a-4324-8109-42f0546a347f",
+        "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05"
+      ],
+      "coverage": 0.0,
+      "pending": true
+    },
+    {
+      "technique": "T1053.005",
+      "weight": 2,
+      "scenarios": [
+        "t1053-005-scheduled-task-persistence"
+      ],
+      "rules": [
+        "3a734d25-df5c-4b99-8034-af1ddb5883a4",
+        "92626ddd-662c-49e3-ac59-f6535f12d189"
+      ],
+      "coverage": 0.0,
+      "pending": true
+    },
+    {
+      "technique": "T1059.001",
+      "weight": 9,
+      "scenarios": [
+        "t1059-001-powershell-encoded-download"
+      ],
+      "rules": [
+        "403c2cc0-7f6b-4925-9423-bfa573bed7eb",
+        "fb843269-508c-4b76-8b8d-88679db22ce7"
+      ],
+      "coverage": 0.0,
+      "pending": true
+    },
+    {
+      "technique": "T1059.003",
+      "weight": 8,
+      "scenarios": [
+        "t1059-003-cmd-suspicious-redirect"
+      ],
+      "rules": [
+        "8e0bb260-d4b2-4fff-bb8d-3f82118e6892"
+      ],
+      "coverage": 0.0,
+      "pending": true
+    },
+    {
+      "technique": "T1070.003",
+      "weight": 2,
+      "scenarios": [
+        "t1070-003-clear-command-history"
+      ],
+      "rules": [
+        "1182f3b3-e716-4efa-99ab-d2685d04360f",
+        "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e"
+      ],
+      "coverage": 0.0,
+      "pending": true
+    },
+    {
+      "technique": "T1078.004",
+      "weight": 10,
+      "scenarios": [
+        "t1078-004-console-login-without-mfa"
+      ],
+      "rules": [
+        "3b1f0d2e-7c4a-4d5b-9e8f-2a6c1d0b9f41",
+        "8ad1600d-e9dc-4251-b0ee-a65268f29add"
+      ],
+      "coverage": 1.0,
+      "pending": false
+    },
+    {
+      "technique": "T1098.001",
+      "weight": 3,
+      "scenarios": [
+        "t1098-001-iam-backdoor-access-key"
+      ],
+      "rules": [
+        "0a5177f4-6ca9-44c2-aacf-d3f3d8b6e4d2"
+      ],
+      "coverage": 1.0,
+      "pending": false
+    },
+    {
+      "technique": "T1105",
+      "weight": 6,
+      "scenarios": [
+        "t1105-certutil-bitsadmin-download"
+      ],
+      "rules": [
+        "19b08b1c-861d-4e75-a1ef-ea0c1baf202b",
+        "d059842b-6b9d-4ed1-b5c3-5b89143c6ede"
+      ],
+      "coverage": 0.0,
+      "pending": true
+    },
+    {
+      "technique": "T1530",
+      "weight": 7,
+      "scenarios": [
+        "t1530-s3-bucket-exposure"
+      ],
+      "rules": [
+        "5c0d9e7b-3a21-4f68-b8d4-7e9f0a1b2c3d",
+        "8f6a2c41-5d7e-4b0a-a3c9-1e2f3d4c5b6a"
+      ],
+      "coverage": 1.0,
+      "pending": false
+    },
+    {
+      "technique": "T1548.001",
+      "weight": 2,
+      "scenarios": [
+        "t1548-001-setuid-setgid"
+      ],
+      "rules": [
+        "c21c4eaa-ba2e-419a-92b2-8371703cbe21"
+      ],
+      "coverage": 0.0,
+      "pending": true
+    },
+    {
+      "technique": "T1562.008",
+      "weight": 3,
+      "scenarios": [
+        "t1562-008-cloudtrail-stop"
+      ],
+      "rules": [
+        "4db60cc0-36fb-42b7-9b58-a5b53019fb74"
+      ],
+      "coverage": 1.0,
+      "pending": false
+    }
+  ],
+  "gate": {
+    "passed": true,
+    "failures": []
+  }
+}

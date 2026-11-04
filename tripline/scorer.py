@@ -21,6 +21,7 @@ from xml.etree import ElementTree as ET
 from tripline import __version__
 from tripline.engine.compiler import CompiledRule
 from tripline.engine.rules import RuleSet
+from tripline.events import write_text_lf
 from tripline.models import (
     GateResult,
     ReplayResult,
@@ -120,8 +121,7 @@ def write_junit(results: list[ReplayResult], scenarios: list[Scenario], path: Pa
 
 def write_scorecard(scorecard: Scorecard, path: Path) -> None:
     """Serialise the scorecard as indented JSON (stable key order for clean diffs)."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(scorecard.model_dump_json(indent=2) + "\n", encoding="utf-8")
+    write_text_lf(path, scorecard.model_dump_json(indent=2) + "\n")
 
 
 def read_scorecard(path: Path) -> Scorecard:

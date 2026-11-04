@@ -135,6 +135,14 @@ class Scenario(BaseModel):
             raise ValueError("expected_rules contains duplicates")
         return value
 
+    @field_validator("fixtures")
+    @classmethod
+    def _unique_fixture_paths(cls, value: list[Fixture]) -> list[Fixture]:
+        paths = [str(f.path) for f in value]
+        if len(set(paths)) != len(paths):
+            raise ValueError("fixtures list the same path twice (events would be double counted)")
+        return value
+
     @property
     def parent_technique(self) -> str:
         """``T1059.001`` -> ``T1059``; already-parent IDs are returned unchanged."""

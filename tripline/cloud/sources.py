@@ -26,7 +26,7 @@ from tripline.cloud.replay import (
     select_many,
     time_window,
 )
-from tripline.events import get_field, write_ndjson
+from tripline.events import get_field, write_ndjson, write_text_lf
 from tripline.models import Event
 
 STRATUS_RAW = (
@@ -202,7 +202,7 @@ def build_fixture(
         "event_names": sorted({str(r.get("eventName")) for r in replayed}),
         "sources": [{"name": s.name, "url": s.url, "license": s.license} for s in recipe.sources],
     }
-    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    write_text_lf(out_dir / "manifest.json", json.dumps(manifest, indent=2) + "\n")
     return target
 
 

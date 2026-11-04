@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from tripline.events import write_text_lf
 from tripline.models import Scorecard, TechniqueCoverage
 
 LAYER_VERSION = "4.5"
@@ -80,8 +81,7 @@ def build_layer(scorecard: Scorecard, *, name: str = "tripline coverage") -> dic
 def write_layer(scorecard: Scorecard, path: Path) -> dict[str, Any]:
     """Write the layer JSON to ``path`` and return it."""
     layer = build_layer(scorecard)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(layer, indent=2) + "\n", encoding="utf-8")
+    write_text_lf(path, json.dumps(layer, indent=2) + "\n")
     return layer
 
 

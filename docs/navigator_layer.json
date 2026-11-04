@@ -1,0 +1,459 @@
+{
+  "name": "tripline coverage",
+  "versions": {
+    "attack": "16",
+    "navigator": "5.1.0",
+    "layer": "4.5"
+  },
+  "domain": "enterprise-attack",
+  "description": "Prevalence-weighted Sigma coverage from tripline scorecard (4/14 scenarios passed, 10 pending). Weighted coverage 37% overall, 100% over scenarios with fixtures.",
+  "sorting": 3,
+  "layout": {
+    "layout": "side",
+    "showID": true,
+    "showName": true
+  },
+  "hideDisabled": false,
+  "techniques": [
+    {
+      "techniqueID": "T1003.001",
+      "score": 0,
+      "enabled": true,
+      "showSubtechniques": true,
+      "comment": "weight 3; coverage 0%; scenarios: t1003-001-lsass-memory-dump; fixtures pending",
+      "metadata": [
+        {
+          "name": "weight",
+          "value": "3"
+        },
+        {
+          "name": "coverage",
+          "value": "0.00"
+        },
+        {
+          "name": "rules",
+          "value": "5ef9853e-4d0e-4a70-846f-a9ca37d876da, 646ea171-dded-4578-8a4d-65e9822892e3"
+        },
+        {
+          "name": "status",
+          "value": "pending"
+        }
+      ],
+      "color": "#e0e0e0"
+    },
+    {
+      "techniqueID": "T1027",
+      "score": 0,
+      "enabled": true,
+      "showSubtechniques": false,
+      "comment": "weight 1; coverage 0%; scenarios: t1027-obfuscated-powershell-oneliner; fixtures pending",
+      "metadata": [
+        {
+          "name": "weight",
+          "value": "1"
+        },
+        {
+          "name": "coverage",
+          "value": "0.00"
+        },
+        {
+          "name": "rules",
+          "value": "44e24481-6202-4c62-9127-5a0ae8e3fe3d"
+        },
+        {
+          "name": "status",
+          "value": "pending"
+        }
+      ],
+      "color": "#e0e0e0"
+    },
+    {
+      "techniqueID": "T1047",
+      "score": 0,
+      "enabled": true,
+      "showSubtechniques": false,
+      "comment": "weight 4; coverage 0%; scenarios: t1047-wmic-process-call-create; fixtures pending",
+      "metadata": [
+        {
+          "name": "weight",
+          "value": "4"
+        },
+        {
+          "name": "coverage",
+          "value": "0.00"
+        },
+        {
+          "name": "rules",
+          "value": "526be59f-a573-4eea-b5f7-f0973207634d"
+        },
+        {
+          "name": "status",
+          "value": "pending"
+        }
+      ],
+      "color": "#e0e0e0"
+    },
+    {
+      "techniqueID": "T1053.003",
+      "score": 0,
+      "enabled": true,
+      "showSubtechniques": true,
+      "comment": "weight 2; coverage 0%; scenarios: t1053-003-cron-persistence; fixtures pending",
+      "metadata": [
+        {
+          "name": "weight",
+          "value": "2"
+        },
+        {
+          "name": "coverage",
+          "value": "0.00"
+        },
+        {
+          "name": "rules",
+          "value": "6b14bac8-3e3a-4324-8109-42f0546a347f, 6c4e2f43-d94d-4ead-b64d-97e53fa2bd05"
+        },
+        {
+          "name": "status",
+          "value": "pending"
+        }
+      ],
+      "color": "#e0e0e0"
+    },
+    {
+      "techniqueID": "T1053.005",
+      "score": 0,
+      "enabled": true,
+      "showSubtechniques": true,
+      "comment": "weight 2; coverage 0%; scenarios: t1053-005-scheduled-task-persistence; fixtures pending",
+      "metadata": [
+        {
+          "name": "weight",
+          "value": "2"
+        },
+        {
+          "name": "coverage",
+          "value": "0.00"
+        },
+        {
+          "name": "rules",
+          "value": "3a734d25-df5c-4b99-8034-af1ddb5883a4, 92626ddd-662c-49e3-ac59-f6535f12d189"
+        },
+        {
+          "name": "status",
+          "value": "pending"
+        }
+      ],
+      "color": "#e0e0e0"
+    },
+    {
+      "techniqueID": "T1059.001",
+      "score": 0,
+      "enabled": true,
+      "showSubtechniques": true,
+      "comment": "weight 9; coverage 0%; scenarios: t1059-001-powershell-encoded-download; fixtures pending",
+      "metadata": [
+        {
+          "name": "weight",
+          "value": "9"
+        },
+        {
+          "name": "coverage",
+          "value": "0.00"
+        },
+        {
+          "name": "rules",
+          "value": "403c2cc0-7f6b-4925-9423-bfa573bed7eb, fb843269-508c-4b76-8b8d-88679db22ce7"
+        },
+        {
+          "name": "status",
+          "value": "pending"
+        }
+      ],
+      "color": "#e0e0e0"
+    },
+    {
+      "techniqueID": "T1059.003",
+      "score": 0,
+      "enabled": true,
+      "showSubtechniques": true,
+      "comment": "weight 8; coverage 0%; scenarios: t1059-003-cmd-suspicious-redirect; fixtures pending",
+      "metadata": [
+        {
+          "name": "weight",
+          "value": "8"
+        },
+        {
+          "name": "coverage",
+          "value": "0.00"
+        },
+        {
+          "name": "rules",
+          "value": "8e0bb260-d4b2-4fff-bb8d-3f82118e6892"
+        },
+        {
+          "name": "status",
+          "value": "pending"
+        }
+      ],
+      "color": "#e0e0e0"
+    },
+    {
+      "techniqueID": "T1070.003",
+      "score": 0,
+      "enabled": true,
+      "showSubtechniques": true,
+      "comment": "weight 2; coverage 0%; scenarios: t1070-003-clear-command-history; fixtures pending",
+      "metadata": [
+        {
+          "name": "weight",
+          "value": "2"
+        },
+        {
+          "name": "coverage",
+          "value": "0.00"
+        },
+        {
+          "name": "rules",
+          "value": "1182f3b3-e716-4efa-99ab-d2685d04360f, fdc88d25-96fb-4b7c-9633-c0e417fdbd4e"
+        },
+        {
+          "name": "status",
+          "value": "pending"
+        }
+      ],
+      "color": "#e0e0e0"
+    },
+    {
+      "techniqueID": "T1078.004",
+      "score": 100,
+      "enabled": true,
+      "showSubtechniques": true,
+      "comment": "weight 10; coverage 100%; scenarios: t1078-004-console-login-without-mfa",
+      "metadata": [
+        {
+          "name": "weight",
+          "value": "10"
+        },
+        {
+          "name": "coverage",
+          "value": "1.00"
+        },
+        {
+          "name": "rules",
+          "value": "3b1f0d2e-7c4a-4d5b-9e8f-2a6c1d0b9f41, 8ad1600d-e9dc-4251-b0ee-a65268f29add"
+        },
+        {
+          "name": "status",
+          "value": "scored"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1098.001",
+      "score": 100,
+      "enabled": true,
+      "showSubtechniques": true,
+      "comment": "weight 3; coverage 100%; scenarios: t1098-001-iam-backdoor-access-key",
+      "metadata": [
+        {
+          "name": "weight",
+          "value": "3"
+        },
+        {
+          "name": "coverage",
+          "value": "1.00"
+        },
+        {
+          "name": "rules",
+          "value": "0a5177f4-6ca9-44c2-aacf-d3f3d8b6e4d2"
+        },
+        {
+          "name": "status",
+          "value": "scored"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1105",
+      "score": 0,
+      "enabled": true,
+      "showSubtechniques": false,
+      "comment": "weight 6; coverage 0%; scenarios: t1105-certutil-bitsadmin-download; fixtures pending",
+      "metadata": [
+        {
+          "name": "weight",
+          "value": "6"
+        },
+        {
+          "name": "coverage",
+          "value": "0.00"
+        },
+        {
+          "name": "rules",
+          "value": "19b08b1c-861d-4e75-a1ef-ea0c1baf202b, d059842b-6b9d-4ed1-b5c3-5b89143c6ede"
+        },
+        {
+          "name": "status",
+          "value": "pending"
+        }
+      ],
+      "color": "#e0e0e0"
+    },
+    {
+      "techniqueID": "T1530",
+      "score": 100,
+      "enabled": true,
+      "showSubtechniques": false,
+      "comment": "weight 7; coverage 100%; scenarios: t1530-s3-bucket-exposure",
+      "metadata": [
+        {
+          "name": "weight",
+          "value": "7"
+        },
+        {
+          "name": "coverage",
+          "value": "1.00"
+        },
+        {
+          "name": "rules",
+          "value": "5c0d9e7b-3a21-4f68-b8d4-7e9f0a1b2c3d, 8f6a2c41-5d7e-4b0a-a3c9-1e2f3d4c5b6a"
+        },
+        {
+          "name": "status",
+          "value": "scored"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1548.001",
+      "score": 0,
+      "enabled": true,
+      "showSubtechniques": true,
+      "comment": "weight 2; coverage 0%; scenarios: t1548-001-setuid-setgid; fixtures pending",
+      "metadata": [
+        {
+          "name": "weight",
+          "value": "2"
+        },
+        {
+          "name": "coverage",
+          "value": "0.00"
+        },
+        {
+          "name": "rules",
+          "value": "c21c4eaa-ba2e-419a-92b2-8371703cbe21"
+        },
+        {
+          "name": "status",
+          "value": "pending"
+        }
+      ],
+      "color": "#e0e0e0"
+    },
+    {
+      "techniqueID": "T1562.008",
+      "score": 100,
+      "enabled": true,
+      "showSubtechniques": true,
+      "comment": "weight 3; coverage 100%; scenarios: t1562-008-cloudtrail-stop",
+      "metadata": [
+        {
+          "name": "weight",
+          "value": "3"
+        },
+        {
+          "name": "coverage",
+          "value": "1.00"
+        },
+        {
+          "name": "rules",
+          "value": "4db60cc0-36fb-42b7-9b58-a5b53019fb74"
+        },
+        {
+          "name": "status",
+          "value": "scored"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1114.003",
+      "color": "#9e9e9e",
+      "enabled": true,
+      "showSubtechniques": true,
+      "comment": "KNOWN GAP: Email Forwarding Rule - needs an M365/Google Workspace tenant; not emulated.",
+      "metadata": [
+        {
+          "name": "status",
+          "value": "known gap"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1204.004",
+      "color": "#9e9e9e",
+      "enabled": true,
+      "showSubtechniques": true,
+      "comment": "KNOWN GAP: Malicious Copy and Paste (ClickFix) - user-driven; candidate for a later phase.",
+      "metadata": [
+        {
+          "name": "status",
+          "value": "known gap"
+        }
+      ]
+    },
+    {
+      "techniqueID": "T1564.008",
+      "color": "#9e9e9e",
+      "enabled": true,
+      "showSubtechniques": true,
+      "comment": "KNOWN GAP: Email Hiding Rules - needs an M365/Google Workspace tenant; not emulated.",
+      "metadata": [
+        {
+          "name": "status",
+          "value": "known gap"
+        }
+      ]
+    }
+  ],
+  "gradient": {
+    "colors": [
+      "#d32f2f",
+      "#fbc02d",
+      "#388e3c"
+    ],
+    "minValue": 0,
+    "maxValue": 100
+  },
+  "legendItems": [
+    {
+      "label": "weighted coverage 0%",
+      "color": "#d32f2f"
+    },
+    {
+      "label": "weighted coverage 100%",
+      "color": "#388e3c"
+    },
+    {
+      "label": "fixtures pending",
+      "color": "#e0e0e0"
+    },
+    {
+      "label": "known gap (not emulated)",
+      "color": "#9e9e9e"
+    }
+  ],
+  "showTacticRowBackground": true,
+  "tacticRowBackground": "#dddddd",
+  "selectTechniquesAcrossTactics": true,
+  "selectSubtechniquesWithParent": false,
+  "metadata": [
+    {
+      "name": "generated_at",
+      "value": "2026-11-04T12:52:36.113946+00:00"
+    },
+    {
+      "name": "tripline_version",
+      "value": "0.1.0"
+    }
+  ]
+}

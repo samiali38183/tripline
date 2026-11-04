@@ -47,6 +47,13 @@ def write_ndjson(path: Path, events: Iterable[Event]) -> int:
     return count
 
 
+def write_text_lf(path: Path, text: str) -> None:
+    r"""Write UTF-8 text with ``\n`` line endings on every platform (clean diffs on Windows)."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(text)
+
+
 def get_field(event: Event, field: str) -> Any:
     """Resolve ``field`` against ``event``.
 

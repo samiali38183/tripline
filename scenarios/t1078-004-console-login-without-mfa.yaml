@@ -16,10 +16,9 @@ fixtures:
   - path: fixtures/cloud/t1078-004-console-login-without-mfa/run.ndjson
     provenance: recorded
     source: https://raw.githubusercontent.com/DataDog/stratus-red-team/main/docs/detonation-logs/aws.initial-access.console-login-without-mfa.json
-    notes: Stratus detonation log captured with Grimoire (Apache-2.0)
-  - path: fixtures/cloud/t1078-004-console-login-without-mfa/run.ndjson
-    provenance: recorded
-    source: https://summitroute.com/downloads/flaws_cloudtrail_logs.tar
-    notes: flaws.cloud public CloudTrail dataset (Summit Route)
+    notes: >-
+      Stratus detonation log captured with Grimoire (Apache-2.0) concatenated with root
+      ConsoleLogin records from the flaws.cloud public CloudTrail dataset
+      (https://summitroute.com/downloads/flaws_cloudtrail_logs.tar, Summit Route); see manifest.json.
 notes: >-
   Red Canary 2026 #1 technique. The MFAUsed=No signal is the single-event detection; new-ASN / impossible-travel baselining is a Phase B item.
