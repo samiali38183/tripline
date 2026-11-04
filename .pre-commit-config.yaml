@@ -1,0 +1,15 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.0
+    hooks:
+      - id: ruff-format
+      - id: ruff
+        args: [--fix]
+  - repo: local
+    hooks:
+      - id: tripline-validate
+        name: tripline validate
+        entry: tripline validate
+        language: system
+        pass_filenames: false
+        files: ^(scenarios|rules|fixtures)/
