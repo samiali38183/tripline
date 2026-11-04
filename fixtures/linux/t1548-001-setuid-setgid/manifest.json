@@ -1,0 +1,16 @@
+{
+  "scenario_id": "t1548-001-setuid-setgid",
+  "run_guid": "2ee9d910-f9b3-4351-90c6-51e46ed846fa",
+  "source": "https://github.com/samiali38183/tripline/actions/runs/41838714456",
+  "events": 84,
+  "atomic_tests": {
+    "759055b3-3885-4582-a8ec-c00c9d64dd79": 42,
+    "db55f666-7cba-46c6-9fe6-205a05c3242c": 42
+  },
+  "execve_events": 36,
+  "created_files": [],
+  "time_window": [
+    "2026-11-04T13:31:47.816Z",
+    "2026-11-04T13:31:55.107Z"
+  ]
+}

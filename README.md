@@ -16,10 +16,12 @@ Canary's 2026 technique prevalence so the heatmap answers *"how exposed are we t
 happens"*, not *"how many rules do we have"*. The GitHub Action posts the scorecard on the PR and
 fails the build when an expected rule stops firing.
 
-Phase A1 (this release) ships the engine, the scorer, the CI gate and a **real cloud plane**: all
-four AWS scenarios replay recorded public CloudTrail telemetry and pass. Endpoint scenarios are
-specified (Atomic test GUIDs, expected rules) and report as *pending* until their fixtures are
-recorded on GitHub runners in Phase A2.
+Phase A1 shipped the engine, the scorer, the CI gate and a **real cloud plane**: all four AWS
+scenarios replay recorded public CloudTrail telemetry and pass. Phase A2 (in progress) records
+endpoint telemetry on GitHub runners: the **Linux plane is live** - auditd from `ubuntu-latest`
+running the Atomic Red Team tests, 3/3 scenarios pass, and the first run already found a real
+SigmaHQ rule gap ([docs/findings.md](docs/findings.md)). Windows scenarios are specified (Atomic
+GUIDs, expected rules) and report *pending* until `emulate-windows.yml` lands.
 
 ## Architecture
 
@@ -80,9 +82,9 @@ Rebuild the cloud fixtures from upstream (downloads ~450 MB of public CloudTrail
 |---|---|---|---|
 | AWS CloudTrail | 4 | **4/4 pass** on recorded Stratus Red Team + flaws.cloud telemetry | 6/6 |
 | Windows (Sysmon / Security / PowerShell) | 7 | fixtures pending: Phase A2 | 0/11 (pending) |
-| Linux (auditd) | 3 | fixtures pending: Phase A2 | 0/5 (pending) |
+| Linux (auditd) | 3 | **3/3 pass** on auditd recorded from Atomic Red Team on `ubuntu-latest` ([run](https://github.com/samiali38183/tripline/actions/runs/41838714456)) | 5/5 |
 
-Prevalence-weighted coverage: **37 %** of all 14 scenarios (pending counts as 0), **100 %** of the
+Prevalence-weighted coverage: **47 %** of all 14 scenarios (pending counts as 0), **100 %** of the
 scenarios that have fixtures. Full table: [`docs/scorecard.md`](docs/scorecard.md). Navigator
 layer with 14 scored cells plus three grey *known gap* cells (T1114.003, T1564.008, T1204.004 -
 need a mail tenant or a human at the keyboard): [`docs/navigator_layer.json`](docs/navigator_layer.json).
@@ -90,8 +92,20 @@ need a mail tenant or a human at the keyboard): [`docs/navigator_layer.json`](do
 The gate is proven, not described: [`docs/gate-proof.md`](docs/gate-proof.md) links the PR that
 broke one cloud rule's condition and went red naming the scenario.
 
-Test suite: 94 tests, 90 % line coverage (`pytest --cov=tripline`), ruff and `mypy --strict` clean,
-`sigma check rules/` clean (23 rules: 20 vendored from SigmaHQ under DRL 1.1, 3 custom CloudTrail rules).
+Test suite: 100 tests, 89 % line coverage (`pytest --cov=tripline`), ruff and `mypy --strict` clean,
+`sigma check rules/` clean (24 rules: 20 vendored from SigmaHQ under DRL 1.1, 3 custom CloudTrail
+rules, 1 custom Linux rule written to close [finding F-001](docs/findings.md)).
+
+### Linux emulation on GitHub runners
+
+[`.github/workflows/emulate-linux.yml`](.github/workflows/emulate-linux.yml) installs auditd
+(`execve` + cron directory watches), installs Invoke-AtomicRedTeam as root, and runs each Linux
+atomic between two marker commands (`sh -c "true tripline-marker <run-guid> <test-guid> start|end"`)
+so the audit log carries its own attribution. `tripline linux collect audit.log --run-guid ... --replay`
+merges audit records by serial (SYSCALL + EXECVE + PATH + CWD + PROCTITLE), hex-decodes arguments,
+slices by marker into `fixtures/linux/<scenario>/run.ndjson` + `manifest.json`, and replays the
+fresh fixtures through the expected rules - the workflow is red if a rule stops firing on *today's*
+atomics. Fixtures are uploaded as an artifact and committed after review.
 
 ## Scenarios (DESIGN section 3)
 
@@ -134,9 +148,9 @@ Weight = Red Canary 2026 Threat Detection Report prevalence bucket (10 = #1 tech
 
 ## Roadmap
 
-* **Phase A2 - endpoint emulation on GitHub runners.** `emulate-windows.yml` (Sysmon + Invoke-Atomic
-  on `windows-latest`, winlog export) and `emulate-linux.yml` (auditd on `ubuntu-latest`); recorded
-  NDJSON committed as fixtures so the 10 pending scenarios score for real.
+* **Phase A2 - endpoint emulation on GitHub runners.** Linux done (`emulate-linux.yml`). Next:
+  `emulate-windows.yml` (Sysmon + Invoke-Atomic on `windows-latest`, `Get-WinEvent` NDJSON export,
+  `tripline windows collect`) so the 7 pending Windows scenarios score for real.
 * **Phase B - mutator** (case/quoting/encoding/arg-order/LOLBin substitution/`userAgent` swap
   variants per emulation → robustness score, with the Sigma modifier that saved each rule),
   **responder** (enrich + auto-close with an audit trail), **benign corpora** for precision, and

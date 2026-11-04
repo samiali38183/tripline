@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-11-04T12:52:36.113946Z",
+  "generated_at": "2026-11-04T13:40:36.576564Z",
   "tripline_version": "0.1.0",
   "totals": {
     "scenarios": 14,
-    "passed": 4,
+    "passed": 7,
     "failed": 0,
-    "pending": 10,
+    "pending": 7,
     "rules": 22,
-    "weighted_coverage": 0.3709677419354839,
+    "weighted_coverage": 0.46774193548387094,
     "weighted_coverage_scored": 1.0
   },
   "rules": [
@@ -40,12 +40,12 @@
       "expected_scenarios": [
         "t1070-003-clear-command-history"
       ],
-      "detected_scenarios": [],
-      "missed_scenarios": [],
-      "pending_scenarios": [
+      "detected_scenarios": [
         "t1070-003-clear-command-history"
       ],
-      "coverage": null
+      "missed_scenarios": [],
+      "pending_scenarios": [],
+      "coverage": 1.0
     },
     {
       "rule_id": "19b08b1c-861d-4e75-a1ef-ea0c1baf202b",
@@ -242,12 +242,12 @@
       "expected_scenarios": [
         "t1053-003-cron-persistence"
       ],
-      "detected_scenarios": [],
-      "missed_scenarios": [],
-      "pending_scenarios": [
+      "detected_scenarios": [
         "t1053-003-cron-persistence"
       ],
-      "coverage": null
+      "missed_scenarios": [],
+      "pending_scenarios": [],
+      "coverage": 1.0
     },
     {
       "rule_id": "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05",
@@ -260,12 +260,30 @@
       "expected_scenarios": [
         "t1053-003-cron-persistence"
       ],
-      "detected_scenarios": [],
-      "missed_scenarios": [],
-      "pending_scenarios": [
+      "detected_scenarios": [
         "t1053-003-cron-persistence"
       ],
-      "coverage": null
+      "missed_scenarios": [],
+      "pending_scenarios": [],
+      "coverage": 1.0
+    },
+    {
+      "rule_id": "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d",
+      "title": "Setuid or Setgid Bit Set via Chmod (Any Mode Form)",
+      "level": "medium",
+      "logsource": "product=linux category=process_creation",
+      "techniques": [
+        "T1548.001"
+      ],
+      "expected_scenarios": [
+        "t1548-001-setuid-setgid"
+      ],
+      "detected_scenarios": [
+        "t1548-001-setuid-setgid"
+      ],
+      "missed_scenarios": [],
+      "pending_scenarios": [],
+      "coverage": 1.0
     },
     {
       "rule_id": "8ad1600d-e9dc-4251-b0ee-a65268f29add",
@@ -340,24 +358,6 @@
       "coverage": null
     },
     {
-      "rule_id": "c21c4eaa-ba2e-419a-92b2-8371703cbe21",
-      "title": "Setuid and Setgid",
-      "level": "low",
-      "logsource": "product=linux category=process_creation",
-      "techniques": [
-        "T1548.001"
-      ],
-      "expected_scenarios": [
-        "t1548-001-setuid-setgid"
-      ],
-      "detected_scenarios": [],
-      "missed_scenarios": [],
-      "pending_scenarios": [
-        "t1548-001-setuid-setgid"
-      ],
-      "coverage": null
-    },
-    {
       "rule_id": "d059842b-6b9d-4ed1-b5c3-5b89143c6ede",
       "title": "File Download Via Bitsadmin",
       "level": "medium",
@@ -406,12 +406,12 @@
       "expected_scenarios": [
         "t1070-003-clear-command-history"
       ],
-      "detected_scenarios": [],
-      "missed_scenarios": [],
-      "pending_scenarios": [
+      "detected_scenarios": [
         "t1070-003-clear-command-history"
       ],
-      "coverage": null
+      "missed_scenarios": [],
+      "pending_scenarios": [],
+      "coverage": 1.0
     }
   ],
   "scenarios": [
@@ -467,14 +467,19 @@
       "plane": "linux",
       "technique": "T1053.003",
       "weight": 2,
-      "status": "pending",
-      "provenance": [],
-      "events": 0,
+      "status": "passed",
+      "provenance": [
+        "recorded"
+      ],
+      "events": 42,
       "expected_rules": [
         "6b14bac8-3e3a-4324-8109-42f0546a347f",
         "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05"
       ],
-      "fired_rules": [],
+      "fired_rules": [
+        "6b14bac8-3e3a-4324-8109-42f0546a347f",
+        "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05"
+      ],
       "missing_rules": []
     },
     {
@@ -530,14 +535,19 @@
       "plane": "linux",
       "technique": "T1070.003",
       "weight": 2,
-      "status": "pending",
-      "provenance": [],
-      "events": 0,
+      "status": "passed",
+      "provenance": [
+        "recorded"
+      ],
+      "events": 38,
       "expected_rules": [
         "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e",
         "1182f3b3-e716-4efa-99ab-d2685d04360f"
       ],
-      "fired_rules": [],
+      "fired_rules": [
+        "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e",
+        "1182f3b3-e716-4efa-99ab-d2685d04360f"
+      ],
       "missing_rules": []
     },
     {
@@ -623,13 +633,17 @@
       "plane": "linux",
       "technique": "T1548.001",
       "weight": 2,
-      "status": "pending",
-      "provenance": [],
-      "events": 0,
-      "expected_rules": [
-        "c21c4eaa-ba2e-419a-92b2-8371703cbe21"
+      "status": "passed",
+      "provenance": [
+        "recorded"
       ],
-      "fired_rules": [],
+      "events": 84,
+      "expected_rules": [
+        "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d"
+      ],
+      "fired_rules": [
+        "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d"
+      ],
       "missing_rules": []
     },
     {
@@ -700,8 +714,8 @@
         "6b14bac8-3e3a-4324-8109-42f0546a347f",
         "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05"
       ],
-      "coverage": 0.0,
-      "pending": true
+      "coverage": 1.0,
+      "pending": false
     },
     {
       "technique": "T1053.005",
@@ -751,8 +765,8 @@
         "1182f3b3-e716-4efa-99ab-d2685d04360f",
         "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e"
       ],
-      "coverage": 0.0,
-      "pending": true
+      "coverage": 1.0,
+      "pending": false
     },
     {
       "technique": "T1078.004",
@@ -812,10 +826,10 @@
         "t1548-001-setuid-setgid"
       ],
       "rules": [
-        "c21c4eaa-ba2e-419a-92b2-8371703cbe21"
+        "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d"
       ],
-      "coverage": 0.0,
-      "pending": true
+      "coverage": 1.0,
+      "pending": false
     },
     {
       "technique": "T1562.008",

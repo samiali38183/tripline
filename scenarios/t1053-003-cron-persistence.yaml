@@ -14,6 +14,10 @@ emulation:
 expected_rules:
   - 6b14bac8-3e3a-4324-8109-42f0546a347f  # Scheduled Cron Task/Job - Linux (SigmaHQ)
   - 6c4e2f43-d94d-4ead-b64d-97e53fa2bd05  # New Cron File Created (SigmaHQ)
-fixtures: []  # Phase A2: recorded on a GitHub Actions linux runner
+fixtures:
+  - path: fixtures/linux/t1053-003-cron-persistence/run.ndjson
+    provenance: recorded
+    source: https://github.com/samiali38183/tripline/actions/runs/41838714456
+    notes: auditd (execve + cron watches) on ubuntu-latest, Invoke-AtomicTest between tripline markers; see manifest.json
 notes: >-
   Linux file_event rules are evaluated against auditd PATH records with name=create in Phase A2.

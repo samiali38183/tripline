@@ -172,23 +172,33 @@ def test_load_stratus_log_validates_shape(tmp_path):
 # --------------------------------------------------------------------------- committed fixtures
 
 
-def test_committed_cloud_fixtures_all_pass(repo_root, ruleset):
-    scenarios = [s for s in load_scenarios(repo_root / "scenarios") if s.plane is Plane.AWS]
+def test_committed_fixtures_all_pass(repo_root, ruleset):
+    scenarios = [
+        s for s in load_scenarios(repo_root / "scenarios") if s.plane in {Plane.AWS, Plane.LINUX}
+    ]
     results = replay_all(scenarios, ruleset, repo_root)
-    assert len(results) == 4
+    assert len(results) == 7  # 4 AWS + 3 Linux recorded on the runner
     for result in results:
         assert result.status is ScenarioStatus.PASSED, (result.scenario_id, result.missing_rules)
         assert result.events > 0
 
 
-def test_committed_cloud_fixtures_are_guid_tagged_and_match_manifest(repo_root):
+def test_committed_fixtures_are_guid_tagged_and_match_manifest(repo_root):
+    """Cloud events carry the GUID in userAgent, Linux events in the ``tripline`` object."""
     for scenario in load_scenarios(repo_root / "scenarios"):
         for fixture in scenario.fixtures:
             events = read_ndjson(repo_root / fixture.path)
             manifest = json.loads(
                 (repo_root / fixture.path).with_name("manifest.json").read_text(encoding="utf-8")
             )
-            guids = {run_guid_of(e) for e in events}
+            if scenario.plane is Plane.AWS:
+                guids = {run_guid_of(e) for e in events}
+            else:
+                guids = {e["tripline"]["run_guid"] for e in events}
+                assert {e["tripline"]["atomic_test"] for e in events} <= set(
+                    scenario.emulation.atomic_tests
+                )
             assert guids == {manifest["run_guid"]}
             assert manifest["events"] == len(events)
             assert manifest["scenario_id"] == scenario.id
+            assert fixture.source and fixture.source.startswith("https://")

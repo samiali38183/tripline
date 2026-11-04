@@ -1,0 +1,20 @@
+{
+  "scenario_id": "t1053-003-cron-persistence",
+  "run_guid": "2ee9d910-f9b3-4351-90c6-51e46ed846fa",
+  "source": "https://github.com/samiali38183/tripline/actions/runs/41838714456",
+  "events": 42,
+  "atomic_tests": {
+    "078e69eb-d9fb-450e-b9d0-2e118217c846": 19,
+    "435057fb-74b1-410e-9403-d81baf194f75": 23
+  },
+  "execve_events": 26,
+  "created_files": [
+    "/etc/cron.d/persistevil",
+    "crontabs/root",
+    "crontabs/tmp.RxAWNL"
+  ],
+  "time_window": [
+    "2026-11-04T13:31:23.974Z",
+    "2026-11-04T13:31:31.760Z"
+  ]
+}

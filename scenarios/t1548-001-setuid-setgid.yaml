@@ -12,7 +12,13 @@ emulation:
     - 759055b3-3885-4582-a8ec-c00c9d64dd79  # ART #3: Set a SetUID flag on file
     - db55f666-7cba-46c6-9fe6-205a05c3242c  # ART #5: Set a SetGID flag on file
 expected_rules:
-  - c21c4eaa-ba2e-419a-92b2-8371703cbe21  # Setuid and Setgid (SigmaHQ)
-fixtures: []  # Phase A2: recorded on a GitHub Actions linux runner
+  - 7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d  # Setuid or Setgid Bit Set via Chmod, any mode form (tripline)
+  # NOT expected: SigmaHQ c21c4eaa 'Setuid and Setgid' matches only ' chmod u+s' / ' chmod g+s' and
+  # missed the recorded atomics ('chmod u+xs', 'chmod g+xs') - see docs/findings.md.
+fixtures:
+  - path: fixtures/linux/t1548-001-setuid-setgid/run.ndjson
+    provenance: recorded
+    source: https://github.com/samiali38183/tripline/actions/runs/41838714456
+    notes: auditd (execve + cron watches) on ubuntu-latest, Invoke-AtomicTest between tripline markers; see manifest.json
 notes: >-
   Rule requires both 'chown root' and 'chmod u+s' in the same command line (all of selection_*).

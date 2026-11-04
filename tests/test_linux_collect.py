@@ -27,6 +27,7 @@ def _execve(
     proctitle = _hex("\x00".join(argv))
     return [
         f"type=SYSCALL msg=audit({ts:.3f}:{serial}): arch=c000003e syscall=59 success=yes exit=0 "
+        f"a0=55d4f0a1b2c0 a1=55d4f0a1b300 a2=55d4f0a1b400 a3=8 "
         f'ppid=100 pid={serial} auid=1001 uid=0 comm="{Path(exe).name}" exe="{exe}" key="{key}"',
         f"type=EXECVE msg=audit({ts:.3f}:{serial}): argc={len(argv)} {args}",
         f'type=CWD msg=audit({ts:.3f}:{serial}): cwd="/home/runner"',
@@ -92,6 +93,7 @@ def test_parse_merges_records_and_decodes_hex():
     assert e["timestamp"] == "2023-11-14T22:13:22.000Z"
     assert e["record_types"] == ["CWD", "EXECVE", "PATH", "PROCTITLE", "SYSCALL"]
     assert command_line(e) == e["proctitle"]
+    assert "a3" not in e  # SYSCALL register values must not leak into the argument list
     created = events[8]
     assert created["type"] == "SYSCALL" and created["TargetFilename"] == "/etc/cron.d/persistevil"
 
@@ -123,6 +125,8 @@ def test_normalized_events_fire_the_linux_rules(repo_root):
     assert "product=linux category=process_creation" in {str(s) for s in classify(setuid_sh)}
     assert normalize(setuid_sh)["CommandLine"].startswith("sh -c sudo touch")
     assert evaluate(by_id["c21c4eaa-ba2e-419a-92b2-8371703cbe21"], setuid_sh) is True
+    chmod = events[3]  # "chmod u+s /tmp/evilBinary" executed by /usr/bin/chmod
+    assert evaluate(by_id["7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d"], chmod) is True
     cron_create = events[8]
     assert "product=linux category=file_event" in {str(s) for s in classify(cron_create)}
     assert evaluate(by_id["6c4e2f43-d94d-4ead-b64d-97e53fa2bd05"], cron_create) is True
@@ -144,3 +148,27 @@ def test_collect_writes_fixtures_for_seen_scenarios(repo_root, tmp_path):
     assert manifest["atomic_tests"][T_CRON] == 2 and manifest["run_guid"] == RUN
     text = (tmp_path / "t1548-001-setuid-setgid" / "run.ndjson").read_bytes()
     assert text.count(b"\n") == 2 and b"\r\n" not in text
+
+
+def test_setuid_any_form_rule_covers_what_sigmahq_misses(repo_root):
+    """docs/findings.md F-001: 'chmod u+xs' as recorded on the runner."""
+    rules = load_rules(repo_root / "rules" / "sigma")
+    by_id = {r.id: r for r in rules.rules}
+    sigmahq, tripline_rule = (
+        by_id["c21c4eaa-ba2e-419a-92b2-8371703cbe21"],
+        by_id["7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d"],
+    )
+
+    def chmod(mode: str, exe: str = "/usr/bin/chmod"):
+        (ev,) = parse_records(_execve(99, 1700000099.0, ["chmod", mode, "/tmp/evilBinary"], exe))
+        return ev
+
+    for mode in ("u+xs", "g+xs", "u+s", "ug+s", "a+s", "4755", "2755", "6755"):
+        assert evaluate(tripline_rule, chmod(mode)) is True, mode
+    for mode in ("u+x", "755", "0755", "+rw"):
+        assert evaluate(tripline_rule, chmod(mode)) is False, mode
+    assert evaluate(sigmahq, chmod("u+xs")) is False  # the documented gap
+    (wrapper,) = parse_records(
+        _execve(98, 1700000098.0, ["sh", "-c", "chmod u+xs /tmp/x"], "/usr/bin/dash")
+    )
+    assert evaluate(tripline_rule, wrapper) is False  # Image must be chmod itself

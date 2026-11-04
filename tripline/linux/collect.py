@@ -41,10 +41,14 @@ class _Pending:
     records: list[tuple[str, dict[str, str]]] = field(default_factory=list)
 
 
-def _decode(key: str, raw: str) -> str:
+def _decode(rtype: str, key: str, raw: str) -> str:
+    """Strip quotes; hex-decode EXECVE arguments and PROCTITLE (never SYSCALL registers)."""
     if raw.startswith('"') and raw.endswith('"'):
         return raw[1:-1]
-    if (_ARG.match(key) or key == "proctitle") and _HEX.match(raw):
+    hex_field = (rtype == "EXECVE" and _ARG.match(key)) or (
+        rtype == "PROCTITLE" and key == "proctitle"
+    )
+    if hex_field and _HEX.match(raw):
         text = bytes.fromhex(raw).decode("utf-8", errors="replace")
         return text.replace("\x00", " ").rstrip()
     return raw
@@ -71,8 +75,12 @@ def parse_records(lines: Iterable[str]) -> list[Event]:
                 serial=serial, timestamp=stamp.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
             )
             pending[serial] = entry
-        fields = {k: _decode(k, v) for k, v in _KV.findall(match["body"])}
-        entry.records.append((match["type"], fields))
+        rtype = match["type"]
+        fields = {k: _decode(rtype, k, v) for k, v in _KV.findall(match["body"])}
+        if rtype == "SYSCALL":
+            # a0..a3 on SYSCALL are raw register values (pointers), not arguments.
+            fields = {k: v for k, v in fields.items() if not _ARG.match(k)}
+        entry.records.append((rtype, fields))
     return [_merge(p) for p in pending.values()]
 
 

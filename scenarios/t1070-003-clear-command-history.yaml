@@ -14,6 +14,10 @@ emulation:
 expected_rules:
   - fdc88d25-96fb-4b7c-9633-c0e417fdbd4e  # Linux Command History Tampering (SigmaHQ)
   - 1182f3b3-e716-4efa-99ab-d2685d04360f  # History File Deletion (SigmaHQ)
-fixtures: []  # Phase A2: recorded on a GitHub Actions linux runner
+fixtures:
+  - path: fixtures/linux/t1070-003-clear-command-history/run.ndjson
+    provenance: recorded
+    source: https://github.com/samiali38183/tripline/actions/runs/41838714456
+    notes: auditd (execve + cron watches) on ubuntu-latest, Invoke-AtomicTest between tripline markers; see manifest.json
 notes: >-
   Shell builtins (history -c) never reach auditd; the keyword rule relies on the PROCTITLE record. Documented as a telemetry gap for the write-up.

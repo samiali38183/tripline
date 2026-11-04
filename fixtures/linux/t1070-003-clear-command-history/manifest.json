@@ -1,0 +1,16 @@
+{
+  "scenario_id": "t1070-003-clear-command-history",
+  "run_guid": "2ee9d910-f9b3-4351-90c6-51e46ed846fa",
+  "source": "https://github.com/samiali38183/tripline/actions/runs/41838714456",
+  "events": 38,
+  "atomic_tests": {
+    "a934276e-2be5-4a36-93fd-98adbb5bd4fc": 19,
+    "b1251c35-dcd3-4ea1-86da-36d27b54f31f": 19
+  },
+  "execve_events": 26,
+  "created_files": [],
+  "time_window": [
+    "2026-11-04T13:31:36.163Z",
+    "2026-11-04T13:31:43.397Z"
+  ]
+}
