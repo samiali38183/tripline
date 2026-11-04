@@ -50,14 +50,24 @@ def write_ndjson(path: Path, events: Iterable[Event]) -> int:
 def get_field(event: Event, field: str) -> Any:
     """Resolve ``field`` against ``event``.
 
-    Resolution order: literal key, then dotted path through nested dicts. Returns ``None``
-    when the path does not exist so callers can treat "absent" and ``null`` alike, which is
-    how Sigma's ``field: null`` is defined.
+    Resolution order: literal key, then dotted path through nested dicts. When a path segment
+    lands on a list (CloudTrail ``requestParameters.*.Grant`` is a list of grants) the
+    remaining path is resolved against every element and the results are flattened, so a
+    rule written as ``Grant.Grantee.URI|contains: AllUsers`` sees all grantees. Returns
+    ``None`` when the path does not exist so callers can treat "absent" and ``null`` alike,
+    which is how Sigma's ``field: null`` is defined.
     """
     if field in event:
         return event[field]
-    current: Any = event
-    for part in field.split("."):
+    return _resolve(event, field.split("."))
+
+
+def _resolve(current: Any, parts: list[str]) -> Any:
+    for index, part in enumerate(parts):
+        if isinstance(current, list):
+            values = [_resolve(item, parts[index:]) for item in current]
+            flat = [v for v in values if v is not None]
+            return flat or None
         if not isinstance(current, dict):
             return None
         current = current.get(part, _MISSING)

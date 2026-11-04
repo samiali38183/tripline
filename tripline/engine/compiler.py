@@ -257,10 +257,17 @@ def _in_network(actual: Any, network: ipaddress.IPv4Network | ipaddress.IPv6Netw
 
 
 def _field_ref_matches(event: Event, field_name: str, other: str, ref: SigmaFieldReference) -> bool:
+    """Compare two fields of the same event (``|fieldref`` and its ``contains`` etc. variants).
+
+    pySigma encodes ``fieldref|contains`` as ``starts_with and ends_with`` both set, so that
+    case is tested first. Comparison is case-insensitive like plain Sigma strings.
+    """
     left, right = get_field(event, field_name), get_field(event, other)
     if left is None or right is None:
         return False
     left_text, right_text = _to_text(left).lower(), _to_text(right).lower()
+    if ref.starts_with and ref.ends_with:
+        return right_text in left_text
     if ref.starts_with:
         return left_text.startswith(right_text)
     if ref.ends_with:

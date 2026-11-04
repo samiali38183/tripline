@@ -1,7 +1,8 @@
-"""Typed data models shared across the planner, scorer and reporters.
+"""Typed data models shared across the loader, replay, scorer and reporters.
 
-Scenarios are authored as YAML under ``scenarios/`` and validated into :class:`Scenario`.
-Scorecards are produced by :mod:`tripline.scorer` and serialised to ``scorecard.json``.
+Scenarios are authored as YAML under ``scenarios/`` and validated into :class:`Scenario` by
+:mod:`tripline.scenarios`. Scorecards are produced by :mod:`tripline.scorer` and serialised
+to ``scorecard.json``; the heatmap and the PR comment are derived from that file only.
 """
 
 from __future__ import annotations
@@ -12,7 +13,6 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
-import yaml
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 Event = dict[str, Any]
@@ -44,9 +44,20 @@ class Provenance(StrEnum):
     """Where a fixture's events came from. Shown verbatim on every scorecard."""
 
     RECORDED = "recorded"
-    """Real telemetry captured from a detonation (source URL required)."""
+    """Real telemetry captured from a detonation or a public dataset (source URL required)."""
     SYNTHETIC = "synthetic"
     """Hand-authored events modelled on the real log schema; not captured from a host."""
+
+
+class ScenarioStatus(StrEnum):
+    """Outcome of replaying one scenario."""
+
+    PASSED = "passed"
+    """Every expected rule fired on at least one fixture event."""
+    FAILED = "failed"
+    """At least one expected rule did not fire, is missing, or could not be compiled."""
+    PENDING = "pending"
+    """The scenario has no committed fixtures yet; it is reported but does not gate."""
 
 
 class Emulation(BaseModel):
@@ -61,7 +72,7 @@ class Emulation(BaseModel):
     command: str | None = None
     """Command line executed on the lab host (``kind == script``) or shown as evidence."""
     source: str | None = None
-    """URL of the recorded detonation log (``kind == replay``)."""
+    """URL of the recorded detonation log or dataset (``kind == replay``)."""
 
     @model_validator(mode="after")
     def _check_kind_fields(self) -> Emulation:
@@ -80,6 +91,7 @@ class Fixture(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     path: Path
+    """Relative to the repository root, e.g. ``fixtures/cloud/<scenario>/run.ndjson``."""
     provenance: Provenance
     source: str | None = None
     notes: str | None = None
@@ -104,9 +116,10 @@ class Scenario(BaseModel):
     weight: int = Field(ge=1, le=10, description="Prevalence weight (Red Canary 2026 rank).")
     emulation: Emulation
     expected_rules: list[str] = Field(min_length=1)
-    fixtures: list[Fixture] = Field(min_length=1)
-    mutations: list[str] | None = None
-    """Restrict robustness testing to these mutation names; ``None`` = all applicable."""
+    """Sigma rule UUIDs that must fire on the scenario's fixtures."""
+    fixtures: list[Fixture] = Field(default_factory=list)
+    """Empty until telemetry has been recorded; the scenario is then reported as *pending*."""
+    notes: str | None = None
 
     @field_validator("technique")
     @classmethod
@@ -115,64 +128,59 @@ class Scenario(BaseModel):
             raise ValueError(f"technique must look like T1059 or T1059.001, got {value!r}")
         return value
 
+    @field_validator("expected_rules")
+    @classmethod
+    def _unique_rules(cls, value: list[str]) -> list[str]:
+        if len(set(value)) != len(value):
+            raise ValueError("expected_rules contains duplicates")
+        return value
+
     @property
     def parent_technique(self) -> str:
         """``T1059.001`` -> ``T1059``; already-parent IDs are returned unchanged."""
         return self.technique.split(".")[0]
 
-    @classmethod
-    def from_yaml(cls, path: Path) -> Scenario:
-        """Load and validate a scenario file."""
-        with path.open(encoding="utf-8") as handle:
-            data = yaml.safe_load(handle)
-        return cls.model_validate(data)
+
+# --------------------------------------------------------------------------- replay models
 
 
-def load_scenarios(directory: Path) -> list[Scenario]:
-    """Load every ``*.yaml`` scenario in ``directory``, sorted by id, rejecting duplicates."""
-    scenarios = [Scenario.from_yaml(p) for p in sorted(directory.glob("*.yaml"))]
-    seen: set[str] = set()
-    for scenario in scenarios:
-        if scenario.id in seen:
-            raise ValueError(f"duplicate scenario id {scenario.id!r}")
-        seen.add(scenario.id)
-    return sorted(scenarios, key=lambda s: s.id)
+class RuleHit(BaseModel):
+    """One expected rule evaluated against one scenario's fixtures."""
+
+    rule_id: str
+    title: str | None
+    """``None`` when the rule id is not present in the loaded rule set."""
+    fired: bool
+    hits: int
+    """Number of fixture events the rule matched."""
+    evaluated: int
+    """Number of fixture events whose logsource made the rule applicable."""
+    first_match: Event | None = None
+    """The first matching event, kept so a failure report can show the evidence."""
+    error: str | None = None
+    """Why the rule could not be evaluated (missing from the rule set, unsupported...)."""
+
+
+class ReplayResult(BaseModel):
+    """Outcome of replaying one scenario's fixtures through its expected rules."""
+
+    scenario_id: str
+    status: ScenarioStatus
+    events: int
+    fixtures: list[str]
+    rules: list[RuleHit]
+
+    @property
+    def missing_rules(self) -> list[str]:
+        """Expected rules that did not fire (including rules that could not be evaluated)."""
+        return [r.rule_id for r in self.rules if not r.fired]
 
 
 # --------------------------------------------------------------------------- scoring models
 
 
-class Thresholds(BaseModel):
-    """Minimum acceptable scores. A rule below any ``*_min`` fails the gate."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    coverage_min: float = Field(default=1.0, ge=0.0, le=1.0)
-    precision_min: float = Field(default=0.95, ge=0.0, le=1.0)
-    robustness_min: float = Field(default=0.75, ge=0.0, le=1.0)
-    robustness_is_blocking: bool = False
-    """Robustness failures are reported as warnings unless this is true."""
-    regression_tolerance: float = Field(default=1e-9, ge=0.0)
-    """A metric may drop by at most this much relative to the baseline scorecard."""
-
-
-class MutationOutcome(BaseModel):
-    """Result of replaying one mutated scenario fixture through one rule."""
-
-    scenario_id: str
-    mutation: str
-    detected: bool
-
-
-class FalsePositiveExample(BaseModel):
-    """A benign event a rule matched, with the fields the analyst should look at first."""
-
-    corpus: str
-    excerpt: dict[str, Any]
-
-
 class RuleScore(BaseModel):
-    """Four-axis score for a single Sigma rule."""
+    """Coverage of a single Sigma rule across the scenarios that expect it."""
 
     rule_id: str
     title: str
@@ -182,68 +190,59 @@ class RuleScore(BaseModel):
     expected_scenarios: list[str]
     detected_scenarios: list[str]
     missed_scenarios: list[str]
+    pending_scenarios: list[str]
     coverage: float | None
-    """Fraction of expected scenarios where the rule fired (``None`` if none expected)."""
-    true_positives: int
-    false_positives: int
-    precision: float | None
-    """``TP / (TP + FP)`` over attack fixtures plus benign corpora (``None`` if no hits)."""
-    fp_examples: list[FalsePositiveExample]
-    mutations: list[MutationOutcome]
-    robustness: float | None
-    """Fraction of applicable mutations still detected (``None`` if nothing to mutate)."""
-    evaded_by: list[str]
-    events_scanned: int
-    events_per_hit: float | None
-    eval_us_per_event: float
-    """Mean wall-clock microseconds the pure-Python predicate spent per evaluated event."""
+    """Detected / (detected + missed). ``None`` when every expecting scenario is pending."""
 
 
 class ScenarioScore(BaseModel):
-    """Per-scenario view: did every expected rule fire on the committed fixture?"""
+    """Per-scenario view: did every expected rule fire on the committed fixtures?"""
 
     scenario_id: str
     name: str
     plane: Plane
     technique: str
     weight: int
+    status: ScenarioStatus
     provenance: list[Provenance]
     events: int
     expected_rules: list[str]
     fired_rules: list[str]
     missing_rules: list[str]
-    unexpected_rules: list[str]
-    passed: bool
 
 
 class TechniqueCoverage(BaseModel):
-    """Prevalence-weighted coverage of one technique for the Navigator heatmap."""
+    """Prevalence-weighted coverage of one technique, the unit the heatmap colours."""
 
     technique: str
     weight: int
     scenarios: list[str]
     rules: list[str]
     coverage: float
-    robust_coverage: float
-    """``coverage * mean(robustness)`` - what the heatmap colours by."""
+    """Fraction of the technique's scenarios that passed. Pending scenarios count as 0."""
+    pending: bool
+    """True when no scenario for the technique has fixtures yet."""
 
 
-class CorpusSummary(BaseModel):
-    """Size and provenance of a benign corpus used for precision."""
+class ScorecardTotals(BaseModel):
+    """Headline numbers; every figure in the README comes from here."""
 
-    name: str
-    plane: Plane
-    events: int
-    provenance: Provenance
-    source: str | None
+    scenarios: int
+    passed: int
+    failed: int
+    pending: int
+    rules: int
+    weighted_coverage: float
+    """sum(weight x coverage) / sum(weight) over every scenario (pending counts as 0)."""
+    weighted_coverage_scored: float | None
+    """Same, restricted to scenarios that have fixtures. ``None`` if nothing is scored."""
 
 
 class GateResult(BaseModel):
-    """Outcome of applying thresholds (and an optional baseline) to a scorecard."""
+    """Outcome of applying the gate to a scorecard."""
 
     passed: bool
     failures: list[str]
-    warnings: list[str]
 
 
 class Scorecard(BaseModel):
@@ -251,13 +250,16 @@ class Scorecard(BaseModel):
 
     generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     tripline_version: str
-    thresholds: Thresholds
+    totals: ScorecardTotals
     rules: list[RuleScore]
     scenarios: list[ScenarioScore]
     techniques: list[TechniqueCoverage]
-    corpora: list[CorpusSummary]
     gate: GateResult
 
     def rule(self, rule_id: str) -> RuleScore | None:
         """Look up a rule score by Sigma rule id."""
         return next((r for r in self.rules if r.rule_id == rule_id), None)
+
+    def scenario(self, scenario_id: str) -> ScenarioScore | None:
+        """Look up a scenario score by id."""
+        return next((s for s in self.scenarios if s.scenario_id == scenario_id), None)
