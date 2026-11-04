@@ -1,0 +1,37 @@
+title: AWS S3 Bucket Enumeration by IAM User from Non-AWS Tooling
+id: 5c0d9e7b-3a21-4f68-b8d4-7e9f0a1b2c3d
+status: experimental
+description: |
+    Detects ListBuckets calls issued with long-lived IAM user credentials from a client that is
+    not the AWS console or an AWS service. Leaked access keys are typically first used to list
+    buckets (flaws.cloud 'backup' user) before objects are collected (T1530).
+references:
+    - https://summitroute.com/blog/2020/10/09/public_dataset_of_cloudtrail_logs_from_flaws_cloud/
+    - http://flaws.cloud/
+author: Sami Ali (tripline)
+date: 2026-11-04
+tags:
+    - attack.discovery
+    - attack.collection
+    - attack.t1530
+    - attack.t1580
+logsource:
+    product: aws
+    service: cloudtrail
+detection:
+    selection:
+        eventSource: s3.amazonaws.com
+        eventName: ListBuckets
+        userIdentity.type: IAMUser
+    filter_console:
+        userAgent|contains:
+            - 'S3Console/'
+            - 'console.amazonaws.com'
+    filter_aws_internal:
+        sourceIPAddress|endswith: '.amazonaws.com'
+    filter_error:
+        errorCode|exists: true
+    condition: selection and not 1 of filter_*
+falsepositives:
+    - Backup and inventory tooling using IAM user keys; scope by userIdentity.userName.
+level: low
