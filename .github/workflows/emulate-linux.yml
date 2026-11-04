@@ -38,12 +38,16 @@ jobs:
           sudo auditctl -l
           sudo auditctl -s
 
-      - name: Install Invoke-AtomicRedTeam + atomics
-        shell: pwsh
+      - name: Install Invoke-AtomicRedTeam + atomics (as root, since atomics run under sudo)
         run: |
-          IEX (IWR 'https://raw.githubusercontent.com/redcanaryco/invoke-atomicredteam/master/install-atomicredteam.ps1' -UseBasicParsing)
-          Install-AtomicRedTeam -InstallPath /tmp/AtomicRedTeam -getAtomics -Force
-          Get-ChildItem /tmp/AtomicRedTeam/atomics | Measure-Object | Select-Object -ExpandProperty Count
+          sudo pwsh -NoProfile -Command '
+            IEX (IWR "https://raw.githubusercontent.com/redcanaryco/invoke-atomicredteam/master/install-atomicredteam.ps1" -UseBasicParsing)
+            Install-AtomicRedTeam -InstallPath /tmp/AtomicRedTeam -getAtomics -Force
+            Install-Module powershell-yaml -Force -Scope AllUsers -ErrorAction SilentlyContinue
+            Import-Module /tmp/AtomicRedTeam/invoke-atomicredteam/Invoke-AtomicRedTeam.psd1 -Force
+            Get-Command Invoke-AtomicTest | Select-Object -ExpandProperty Name
+            (Get-ChildItem /tmp/AtomicRedTeam/atomics).Count
+          '
 
       - name: List Linux atomic tests from scenarios
         run: |
