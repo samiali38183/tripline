@@ -65,7 +65,7 @@ jobs:
             scorecard.md
       - name: Comment scorecard on PR
         if: always() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
