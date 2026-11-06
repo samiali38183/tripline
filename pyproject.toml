@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "tripline"
 version = "0.1.0"
-description = "Detection quality gate: replay ATT&CK telemetry through Sigma rules and score coverage, precision, robustness and cost in CI."
+description = "Detection quality gate: replay ATT&CK telemetry through Sigma rules and score weighted coverage in CI"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.12"
