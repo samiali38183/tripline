@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from tripline.engine.rules import evaluate, load_rules
 from tripline.linux.collect import collect, command_line, marker_of, parse_records, slice_by_markers
 from tripline.logsource import classify, normalize
@@ -172,3 +174,70 @@ def test_setuid_any_form_rule_covers_what_sigmahq_misses(repo_root):
         _execve(98, 1700000098.0, ["sh", "-c", "chmod u+xs /tmp/x"], "/usr/bin/dash")
     )
     assert evaluate(tripline_rule, wrapper) is False  # Image must be chmod itself
+
+
+# Synthetic chmod events (built by _execve, not recorded telemetry): regression cases for the
+# gaps in the any-form setuid rule found in review.
+TRIPLINE_SETUID = "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d"
+
+
+def _chmod_event(*args: str, exe: str = "/usr/bin/chmod", argv0: str = "chmod"):
+    (event,) = parse_records(_execve(97, 1700000097.0, [argv0, *args], exe))
+    return event
+
+
+def _setuid_rule(repo_root):
+    rules = load_rules(repo_root / "rules" / "sigma")
+    return {r.id: r for r in rules.rules}[TRIPLINE_SETUID]
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ("3755", "/tmp/x"),  # setgid + sticky
+        ("5755", "/tmp/x"),  # setuid + sticky
+        ("04755", "/tmp/x"),  # leading zero
+        ("02755", "/tmp/x"),
+        ("07777", "/tmp/x"),
+        ("-R", "4755", "/tmp/x"),
+        ("--", "4755", "/tmp/x"),
+        ("g+w,u+s", "/tmp/x"),  # setuid in a later clause of a symbolic list
+        ("a+rx,g+xs", "/tmp/x"),
+        ("u=rwxs,go=rx", "/tmp/x"),
+        ("u+s,g+w", "/tmp/x"),
+        ("4755", "/tmp/x", "/usr/share/doc/y/../../../../tmp/z"),  # traversal is not a doc path
+        ("u+s", "/tmp/x", "/usr/share/doc/"),  # filter must not be satisfiable by an extra arg
+        ("u+s", "/usr/share/doc/pkg", "/tmp/x"),  # one operand outside the doc tree
+        ("4755", "/tmp/x", "/usr/share/doc/pkg"),
+        ("u+s", "/tmp/usr/share/doc/x"),  # not under /usr/share/doc
+    ],
+)
+def test_setuid_rule_catches_forms_and_filter_evasions(repo_root, args):
+    assert evaluate(_setuid_rule(repo_root), _chmod_event(*args)) is True, args
+
+
+def test_setuid_rule_catches_full_path_invocation(repo_root):
+    event = _chmod_event("4755", "/tmp/x", argv0="/usr/bin/chmod")
+    assert evaluate(_setuid_rule(repo_root), event) is True
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ("1755", "/tmp/x"),  # sticky only
+        ("01755", "/tmp/x"),
+        ("0755", "/tmp/x"),
+        ("755", "/tmp/x"),
+        ("0644", "/tmp/x"),
+        ("u+x", "/tmp/x"),
+        ("+x", "/tmp/scripts/run.sh"),
+        ("u-s", "/tmp/x"),  # clearing the bit is not setting it
+        ("a+rx,u+t", "/tmp/x"),
+        ("-R", "u+rwX", "/home/u/sdir"),
+        # what the filter exists for: package documentation directories only
+        ("u+s", "/usr/share/doc/pkg"),
+        ("2755", "/usr/share/doc/pkg/", "/usr/share/doc/other/README"),
+    ],
+)
+def test_setuid_rule_ignores_benign_modes(repo_root, args):
+    assert evaluate(_setuid_rule(repo_root), _chmod_event(*args)) is False, args

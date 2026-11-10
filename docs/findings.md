@@ -25,9 +25,29 @@ the rule that should have fired, why it did not, and what changed.
   events.
 * **Fix:** `rules/sigma/linux/tripline_lnx_chmod_setuid_setgid_any_form.yml`
   (`7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d`) matches `Image|endswith: /chmod` with a regex over the
-  symbolic form `[ugoa]*[+=][rwxXt]*s` or a 4-digit octal mode starting with 2/4/6. On the same
-  fixture: 2 of 36 applicable events (the two `chmod` executions), the wrapper `sh -c` line is not
-  double-counted because the `Image` must be `chmod` itself.
+  symbolic form `[ugoa]*[+=][rwxXt]*s` or an octal mode. On the same fixture: 2 of 36 applicable
+  events (the two `chmod` executions), the wrapper `sh -c` line is not double-counted because the
+  `Image` must be `chmod` itself.
+* **Revision in 0.2.1 (review findings).** The first version of the rule had its own gaps, found
+  by reading the regexes against hand-built command lines (synthetic events in
+  `tests/test_linux_collect.py`, not recorded telemetry; the committed fixtures and the 2 of 36
+  result are unchanged):
+  * The octal branch matched only `[2467][0-7]{3}`. The special-bits digit is a bitmask (4 setuid,
+    2 setgid, 1 sticky), so `3755` (setgid+sticky) and `5755` (setuid+sticky) were missed, and a
+    leading zero (`04755`, `02755`) was missed because exactly four digits had to follow. It is
+    now `0?[2-7][0-7]{3}`; sticky-only (`1755`, `01755`) still does not match.
+  * The symbolic branch only looked at the first clause of the mode, so `g+w,u+s` and
+    `a+rx,g+xs` were missed. It now walks a comma-separated clause list. `u-s` (clearing the bit)
+    still does not match.
+  * Both branches required whitespace before `chmod`, so an invocation by full path
+    (`/usr/bin/chmod 4755 ...`) was missed; a `/` is now accepted. Option words such as `--` are
+    accepted as well as `-R`.
+  * The filter `CommandLine|contains: '/usr/share/doc/'` suppressed any setuid chmod whose command
+    line contained that string anywhere, so appending `/usr/share/doc/` as an extra argument (or
+    using `/tmp/usr/share/doc/x`) evaded the rule. The filter is now a regex that excludes an
+    event only when *every* file operand is under `/usr/share/doc/` and no operand contains
+    `..`. Residual risk: a symlink inside `/usr/share/doc` that points elsewhere is still
+    excluded; the rule sees the command line, not the resolved path.
 * **Status:** scenario now expects the tripline rule; the SigmaHQ rule stays in the rule set so a
   future upstream fix is picked up by `tripline replay` automatically. Upstream issue: to be filed.
 
