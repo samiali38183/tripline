@@ -98,6 +98,25 @@ the rule that should have fired, why it did not, and what changed.
     atomics redirect to a relative file name (`> hello.txt`, `> AtomicTest.vbs`) after the
     working directory is already `%TEMP%`. The file still lands in a suspicious folder, but the
     command line does not say so. 0/13. This is a real evasion of the rule, same family as F-001.
+* **Added in 0.2.1, not yet confirmed on recorded telemetry.** Two tripline rules target the
+  T1059.003 and T1053.005 gaps above. They are exercised only by hand-written synthetic events in
+  `tests/test_windows_rules.py` (labelled synthetic there; nothing under `fixtures/`, nothing
+  counted in the scorecard). No scenario expects them yet and all seven Windows scenarios stay
+  pending. After the next recorded Windows run, replace the SigmaHQ rule in the scenario's
+  `expected_rules` only if the tripline rule fires on the real events.
+  * `tripline_win_cmd_redirect_relative_in_suspicious_cwd.yml` (`467585b7-9de8-40e5-bb2a-6626902ae295`):
+    cmd.exe with a `>` or `>>` to a relative file name while Sysmon's `CurrentDirectory` is a Temp,
+    AppData, `Users\Public`, `ProgramData` or `C:\Temp` folder. Sysmon EID 1 only (Security 4688
+    has no working directory). Depends on the atomics really running with that working directory,
+    which F-003 inferred from where the files landed and has not been read from a recorded
+    `CurrentDirectory`. Known false positive: `>nul` from a temp directory.
+  * `tripline_win_security_scheduled_task_interpreter_action.yml` (`eb3f5405-928e-441c-a867-0612f0f66dc9`):
+    a 4698 task whose `<Command>` is cmd, powershell, pwsh, wscript, cscript, mshta, rundll32,
+    regsvr32, certutil, bitsadmin or wmic, wherever the binary lives; tasks named under
+    `\Microsoft\` are excluded (spoofable by an attacker who names a task the same way).
+* **Not done in 0.2.1 (needs Windows runs or a scenario decision):** the manual-only `cc50fa2a`
+  atomic, the T1027 rule (a replacement would be guesswork without the recorded command lines of
+  T1027-7 and T1027-11), and the T1059.001 pass that comes from the wrapper parameter text.
 * **Open observation:** for the same processes, Sysmon EID 1 `CommandLine` shows `%%TEMP%%` and
   `%%LOCALAPPDATA:~-3,1%%` while Security 4688 shows `%TEMP%`. Not explained yet; any rule that
   matches a literal `%VAR%` will behave differently per source.

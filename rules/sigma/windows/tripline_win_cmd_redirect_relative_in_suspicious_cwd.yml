@@ -1,0 +1,45 @@
+title: CMD Output Redirected to a Relative Path From a Suspicious Working Directory
+id: 467585b7-9de8-40e5-bb2a-6626902ae295
+status: experimental
+description: |
+    Detects cmd.exe redirecting output with ">" or ">>" to a relative file name (hello.txt,
+    .\out.log, AtomicTest.vbs) while its current directory is a user-writable or temporary folder
+    (Temp, AppData, Users\Public, ProgramData, C:\Temp).
+    Complements the SigmaHQ 'Potentially Suspicious CMD Shell Output Redirect' rule, which looks
+    for the suspicious folder in the command line itself and is therefore evaded by a relative
+    target after a working-directory change (docs/findings.md F-003, T1059.003).
+    Needs Sysmon Event ID 1, which records CurrentDirectory; Security 4688 does not.
+    Synthetic-event unit tests only so far: not yet confirmed on recorded Windows telemetry.
+references:
+    - https://attack.mitre.org/techniques/T1059/003/
+    - https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1059.003/T1059.003.md
+author: Sami Ali (tripline)
+date: 2026-11-10
+tags:
+    - attack.execution
+    - attack.t1059.003
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        - Image|endswith: '\cmd.exe'
+        - OriginalFileName: 'Cmd.Exe'
+    selection_relative_redirect:
+        # > or >> then an optional quote and optional .\ then a bare file name. A target holding
+        # a drive letter, %VAR% or a path separator is not matched (the SigmaHQ rule covers
+        # absolute paths); 2>&1 is not matched because & cannot start a file name here.
+        CommandLine|re: '>{1,2}\s*"*(\.\\)?[^\s"%:\\>|&<]+(["\s&|]|$)'
+    selection_cwd:
+        CurrentDirectory|contains:
+            - '\AppData\Local\Temp'
+            - '\AppData\Roaming'
+            - '\Windows\Temp'
+            - '\Users\Public'
+            - 'C:\ProgramData'
+            - 'C:\Temp'
+    condition: all of selection_*
+falsepositives:
+    - Installers and build scripts run from a temp directory that redirect output to a log file
+    - Redirection to nul (">nul") from a temp directory
+level: medium
