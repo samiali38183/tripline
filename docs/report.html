@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="tripline 0.2.0">
+<title>tripline coverage report</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f6f6f4;
+  --surface: #fcfcfb;
+  --surface-2: #f0efec;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --ink-3: #75746f;
+  --line: #e1e0d9;
+  --line-2: #c3c2b7;
+  --good: #0ca30c;
+  --good-ink: #006300;
+  --good-tint: #e9f6e9;
+  --bad: #d03b3b;
+  --bad-ink: #a12525;
+  --bad-tint: #fbecec;
+  --pend: #8a8984;
+  --pend-tint: #f3f3f1;
+  --accent: #2a78d6;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #121211;
+    --surface: #1a1a19;
+    --surface-2: #232321;
+    --ink: #f0efec;
+    --ink-2: #c3c2b7;
+    --ink-3: #9a9991;
+    --line: #2c2c2a;
+    --line-2: #383835;
+    --good-ink: #4cc44c;
+    --good-tint: #15291a;
+    --bad: #e05252;
+    --bad-ink: #f08080;
+    --bad-tint: #321b1b;
+    --pend: #8a8984;
+    --pend-tint: #1f1f1e;
+    --accent: #3987e5;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 var(--sans); }
+main { max-width: 1280px; margin: 0 auto; padding: 28px 16px 48px; }
+a { color: var(--accent); }
+h1 { font-size: 22px; margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 16px; margin: 36px 0 12px; }
+.sub { color: var(--ink-2); margin: 4px 0 0; }
+.mono { font-family: var(--mono); font-size: 0.92em; }
+header { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: flex-end; justify-content: space-between; }
+.gate { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px;
+  font-weight: 600; border: 1px solid; }
+.gate.ok { color: var(--good-ink); background: var(--good-tint); border-color: var(--good); }
+.gate.bad { color: var(--bad-ink); background: var(--bad-tint); border-color: var(--bad); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 20px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.tile .k { color: var(--ink-2); font-size: 12px; }
+.tile .v { font-size: 28px; font-weight: 650; letter-spacing: -0.02em; margin-top: 2px; }
+.tile .n { color: var(--ink-3); font-size: 12px; }
+.split { margin-top: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.bar { display: flex; gap: 2px; height: 12px; margin: 8px 0 8px; }
+.bar span { display: block; height: 100%; border-radius: 3px; min-width: 0; }
+.bar .p { background: var(--good); }
+.bar .f { background: var(--bad); }
+.bar .q { background: repeating-linear-gradient(45deg, var(--line-2) 0 3px, transparent 3px 6px); border: 1px solid var(--line-2); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; color: var(--ink-2); font-size: 12px; }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.sw.p { background: var(--good); } .sw.f { background: var(--bad); }
+.sw.q { background: repeating-linear-gradient(45deg, var(--line-2) 0 2px, transparent 2px 4px); border: 1px solid var(--line-2); }
+.matrix-wrap { overflow-x: auto; padding-bottom: 6px; }
+.matrix { display: grid; grid-template-columns: repeat(8, minmax(136px, 1fr)); gap: 10px; min-width: 1168px; }
+.col h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-2); margin: 0 0 8px;
+  padding-bottom: 6px; border-bottom: 2px solid var(--line-2); min-height: 46px; display: flex;
+  align-items: flex-end; justify-content: space-between; gap: 6px; }
+.col h3 small { font-weight: 500; letter-spacing: 0; color: var(--ink-3); }
+.cell { position: relative; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--pend);
+  border-radius: 8px; padding: 9px 10px 9px 10px; margin-bottom: 8px; }
+.cell.passed { border-left-color: var(--good); background: var(--good-tint); }
+.cell.failed { border-left-color: var(--bad); background: var(--bad-tint); }
+.cell.pending { border-left-style: dashed; background: var(--pend-tint); }
+.cell .tid { font-family: var(--mono); font-weight: 650; font-size: 13px; }
+.cell .nm { font-size: 12.5px; margin: 2px 0 8px; color: var(--ink); }
+.meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 11.5px; color: var(--ink-2); }
+.chip { border: 1px solid var(--line-2); border-radius: 4px; padding: 0 5px; font-size: 11px; color: var(--ink-2); background: var(--surface); }
+.st { font-weight: 650; }
+.st.passed { color: var(--good-ink); } .st.failed { color: var(--bad-ink); } .st.pending { color: var(--ink-2); }
+.w { display: inline-flex; align-items: center; gap: 4px; }
+.w i { display: inline-block; width: 40px; height: 5px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.w i b { display: block; height: 100%; background: var(--ink-2); }
+details { margin-top: 6px; }
+summary { cursor: pointer; font-size: 11.5px; color: var(--ink-2); }
+.ev { list-style: none; margin: 6px 0 0; padding: 0; font-size: 11.5px; }
+.ev li { padding: 3px 0; border-top: 1px solid var(--line); }
+.ev .ok { color: var(--good-ink); font-weight: 650; } .ev .no { color: var(--bad-ink); font-weight: 650; } .ev .na { color: var(--ink-3); }
+.empty { color: var(--ink-2); font-size: 12.5px; margin-top: 10px; }
+table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; font-size: 13px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; color: var(--ink-2); font-weight: 600; background: var(--surface-2); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.table-wrap { overflow-x: auto; }
+.rules { margin: 0; padding: 0; list-style: none; }
+.rules li { white-space: nowrap; }
+.failures { background: var(--bad-tint); border: 1px solid var(--bad); border-radius: 10px; padding: 10px 14px; margin-top: 14px; }
+.failures ul { margin: 6px 0 0; padding-left: 18px; }
+footer { margin-top: 36px; color: var(--ink-3); font-size: 12px; }
+@media (max-width: 640px) { .tile .v { font-size: 24px; } }
+@media print { .matrix-wrap { overflow: visible; } details { display: none; } }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div>
+    <h1>tripline coverage report</h1>
+    <p class="sub">Sigma rules replayed against recorded ATT&amp;CK emulation telemetry.
+      Generated 2026-11-10 17:57 UTC by tripline 0.2.0.</p>
+  </div>
+  <span class="gate ok" role="status"><span aria-hidden="true">&#10003;</span> Gate passed</span>
+</header>
+
+<section class="tiles" aria-label="Headline numbers">
+  <div class="tile">
+    <div class="k">Weighted coverage, all scenarios</div>
+    <div class="v">47%</div>
+    <div class="n">pending scenarios count as zero</div>
+  </div>
+  <div class="tile">
+    <div class="k">Weighted coverage, scenarios with fixtures</div>
+    <div class="v">100%</div>
+    <div class="n">7 of 14 scenarios have fixtures</div>
+  </div>
+  <div class="tile">
+    <div class="k">Scenarios</div>
+    <div class="v">7<span style="font-size:15px;color:var(--ink-3)"> / 14 pass</span></div>
+    <div class="n">0 failed, 7 pending</div>
+  </div>
+  <div class="tile">
+    <div class="k">Expected rules</div>
+    <div class="v">22</div>
+    <div class="n">14 techniques across 8 tactics</div>
+  </div>
+</section>
+
+<section class="split" aria-label="Prevalence weight by status">
+  <div class="k" style="color:var(--ink-2);font-size:12px">Prevalence weight points (62 total, weight 1-10 per technique)</div>
+  <div class="bar" role="img" aria-label="29 passed, 0 failed, 33 pending weight points">
+<span class="p" style="width:46.77%" title="passed: 29 points"></span><span class="q" style="width:53.23%" title="pending: 33 points"></span>  </div>
+  <div class="legend">
+    <span><i class="sw p"></i>Passed 29</span>
+    <span><i class="sw f"></i>Failed 0</span>
+    <span><i class="sw q"></i>Pending (no fixtures) 33</span>
+  </div>
+</section>
+
+
+<h2>Coverage by tactic</h2>
+<div class="matrix-wrap">
+<div class="matrix">
+  <div class="col">
+    <h3>Initial Access <small>1</small></h3>
+    <article class="cell passed" title="t1078-004-console-login-without-mfa">
+      <div class="tid">T1078.004</div>
+      <div class="nm">Cloud Accounts: console login without MFA</div>
+      <div class="meta">
+        <span class="st passed">&#10003; Pass</span>
+        <span class="chip">AWS</span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+        <span class="w" title="prevalence weight 10 of 10">weight 10 <i><b style="width:100%"></b></i></span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+rules fired: 2/2 &middot; 7 events      </div>
+      <details>
+        <summary>Rule evidence</summary>
+        <ul class="ev">
+          <li>
+<span class="ok">&#10003;</span>            AWS Console Login Without MFA<br>
+            <span class="na">1/7 applicable events</span>
+          </li>
+          <li>
+<span class="ok">&#10003;</span>            AWS Root Credentials<br>
+            <span class="na">6/7 applicable events</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+  </div>
+  <div class="col">
+    <h3>Execution <small>3</small></h3>
+    <article class="cell pending" title="t1059-001-powershell-encoded-download">
+      <div class="tid">T1059.001</div>
+      <div class="nm">PowerShell: encoded command and download cradle</div>
+      <div class="meta">
+        <span class="st pending">&#9675; Pending</span>
+        <span class="chip">Windows</span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+        <span class="w" title="prevalence weight 9 of 10">weight 9 <i><b style="width:90%"></b></i></span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+rules: 2 expected      </div>
+      <details>
+        <summary>Rule evidence</summary>
+        <ul class="ev">
+          <li>
+<span class="na">&#9675;</span>            Suspicious Execution of Powershell with Base64<br>
+            <span class="na">no fixtures</span>
+          </li>
+          <li>
+<span class="na">&#9675;</span>            Suspicious PowerShell Download - Powershell Script<br>
+            <span class="na">no fixtures</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+    <article class="cell pending" title="t1059-003-cmd-suspicious-redirect">
+      <div class="tid">T1059.003</div>
+      <div class="nm">Windows Command Shell: cmd output redirected to a suspicious folder</div>
+      <div class="meta">
+        <span class="st pending">&#9675; Pending</span>
+        <span class="chip">Windows</span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+        <span class="w" title="prevalence weight 8 of 10">weight 8 <i><b style="width:80%"></b></i></span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+rules: 1 expected      </div>
+      <details>
+        <summary>Rule evidence</summary>
+        <ul class="ev">
+          <li>
+<span class="na">&#9675;</span>            Potentially Suspicious CMD Shell Output Redirect<br>
+            <span class="na">no fixtures</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+    <article class="cell pending" title="t1047-wmic-process-call-create">
+      <div class="tid">T1047</div>
+      <div class="nm">WMI: wmic process call create</div>
+      <div class="meta">
+        <span class="st pending">&#9675; Pending</span>
+        <span class="chip">Windows</span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+        <span class="w" title="prevalence weight 4 of 10">weight 4 <i><b style="width:40%"></b></i></span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+rules: 1 expected      </div>
+      <details>
+        <summary>Rule evidence</summary>
+        <ul class="ev">
+          <li>
+<span class="na">&#9675;</span>            Process Creation Attempt via Wmic.EXE<br>
+            <span class="na">no fixtures</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+  </div>
+  <div class="col">
+    <h3>Persistence <small>3</small></h3>
+    <article class="cell passed" title="t1098-001-iam-backdoor-access-key">
+      <div class="tid">T1098.001</div>
+      <div class="nm">Account Manipulation: access key created for another IAM user</div>
+      <div class="meta">
+        <span class="st passed">&#10003; Pass</span>
+        <span class="chip">AWS</span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+        <span class="w" title="prevalence weight 3 of 10">weight 3 <i><b style="width:30%"></b></i></span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+rules fired: 1/1 &middot; 1 events      </div>
+      <details>
+        <summary>Rule evidence</summary>
+        <ul class="ev">
+          <li>
+<span class="ok">&#10003;</span>            AWS IAM Backdoor Users Keys<br>
+            <span class="na">1/1 applicable events</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+    <article class="cell passed" title="t1053-003-cron-persistence">
+      <div class="tid">T1053.003</div>
+      <div class="nm">Cron persistence</div>
+      <div class="meta">
+        <span class="st passed">&#10003; Pass</span>
+        <span class="chip">Linux</span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+        <span class="w" title="prevalence weight 2 of 10">weight 2 <i><b style="width:20%"></b></i></span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+rules fired: 2/2 &middot; 42 events      </div>
+      <details>
+        <summary>Rule evidence</summary>
+        <ul class="ev">
+          <li>
+<span class="ok">&#10003;</span>            Scheduled Cron Task/Job - Linux<br>
+            <span class="na">1/26 applicable events</span>
+          </li>
+          <li>
+<span class="ok">&#10003;</span>            New Cron File Created<br>
+            <span class="na">1/3 applicable events</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+    <article class="cell pending" title="t1053-005-scheduled-task-persistence">
+      <div class="tid">T1053.005</div>
+      <div class="nm">Scheduled Task persistence via schtasks</div>
+      <div class="meta">
+        <span class="st pending">&#9675; Pending</span>
+        <span class="chip">Windows</span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+        <span class="w" title="prevalence weight 2 of 10">weight 2 <i><b style="width:20%"></b></i></span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+rules: 2 expected      </div>
+      <details>
+        <summary>Rule evidence</summary>
+        <ul class="ev">
+          <li>
+<span class="na">&#9675;</span>            Scheduled Task Creation Via Schtasks.EXE<br>
+            <span class="na">no fixtures</span>
+          </li>
+          <li>
+<span class="na">&#9675;</span>            Suspicious Scheduled Task Creation<br>
+            <span class="na">no fixtures</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+  </div>
+  <div class="col">
+    <h3>Privilege Escalation <small>1</small></h3>
+    <article class="cell passed" title="t1548-001-setuid-setgid">
+      <div class="tid">T1548.001</div>
+      <div class="nm">Abuse Elevation Control: setuid/setgid bit set</div>
+      <div class="meta">
+        <span class="st passed">&#10003; Pass</span>
+        <span class="chip">Linux</span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+        <span class="w" title="prevalence weight 2 of 10">weight 2 <i><b style="width:20%"></b></i></span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+rules fired: 1/1 &middot; 84 events      </div>
+      <details>
+        <summary>Rule evidence</summary>
+        <ul class="ev">
+          <li>
+<span class="ok">&#10003;</span>            Setuid or Setgid Bit Set via Chmod (Any Mode Form)<br>
+            <span class="na">2/36 applicable events</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+  </div>
+  <div class="col">
+    <h3>Defense Evasion <small>3</small></h3>
+    <article class="cell passed" title="t1562-008-cloudtrail-stop">
+      <div class="tid">T1562.008</div>
+      <div class="nm">Impair Defenses: CloudTrail logging stopped</div>
+      <div class="meta">
+        <span class="st passed">&#10003; Pass</span>
+        <span class="chip">AWS</span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+        <span class="w" title="prevalence weight 3 of 10">weight 3 <i><b style="width:30%"></b></i></span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+rules fired: 1/1 &middot; 1 events      </div>
+      <details>
+        <summary>Rule evidence</summary>
+        <ul class="ev">
+          <li>
+<span class="ok">&#10003;</span>            AWS CloudTrail Important Change<br>
+            <span class="na">1/1 applicable events</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+    <article class="cell passed" title="t1070-003-clear-command-history">
+      <div class="tid">T1070.003</div>
+      <div class="nm">Indicator Removal: clear command history</div>
+      <div class="meta">
+        <span class="st passed">&#10003; Pass</span>
+        <span class="chip">Linux</span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+        <span class="w" title="prevalence weight 2 of 10">weight 2 <i><b style="width:20%"></b></i></span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+rules fired: 2/2 &middot; 38 events      </div>
+      <details>
+        <summary>Rule evidence</summary>
+        <ul class="ev">
+          <li>
+<span class="ok">&#10003;</span>            Linux Command History Tampering<br>
+            <span class="na">3/28 applicable events</span>
+          </li>
+          <li>
+<span class="ok">&#10003;</span>            History File Deletion<br>
+            <span class="na">1/26 applicable events</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+    <article class="cell pending" title="t1027-obfuscated-powershell-oneliner">
+      <div class="tid">T1027</div>
+      <div class="nm">Obfuscated Files or Information: obfuscated PowerShell one-liner</div>
+      <div class="meta">
+        <span class="st pending">&#9675; Pending</span>
+        <span class="chip">Windows</span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+        <span class="w" title="prevalence weight 1 of 10">weight 1 <i><b style="width:10%"></b></i></span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+rules: 1 expected      </div>
+      <details>
+        <summary>Rule evidence</summary>
+        <ul class="ev">
+          <li>
+<span class="na">&#9675;</span>            Obfuscated PowerShell OneLiner Execution<br>
+            <span class="na">no fixtures</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+  </div>
+  <div class="col">
+    <h3>Credential Access <small>1</small></h3>
+    <article class="cell pending" title="t1003-001-lsass-memory-dump">
+      <div class="tid">T1003.001</div>
+      <div class="nm">OS Credential Dumping: LSASS memory via comsvcs MiniDump</div>
+      <div class="meta">
+        <span class="st pending">&#9675; Pending</span>
+        <span class="chip">Windows</span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+        <span class="w" title="prevalence weight 3 of 10">weight 3 <i><b style="width:30%"></b></i></span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+rules: 2 expected      </div>
+      <details>
+        <summary>Rule evidence</summary>
+        <ul class="ev">
+          <li>
+<span class="na">&#9675;</span>            Process Memory Dump Via Comsvcs.DLL<br>
+            <span class="na">no fixtures</span>
+          </li>
+          <li>
+<span class="na">&#9675;</span>            Potential Credential Dumping Activity Via LSASS<br>
+            <span class="na">no fixtures</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+  </div>
+  <div class="col">
+    <h3>Collection <small>1</small></h3>
+    <article class="cell passed" title="t1530-s3-bucket-exposure">
+      <div class="tid">T1530</div>
+      <div class="nm">Data from Cloud Storage: S3 bucket made public and enumerated</div>
+      <div class="meta">
+        <span class="st passed">&#10003; Pass</span>
+        <span class="chip">AWS</span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+        <span class="w" title="prevalence weight 7 of 10">weight 7 <i><b style="width:70%"></b></i></span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+rules fired: 2/2 &middot; 10 events      </div>
+      <details>
+        <summary>Rule evidence</summary>
+        <ul class="ev">
+          <li>
+<span class="ok">&#10003;</span>            AWS S3 Bucket Made Public via ACL or Bucket Policy<br>
+            <span class="na">6/10 applicable events</span>
+          </li>
+          <li>
+<span class="ok">&#10003;</span>            AWS S3 Bucket Enumeration by IAM User from Non-AWS Tooling<br>
+            <span class="na">4/10 applicable events</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+  </div>
+  <div class="col">
+    <h3>Command and Control <small>1</small></h3>
+    <article class="cell pending" title="t1105-certutil-bitsadmin-download">
+      <div class="tid">T1105</div>
+      <div class="nm">Ingress Tool Transfer: certutil and bitsadmin downloads</div>
+      <div class="meta">
+        <span class="st pending">&#9675; Pending</span>
+        <span class="chip">Windows</span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+        <span class="w" title="prevalence weight 6 of 10">weight 6 <i><b style="width:60%"></b></i></span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+rules: 2 expected      </div>
+      <details>
+        <summary>Rule evidence</summary>
+        <ul class="ev">
+          <li>
+<span class="na">&#9675;</span>            Suspicious Download Via Certutil.EXE<br>
+            <span class="na">no fixtures</span>
+          </li>
+          <li>
+<span class="na">&#9675;</span>            File Download Via Bitsadmin<br>
+            <span class="na">no fixtures</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+  </div>
+</div>
+</div>
+<p class="empty">No scenarios yet: Reconnaissance, Resource Development, Discovery, Lateral Movement, Exfiltration, Impact.</p>
+
+<h2>Scenarios</h2>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>Scenario</th><th>Technique</th><th>Tactic</th><th>Plane</th><th class="num">Weight</th><th>Status</th><th>Expected rules (hits / applicable events)</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="mono">t1078-004-console-login-without-mfa</td>
+      <td class="mono">T1078.004</td>
+      <td>Initial Access</td>
+      <td>AWS</td>
+      <td class="num">10</td>
+      <td><span class="st passed">&#10003; Pass</span></td>
+      <td>
+        <ul class="rules">
+          <li>AWS Console Login Without MFA <span style="color:var(--ink-3)">(1/7)</span></li>
+          <li>AWS Root Credentials <span style="color:var(--ink-3)">(6/7)</span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="mono">t1059-001-powershell-encoded-download</td>
+      <td class="mono">T1059.001</td>
+      <td>Execution</td>
+      <td>Windows</td>
+      <td class="num">9</td>
+      <td><span class="st pending">&#9675; Pending</span></td>
+      <td>
+        <ul class="rules">
+          <li>Suspicious Execution of Powershell with Base64 <span style="color:var(--ink-3)">(no fixtures)</span></li>
+          <li>Suspicious PowerShell Download - Powershell Script <span style="color:var(--ink-3)">(no fixtures)</span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="mono">t1059-003-cmd-suspicious-redirect</td>
+      <td class="mono">T1059.003</td>
+      <td>Execution</td>
+      <td>Windows</td>
+      <td class="num">8</td>
+      <td><span class="st pending">&#9675; Pending</span></td>
+      <td>
+        <ul class="rules">
+          <li>Potentially Suspicious CMD Shell Output Redirect <span style="color:var(--ink-3)">(no fixtures)</span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="mono">t1530-s3-bucket-exposure</td>
+      <td class="mono">T1530</td>
+      <td>Collection</td>
+      <td>AWS</td>
+      <td class="num">7</td>
+      <td><span class="st passed">&#10003; Pass</span></td>
+      <td>
+        <ul class="rules">
+          <li>AWS S3 Bucket Made Public via ACL or Bucket Policy <span style="color:var(--ink-3)">(6/10)</span></li>
+          <li>AWS S3 Bucket Enumeration by IAM User from Non-AWS Tooling <span style="color:var(--ink-3)">(4/10)</span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="mono">t1105-certutil-bitsadmin-download</td>
+      <td class="mono">T1105</td>
+      <td>Command and Control</td>
+      <td>Windows</td>
+      <td class="num">6</td>
+      <td><span class="st pending">&#9675; Pending</span></td>
+      <td>
+        <ul class="rules">
+          <li>Suspicious Download Via Certutil.EXE <span style="color:var(--ink-3)">(no fixtures)</span></li>
+          <li>File Download Via Bitsadmin <span style="color:var(--ink-3)">(no fixtures)</span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="mono">t1047-wmic-process-call-create</td>
+      <td class="mono">T1047</td>
+      <td>Execution</td>
+      <td>Windows</td>
+      <td class="num">4</td>
+      <td><span class="st pending">&#9675; Pending</span></td>
+      <td>
+        <ul class="rules">
+          <li>Process Creation Attempt via Wmic.EXE <span style="color:var(--ink-3)">(no fixtures)</span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="mono">t1003-001-lsass-memory-dump</td>
+      <td class="mono">T1003.001</td>
+      <td>Credential Access</td>
+      <td>Windows</td>
+      <td class="num">3</td>
+      <td><span class="st pending">&#9675; Pending</span></td>
+      <td>
+        <ul class="rules">
+          <li>Process Memory Dump Via Comsvcs.DLL <span style="color:var(--ink-3)">(no fixtures)</span></li>
+          <li>Potential Credential Dumping Activity Via LSASS <span style="color:var(--ink-3)">(no fixtures)</span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="mono">t1098-001-iam-backdoor-access-key</td>
+      <td class="mono">T1098.001</td>
+      <td>Persistence</td>
+      <td>AWS</td>
+      <td class="num">3</td>
+      <td><span class="st passed">&#10003; Pass</span></td>
+      <td>
+        <ul class="rules">
+          <li>AWS IAM Backdoor Users Keys <span style="color:var(--ink-3)">(1/1)</span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="mono">t1562-008-cloudtrail-stop</td>
+      <td class="mono">T1562.008</td>
+      <td>Defense Evasion</td>
+      <td>AWS</td>
+      <td class="num">3</td>
+      <td><span class="st passed">&#10003; Pass</span></td>
+      <td>
+        <ul class="rules">
+          <li>AWS CloudTrail Important Change <span style="color:var(--ink-3)">(1/1)</span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="mono">t1053-003-cron-persistence</td>
+      <td class="mono">T1053.003</td>
+      <td>Persistence</td>
+      <td>Linux</td>
+      <td class="num">2</td>
+      <td><span class="st passed">&#10003; Pass</span></td>
+      <td>
+        <ul class="rules">
+          <li>Scheduled Cron Task/Job - Linux <span style="color:var(--ink-3)">(1/26)</span></li>
+          <li>New Cron File Created <span style="color:var(--ink-3)">(1/3)</span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="mono">t1053-005-scheduled-task-persistence</td>
+      <td class="mono">T1053.005</td>
+      <td>Persistence</td>
+      <td>Windows</td>
+      <td class="num">2</td>
+      <td><span class="st pending">&#9675; Pending</span></td>
+      <td>
+        <ul class="rules">
+          <li>Scheduled Task Creation Via Schtasks.EXE <span style="color:var(--ink-3)">(no fixtures)</span></li>
+          <li>Suspicious Scheduled Task Creation <span style="color:var(--ink-3)">(no fixtures)</span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="mono">t1070-003-clear-command-history</td>
+      <td class="mono">T1070.003</td>
+      <td>Defense Evasion</td>
+      <td>Linux</td>
+      <td class="num">2</td>
+      <td><span class="st passed">&#10003; Pass</span></td>
+      <td>
+        <ul class="rules">
+          <li>Linux Command History Tampering <span style="color:var(--ink-3)">(3/28)</span></li>
+          <li>History File Deletion <span style="color:var(--ink-3)">(1/26)</span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="mono">t1548-001-setuid-setgid</td>
+      <td class="mono">T1548.001</td>
+      <td>Privilege Escalation</td>
+      <td>Linux</td>
+      <td class="num">2</td>
+      <td><span class="st passed">&#10003; Pass</span></td>
+      <td>
+        <ul class="rules">
+          <li>Setuid or Setgid Bit Set via Chmod (Any Mode Form) <span style="color:var(--ink-3)">(2/36)</span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="mono">t1027-obfuscated-powershell-oneliner</td>
+      <td class="mono">T1027</td>
+      <td>Defense Evasion</td>
+      <td>Windows</td>
+      <td class="num">1</td>
+      <td><span class="st pending">&#9675; Pending</span></td>
+      <td>
+        <ul class="rules">
+          <li>Obfuscated PowerShell OneLiner Execution <span style="color:var(--ink-3)">(no fixtures)</span></li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<footer>
+  <p>A pass means every expected rule fired on at least one event of the scenario's recorded fixture. It is a recall
+  check on one recording, not a false-positive or evasion test. Weights are each technique's rank in the Red Canary
+  2026 Threat Detection Report, mapped by hand (10 = most common). Source:
+  <a href="https://github.com/samiali38183/tripline">github.com/samiali38183/tripline</a>.</p>
+</footer>
+</main>
+</body>
+</html>

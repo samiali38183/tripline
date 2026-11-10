@@ -1,8 +1,9 @@
 """tripline: a detection quality gate.
 
-Replays ATT&CK telemetry (recorded or synthetic NDJSON fixtures) through Sigma rules
-with a pure-Python engine and scores every rule on coverage, precision, robustness
-and cost so a CI job can fail a pull request on detection regressions.
+Replays recorded ATT&CK emulation telemetry (NDJSON fixtures) through Sigma rules with a
+pure-Python evaluator and scores prevalence-weighted coverage, so a CI job can fail a pull
+request when an expected rule stops firing. Precision, robustness and cost scoring are on the
+roadmap, not implemented.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

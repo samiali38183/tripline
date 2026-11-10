@@ -20,4 +20,4 @@
 | t1548-001-setuid-setgid | T1548.001 | linux | 2 | PASS | 1/1 | 84 |
 | t1562-008-cloudtrail-stop | T1562.008 | aws | 3 | PASS | 1/1 | 1 |
 
-_tripline 0.1.0, generated 2026-11-04 13:40 UTC_
+_tripline 0.2.0, generated 2026-11-10 17:57 UTC_
