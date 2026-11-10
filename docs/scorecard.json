@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-11-10T23:04:29.477851Z",
+  "generated_at": "2026-11-10T23:09:25.034561Z",
   "tripline_version": "0.2.1",
   "totals": {
     "scenarios": 14,
-    "passed": 7,
+    "passed": 10,
     "failed": 0,
-    "pending": 7,
+    "pending": 4,
     "rules": 22,
-    "weighted_coverage": 0.46774193548387094,
+    "weighted_coverage": 0.6774193548387096,
     "weighted_coverage_scored": 1.0
   },
   "rules": [
@@ -59,12 +59,12 @@
       "expected_scenarios": [
         "t1105-certutil-bitsadmin-download"
       ],
-      "detected_scenarios": [],
-      "missed_scenarios": [],
-      "pending_scenarios": [
+      "detected_scenarios": [
         "t1105-certutil-bitsadmin-download"
       ],
-      "coverage": null
+      "missed_scenarios": [],
+      "pending_scenarios": [],
+      "coverage": 1.0
     },
     {
       "rule_id": "3a734d25-df5c-4b99-8034-af1ddb5883a4",
@@ -168,12 +168,12 @@
       "expected_scenarios": [
         "t1047-wmic-process-call-create"
       ],
-      "detected_scenarios": [],
-      "missed_scenarios": [],
-      "pending_scenarios": [
+      "detected_scenarios": [
         "t1047-wmic-process-call-create"
       ],
-      "coverage": null
+      "missed_scenarios": [],
+      "pending_scenarios": [],
+      "coverage": 1.0
     },
     {
       "rule_id": "5c0d9e7b-3a21-4f68-b8d4-7e9f0a1b2c3d",
@@ -205,12 +205,12 @@
       "expected_scenarios": [
         "t1003-001-lsass-memory-dump"
       ],
-      "detected_scenarios": [],
-      "missed_scenarios": [],
-      "pending_scenarios": [
+      "detected_scenarios": [
         "t1003-001-lsass-memory-dump"
       ],
-      "coverage": null
+      "missed_scenarios": [],
+      "pending_scenarios": [],
+      "coverage": 1.0
     },
     {
       "rule_id": "646ea171-dded-4578-8a4d-65e9822892e3",
@@ -224,12 +224,12 @@
       "expected_scenarios": [
         "t1003-001-lsass-memory-dump"
       ],
-      "detected_scenarios": [],
-      "missed_scenarios": [],
-      "pending_scenarios": [
+      "detected_scenarios": [
         "t1003-001-lsass-memory-dump"
       ],
-      "coverage": null
+      "missed_scenarios": [],
+      "pending_scenarios": [],
+      "coverage": 1.0
     },
     {
       "rule_id": "6b14bac8-3e3a-4324-8109-42f0546a347f",
@@ -370,12 +370,12 @@
       "expected_scenarios": [
         "t1105-certutil-bitsadmin-download"
       ],
-      "detected_scenarios": [],
-      "missed_scenarios": [],
-      "pending_scenarios": [
+      "detected_scenarios": [
         "t1105-certutil-bitsadmin-download"
       ],
-      "coverage": null
+      "missed_scenarios": [],
+      "pending_scenarios": [],
+      "coverage": 1.0
     },
     {
       "rule_id": "fb843269-508c-4b76-8b8d-88679db22ce7",
@@ -422,33 +422,38 @@
       "technique": "T1003.001",
       "tactic": "credential-access",
       "weight": 3,
-      "status": "pending",
-      "provenance": [],
-      "events": 0,
+      "status": "passed",
+      "provenance": [
+        "recorded"
+      ],
+      "events": 70,
       "expected_rules": [
         "646ea171-dded-4578-8a4d-65e9822892e3",
         "5ef9853e-4d0e-4a70-846f-a9ca37d876da"
       ],
-      "fired_rules": [],
+      "fired_rules": [
+        "646ea171-dded-4578-8a4d-65e9822892e3",
+        "5ef9853e-4d0e-4a70-846f-a9ca37d876da"
+      ],
       "missing_rules": [],
       "evidence": [
         {
           "rule_id": "646ea171-dded-4578-8a4d-65e9822892e3",
           "title": "Process Memory Dump Via Comsvcs.DLL",
-          "fired": false,
-          "hits": 0,
-          "evaluated": 0,
+          "fired": true,
+          "hits": 2,
+          "evaluated": 6,
           "error": null,
-          "outcome": "pending"
+          "outcome": "matched"
         },
         {
           "rule_id": "5ef9853e-4d0e-4a70-846f-a9ca37d876da",
           "title": "Potential Credential Dumping Activity Via LSASS",
-          "fired": false,
-          "hits": 0,
-          "evaluated": 0,
+          "fired": true,
+          "hits": 1,
+          "evaluated": 4,
           "error": null,
-          "outcome": "pending"
+          "outcome": "matched"
         }
       ]
     },
@@ -486,23 +491,27 @@
       "technique": "T1047",
       "tactic": "execution",
       "weight": 4,
-      "status": "pending",
-      "provenance": [],
-      "events": 0,
+      "status": "passed",
+      "provenance": [
+        "recorded"
+      ],
+      "events": 12,
       "expected_rules": [
         "526be59f-a573-4eea-b5f7-f0973207634d"
       ],
-      "fired_rules": [],
+      "fired_rules": [
+        "526be59f-a573-4eea-b5f7-f0973207634d"
+      ],
       "missing_rules": [],
       "evidence": [
         {
           "rule_id": "526be59f-a573-4eea-b5f7-f0973207634d",
           "title": "Process Creation Attempt via Wmic.EXE",
-          "fired": false,
-          "hits": 0,
-          "evaluated": 0,
+          "fired": true,
+          "hits": 1,
+          "evaluated": 5,
           "error": null,
-          "outcome": "pending"
+          "outcome": "matched"
         }
       ]
     },
@@ -771,33 +780,38 @@
       "technique": "T1105",
       "tactic": "command-and-control",
       "weight": 6,
-      "status": "pending",
-      "provenance": [],
-      "events": 0,
+      "status": "passed",
+      "provenance": [
+        "recorded"
+      ],
+      "events": 33,
       "expected_rules": [
         "19b08b1c-861d-4e75-a1ef-ea0c1baf202b",
         "d059842b-6b9d-4ed1-b5c3-5b89143c6ede"
       ],
-      "fired_rules": [],
+      "fired_rules": [
+        "19b08b1c-861d-4e75-a1ef-ea0c1baf202b",
+        "d059842b-6b9d-4ed1-b5c3-5b89143c6ede"
+      ],
       "missing_rules": [],
       "evidence": [
         {
           "rule_id": "19b08b1c-861d-4e75-a1ef-ea0c1baf202b",
           "title": "Suspicious Download Via Certutil.EXE",
-          "fired": false,
-          "hits": 0,
-          "evaluated": 0,
+          "fired": true,
+          "hits": 1,
+          "evaluated": 9,
           "error": null,
-          "outcome": "pending"
+          "outcome": "matched"
         },
         {
           "rule_id": "d059842b-6b9d-4ed1-b5c3-5b89143c6ede",
           "title": "File Download Via Bitsadmin",
-          "fired": false,
-          "hits": 0,
-          "evaluated": 0,
+          "fired": true,
+          "hits": 1,
+          "evaluated": 9,
           "error": null,
-          "outcome": "pending"
+          "outcome": "matched"
         }
       ]
     },
@@ -917,8 +931,8 @@
         "5ef9853e-4d0e-4a70-846f-a9ca37d876da",
         "646ea171-dded-4578-8a4d-65e9822892e3"
       ],
-      "coverage": 0.0,
-      "pending": true
+      "coverage": 1.0,
+      "pending": false
     },
     {
       "technique": "T1027",
@@ -941,8 +955,8 @@
       "rules": [
         "526be59f-a573-4eea-b5f7-f0973207634d"
       ],
-      "coverage": 0.0,
-      "pending": true
+      "coverage": 1.0,
+      "pending": false
     },
     {
       "technique": "T1053.003",
@@ -1043,8 +1057,8 @@
         "19b08b1c-861d-4e75-a1ef-ea0c1baf202b",
         "d059842b-6b9d-4ed1-b5c3-5b89143c6ede"
       ],
-      "coverage": 0.0,
-      "pending": true
+      "coverage": 1.0,
+      "pending": false
     },
     {
       "technique": "T1530",

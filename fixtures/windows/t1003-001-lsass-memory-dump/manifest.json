@@ -1,0 +1,21 @@
+{
+  "scenario_id": "t1003-001-lsass-memory-dump",
+  "run_guid": "b0461db3-9566-444b-aad4-ad2a80011fe3",
+  "source": "https://github.com/samiali38183/tripline/actions/runs/42917025570",
+  "events": 70,
+  "atomic_tests": {
+    "2536dee2-12fb-459a-8c37-971844fa73be": 70
+  },
+  "events_by_channel_and_id": {
+    "Microsoft-Windows-PowerShell/Operational:4104": 49,
+    "Microsoft-Windows-Sysmon/Operational:1": 6,
+    "Microsoft-Windows-Sysmon/Operational:10": 4,
+    "Microsoft-Windows-Sysmon/Operational:11": 2,
+    "Microsoft-Windows-Sysmon/Operational:3": 1,
+    "Security:4688": 8
+  },
+  "time_window": [
+    "2026-11-10T22:56:36.8232610Z",
+    "2026-11-10T22:56:40.7213910Z"
+  ]
+}

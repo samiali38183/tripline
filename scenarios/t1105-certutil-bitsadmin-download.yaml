@@ -14,6 +14,10 @@ emulation:
 expected_rules:
   - 19b08b1c-861d-4e75-a1ef-ea0c1baf202b  # Suspicious Download Via Certutil.EXE (SigmaHQ)
   - d059842b-6b9d-4ed1-b5c3-5b89143c6ede  # File Download Via Bitsadmin (SigmaHQ)
-fixtures: []  # Phase A2: recorded on a GitHub Actions windows runner
+fixtures:
+  - path: fixtures/windows/t1105-certutil-bitsadmin-download/run.ndjson
+    provenance: recorded
+    source: https://github.com/samiali38183/tripline/actions/runs/42917025570
+    notes: Sysmon, Security 4688 and PowerShell logs on windows-latest (Server 2025), Invoke-AtomicTest between tripline markers; see manifest.json
 notes: >-
   Red Canary 2026 #5. The windash modifier in the certutil rule is the robustness talking point for Phase B.

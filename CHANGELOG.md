@@ -4,6 +4,13 @@
 
 Fixes from a code review. Each item was reproduced with a failing test first.
 
+### Recorded Windows telemetry
+
+* Three Windows scenarios now have committed, recorded fixtures from `emulate-windows` run 42917025570
+  on `windows-latest` and pass: T1003.001 (70 events), T1047 (12), T1105 (33). Gate: 10 passed, 0 failed,
+  4 pending. Prevalence-weighted coverage 47% to 68% (29 to 42 of 62 points). The other four Windows
+  scenarios stay pending; see F-003.
+
 ### Engine and scoring
 
 * Timestamp part modifiers (`eventTime|minute`, `|hour`, `|day`, `|week`, `|month`, `|year`) now
