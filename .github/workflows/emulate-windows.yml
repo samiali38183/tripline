@@ -104,8 +104,11 @@ jobs:
         run: |
           Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope AllUsers | Out-Null
           Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          # Invoke-AtomicRedTeam requires powershell-yaml, and the atomics now run under this
+          # shell (Windows PowerShell 5.1), so the module has to be installed for it too.
+          Install-Module -Name powershell-yaml -Scope AllUsers -Force -AllowClobber
           Install-Module -Name AtomicTestHarnesses -Scope AllUsers -Force -AllowClobber
-          Get-Module AtomicTestHarnesses -ListAvailable | Format-Table Name, Version, ModuleBase
+          Get-Module powershell-yaml, AtomicTestHarnesses -ListAvailable | Format-Table Name, Version, ModuleBase
 
       - name: List Windows atomic tests from scenarios
         run: |
