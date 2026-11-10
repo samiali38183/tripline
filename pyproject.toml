@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tripline"
-version = "0.2.0"
+version = "0.2.1"
 description = "Detection quality gate: replay ATT&CK telemetry through Sigma rules and score weighted coverage in CI"
 readme = "README.md"
 license = { file = "LICENSE" }

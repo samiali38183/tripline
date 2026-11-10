@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.2.1 - 2026-11-10
+
+Fixes from a code review. Each item was reproduced with a failing test first.
+
+### Engine and scoring
+
+* Timestamp part modifiers (`eventTime|minute`, `|hour`, `|day`, `|week`, `|month`, `|year`) now
+  evaluate against an ISO 8601 timestamp. Before, they compiled and never matched, which
+  contradicted the compiler's rule that unsupported constructs raise `UnsupportedRuleError`; an
+  unknown part now raises it.
+* A rule with no applicable events is reported as `no applicable events ... (routing problem, not
+  a detection miss)` instead of `0 of 0 applicable events matched`. `scorecard.json` gains
+  `outcome` on each rule evidence entry (`matched`, `missed`, `no_applicable_events`, `error`,
+  `pending`); older scorecards still load and the value is derived. CLI, JUnit, Markdown, gate
+  failure text and the HTML report use the new wording.
+
+### Collectors
+
+* The Linux and Windows marker slicers only honour markers that carry the run GUID passed to
+  `collect`. A marker from another run in the same log or export is ignored, so it can no longer
+  open or close a window, and a window left open by an earlier run no longer leaks events into
+  the current one. `slice_by_markers` now requires `run_guid`.
+
+### Rules
+
+* `tripline_lnx_chmod_setuid_setgid_any_form.yml`: now matches `3755`, `5755` and leading-zero
+  octal modes (`04755`), symbolic mode lists such as `g+w,u+s`, and a full-path `chmod`. The
+  `/usr/share/doc/` exclusion applies only when every file operand is under that directory and
+  none contains `..`; appending that path to another target no longer suppresses the event.
+  Result on the recorded fixture is unchanged (2 of 36). Details in `docs/findings.md` F-001.
+* Two Windows rules for the gaps in F-003: `tripline_win_cmd_redirect_relative_in_suspicious_cwd.yml`
+  (T1059.003) and `tripline_win_security_scheduled_task_interpreter_action.yml` (T1053.005). They
+  are tested on synthetic events only (`tests/test_windows_rules.py`), are not expected by any
+  scenario, and all Windows scenarios remain pending.
+
+### Numbers
+
+* 186 tests (was 113), 89 % line+branch coverage. Scorecard totals unchanged: 7 passed, 0 failed,
+  7 pending, 47 % weighted. 26 rules compiled (was 24).
+
 ## 0.2.0 - 2026-11-10
 
 ### Reporting

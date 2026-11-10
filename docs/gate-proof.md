@@ -29,7 +29,7 @@ Gate job log:
 
 ```
 [   FAIL] t1078-004-console-login-without-mfa (T1078.004, aws) - 7 events
-     - 3b1f0d2e-7c4a-4d5b-9e8f-2a6c1d0b9f41  AWS Console Login Without MFA  (0/7 applicable events)
+     - 3b1f0d2e-7c4a-4d5b-9e8f-2a6c1d0b9f41  AWS Console Login Without MFA  (0/7 applicable events (rule did not match))
      + 8ad1600d-e9dc-4251-b0ee-a65268f29add  AWS Root Credentials  (6/7 applicable events)
 GATE FAILED: 1 scenario(s) missed an expected rule: t1078-004-console-login-without-mfa
 ```
