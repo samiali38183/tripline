@@ -152,6 +152,50 @@ class Scenario(BaseModel):
 # --------------------------------------------------------------------------- replay models
 
 
+class RuleOutcome(StrEnum):
+    """Why an expected rule did or did not count for a scenario.
+
+    ``NO_APPLICABLE_EVENTS`` is deliberately separate from ``MISSED``: when no fixture event
+    matches the rule's logsource, the rule was never run, so ``0 of 0`` says nothing about
+    detection quality. It points at a routing problem (wrong rule, wrong fixture, or an event
+    shape the logsource router does not recognise).
+    """
+
+    MATCHED = "matched"
+    """Applicable events existed and the rule matched at least one."""
+    MISSED = "missed"
+    """Applicable events existed and the rule matched none of them: a detection miss."""
+    NO_APPLICABLE_EVENTS = "no_applicable_events"
+    """No fixture event matches the rule's logsource: a routing problem, not a miss."""
+    ERROR = "error"
+    """The rule is missing from the rule set or could not be compiled."""
+    PENDING = "pending"
+    """The scenario has no fixtures yet."""
+
+
+def classify_outcome(*, fired: bool, evaluated: int, error: str | None = None) -> RuleOutcome:
+    """Derive the outcome of one rule from its counts (pending is decided by the caller)."""
+    if error:
+        return RuleOutcome.ERROR
+    if fired:
+        return RuleOutcome.MATCHED
+    if evaluated == 0:
+        return RuleOutcome.NO_APPLICABLE_EVENTS
+    return RuleOutcome.MISSED
+
+
+def _fill_outcome(data: Any) -> Any:
+    """``before`` validator body: derive ``outcome`` when absent (older scorecards, tests)."""
+    if isinstance(data, dict) and data.get("outcome") is None:
+        derived = classify_outcome(
+            fired=bool(data.get("fired")),
+            evaluated=int(data.get("evaluated") or 0),
+            error=data.get("error"),
+        )
+        return {**data, "outcome": derived}
+    return data
+
+
 class RuleHit(BaseModel):
     """One expected rule evaluated against one scenario's fixtures."""
 
@@ -167,6 +211,13 @@ class RuleHit(BaseModel):
     """The first matching event, kept so a failure report can show the evidence."""
     error: str | None = None
     """Why the rule could not be evaluated (missing from the rule set, unsupported...)."""
+    outcome: RuleOutcome = RuleOutcome.MISSED
+    """Derived from the counts when not given; see :class:`RuleOutcome`."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _derive_outcome(cls, data: Any) -> Any:
+        return _fill_outcome(data)
 
 
 class ReplayResult(BaseModel):
@@ -212,6 +263,13 @@ class RuleEvidence(BaseModel):
     hits: int
     evaluated: int
     error: str | None = None
+    outcome: RuleOutcome = RuleOutcome.MISSED
+    """Added in 0.2.1. Derived from the counts when reading older scorecards."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _derive_outcome(cls, data: Any) -> Any:
+        return _fill_outcome(data)
 
 
 class ScenarioScore(BaseModel):
@@ -232,6 +290,14 @@ class ScenarioScore(BaseModel):
     missing_rules: list[str]
     evidence: list[RuleEvidence] = Field(default_factory=list)
     """Per-rule ``hits/evaluated`` counts. Empty in scorecards written before 0.2.0."""
+
+    @model_validator(mode="after")
+    def _pending_evidence(self) -> ScenarioScore:
+        """A pending scenario's rules were never evaluated; older scorecards lack the outcome."""
+        if self.status is ScenarioStatus.PENDING:
+            for item in self.evidence:
+                item.outcome = RuleOutcome.PENDING
+        return self
 
 
 class TechniqueCoverage(BaseModel):
@@ -286,3 +352,23 @@ class Scorecard(BaseModel):
     def scenario(self, scenario_id: str) -> ScenarioScore | None:
         """Look up a scenario score by id."""
         return next((s for s in self.scenarios if s.scenario_id == scenario_id), None)
+
+
+def describe_outcome(hit: RuleHit | RuleEvidence, events: int) -> str:
+    """One-line explanation of a rule result for the CLI and the HTML report.
+
+    ``events`` is the number of fixture events of the scenario; it is only used to make the
+    routing-problem message concrete.
+    """
+    outcome = hit.outcome
+    if outcome is RuleOutcome.ERROR:
+        return hit.error or "rule could not be evaluated"
+    if outcome is RuleOutcome.PENDING:
+        return "no fixtures"
+    if outcome is RuleOutcome.NO_APPLICABLE_EVENTS:
+        return (
+            f"no applicable events: 0 of {events} fixture events match the rule's logsource "
+            "(routing problem, not a detection miss)"
+        )
+    counts = f"{hit.hits}/{hit.evaluated} applicable events"
+    return counts + (" (rule did not match)" if outcome is RuleOutcome.MISSED else "")

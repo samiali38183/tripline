@@ -169,8 +169,10 @@ and each `manifest.json`.
   rule is missing or failed to compile is a failed scenario. A gate that cannot evaluate a rule
   must not pass it.
 - **Count only applicable events.** A rule is evaluated only on events its logsource matches, and
-  results read `1/7 applicable events`. A `0/0` line means a routing problem (wrong
-  product/category/service), not a missed detection, and is visible on every run.
+  results read `1/7 applicable events`. A rule with no applicable events at all is reported as a
+  routing problem (`no applicable events`, wrong product/category/service), not as a missed
+  detection; `0/7 applicable events (rule did not match)` is the real miss. The two are separate
+  outcomes in `scorecard.json` (`outcome`), the CLI, the JUnit file and the HTML report.
 - **Weight by technique prevalence.** Coverage is `sum(weight x coverage) / sum(weight)` with
   weights 1-10 taken from the Red Canary 2026 Threat Detection Report ranking (mapped by hand in
   each scenario). Breaking T1078.004 (weight 10) moves the headline number more than breaking
@@ -343,7 +345,6 @@ Items below are stated in the repo's docs as planned, not done:
 - Evasion variants (casing, encoding, argument order) to score how robust each rule is.
 - A benign log set to measure false positives per rule.
 - Parity test against a real backend (OpenSearch) for the Python evaluator.
-- A `--strict-logsource` flag so a `0/0 applicable events` rule fails the gate.
 - Signed provenance (`actions/attest-build-provenance`) for fixture artifacts.
 
 ## Repository layout

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T17:57:38.357528Z",
+  "generated_at": "2026-11-10T22:59:40.267744Z",
   "tripline_version": "0.2.0",
   "totals": {
     "scenarios": 14,
@@ -438,7 +438,8 @@
           "fired": false,
           "hits": 0,
           "evaluated": 0,
-          "error": null
+          "error": null,
+          "outcome": "pending"
         },
         {
           "rule_id": "5ef9853e-4d0e-4a70-846f-a9ca37d876da",
@@ -446,7 +447,8 @@
           "fired": false,
           "hits": 0,
           "evaluated": 0,
-          "error": null
+          "error": null,
+          "outcome": "pending"
         }
       ]
     },
@@ -472,7 +474,8 @@
           "fired": false,
           "hits": 0,
           "evaluated": 0,
-          "error": null
+          "error": null,
+          "outcome": "pending"
         }
       ]
     },
@@ -498,7 +501,8 @@
           "fired": false,
           "hits": 0,
           "evaluated": 0,
-          "error": null
+          "error": null,
+          "outcome": "pending"
         }
       ]
     },
@@ -530,7 +534,8 @@
           "fired": true,
           "hits": 1,
           "evaluated": 26,
-          "error": null
+          "error": null,
+          "outcome": "matched"
         },
         {
           "rule_id": "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05",
@@ -538,7 +543,8 @@
           "fired": true,
           "hits": 1,
           "evaluated": 3,
-          "error": null
+          "error": null,
+          "outcome": "matched"
         }
       ]
     },
@@ -565,7 +571,8 @@
           "fired": false,
           "hits": 0,
           "evaluated": 0,
-          "error": null
+          "error": null,
+          "outcome": "pending"
         },
         {
           "rule_id": "3a734d25-df5c-4b99-8034-af1ddb5883a4",
@@ -573,7 +580,8 @@
           "fired": false,
           "hits": 0,
           "evaluated": 0,
-          "error": null
+          "error": null,
+          "outcome": "pending"
         }
       ]
     },
@@ -600,7 +608,8 @@
           "fired": false,
           "hits": 0,
           "evaluated": 0,
-          "error": null
+          "error": null,
+          "outcome": "pending"
         },
         {
           "rule_id": "403c2cc0-7f6b-4925-9423-bfa573bed7eb",
@@ -608,7 +617,8 @@
           "fired": false,
           "hits": 0,
           "evaluated": 0,
-          "error": null
+          "error": null,
+          "outcome": "pending"
         }
       ]
     },
@@ -634,7 +644,8 @@
           "fired": false,
           "hits": 0,
           "evaluated": 0,
-          "error": null
+          "error": null,
+          "outcome": "pending"
         }
       ]
     },
@@ -666,7 +677,8 @@
           "fired": true,
           "hits": 3,
           "evaluated": 28,
-          "error": null
+          "error": null,
+          "outcome": "matched"
         },
         {
           "rule_id": "1182f3b3-e716-4efa-99ab-d2685d04360f",
@@ -674,7 +686,8 @@
           "fired": true,
           "hits": 1,
           "evaluated": 26,
-          "error": null
+          "error": null,
+          "outcome": "matched"
         }
       ]
     },
@@ -706,7 +719,8 @@
           "fired": true,
           "hits": 1,
           "evaluated": 7,
-          "error": null
+          "error": null,
+          "outcome": "matched"
         },
         {
           "rule_id": "8ad1600d-e9dc-4251-b0ee-a65268f29add",
@@ -714,7 +728,8 @@
           "fired": true,
           "hits": 6,
           "evaluated": 7,
-          "error": null
+          "error": null,
+          "outcome": "matched"
         }
       ]
     },
@@ -744,7 +759,8 @@
           "fired": true,
           "hits": 1,
           "evaluated": 1,
-          "error": null
+          "error": null,
+          "outcome": "matched"
         }
       ]
     },
@@ -771,7 +787,8 @@
           "fired": false,
           "hits": 0,
           "evaluated": 0,
-          "error": null
+          "error": null,
+          "outcome": "pending"
         },
         {
           "rule_id": "d059842b-6b9d-4ed1-b5c3-5b89143c6ede",
@@ -779,7 +796,8 @@
           "fired": false,
           "hits": 0,
           "evaluated": 0,
-          "error": null
+          "error": null,
+          "outcome": "pending"
         }
       ]
     },
@@ -811,7 +829,8 @@
           "fired": true,
           "hits": 6,
           "evaluated": 10,
-          "error": null
+          "error": null,
+          "outcome": "matched"
         },
         {
           "rule_id": "5c0d9e7b-3a21-4f68-b8d4-7e9f0a1b2c3d",
@@ -819,7 +838,8 @@
           "fired": true,
           "hits": 4,
           "evaluated": 10,
-          "error": null
+          "error": null,
+          "outcome": "matched"
         }
       ]
     },
@@ -849,7 +869,8 @@
           "fired": true,
           "hits": 2,
           "evaluated": 36,
-          "error": null
+          "error": null,
+          "outcome": "matched"
         }
       ]
     },
@@ -879,7 +900,8 @@
           "fired": true,
           "hits": 1,
           "evaluated": 1,
-          "error": null
+          "error": null,
+          "outcome": "matched"
         }
       ]
     }
