@@ -78,7 +78,7 @@ def test_replay_all_passes_on_committed_repo(repo_root, tmp_path):
     )
     assert result.exit_code == 0, result.output
     assert "gate passed" in result.output
-    assert result.output.count("[   PASS]") == 7 and result.output.count("[PENDING]") == 7
+    assert result.output.count("[   PASS]") == 10 and result.output.count("[PENDING]") == 4
     assert "t1078-004-console-login-without-mfa (T1078.004, aws) - 7 events" in result.output
     assert (tmp_path / "j.xml").exists()
 
