@@ -42,8 +42,21 @@ jobs:
           $zip = "$env:TEMP\Sysmon.zip"
           Invoke-WebRequest -Uri 'https://download.sysinternals.com/files/Sysmon.zip' -OutFile $zip -UseBasicParsing
           Expand-Archive $zip -DestinationPath "$env:TEMP\Sysmon" -Force
-          Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/master/sysmonconfig-export.xml' -OutFile "$env:TEMP\sysmonconfig.xml" -UseBasicParsing
-          & "$env:TEMP\Sysmon\Sysmon64.exe" -accepteula -i "$env:TEMP\sysmonconfig.xml" | Out-Null
+          $cfg = "$env:TEMP\sysmonconfig.xml"
+          Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/master/sysmonconfig-export.xml' -OutFile $cfg -UseBasicParsing
+          # The SwiftOnSecurity config ships ProcessAccess (EID 10) as an empty include, so nothing
+          # is logged and process_access rules (T1003.001) see 0 applicable events. Log access to
+          # lsass.exe only.
+          [xml]$x = Get-Content $cfg -Raw
+          $pa = $x.SelectSingleNode("//EventFiltering/RuleGroup/ProcessAccess[@onmatch='include']")
+          if (-not $pa) { throw "ProcessAccess include block not found in sysmon config" }
+          $t = $x.CreateElement('TargetImage')
+          $t.SetAttribute('condition', 'end with')
+          $t.InnerText = '\lsass.exe'
+          [void]$pa.AppendChild($t)
+          $x.Save($cfg)
+          Write-Host "ProcessAccess include: $($pa.OuterXml)"
+          & "$env:TEMP\Sysmon\Sysmon64.exe" -accepteula -i $cfg | Out-Null
           Start-Sleep 3
           Get-Service Sysmon64 | Format-Table Status, Name
           (Get-WinEvent -LogName 'Microsoft-Windows-Sysmon/Operational' -MaxEvents 1).TimeCreated
@@ -67,17 +80,48 @@ jobs:
           Import-Module 'C:\AtomicRedTeam\invoke-atomicredteam\Invoke-AtomicRedTeam.psd1' -Force
           (Get-ChildItem C:\AtomicRedTeam\atomics -Directory).Count
 
+      # windows-latest is Windows Server 2025 (build 26100), where WMIC is an optional feature
+      # that is not installed. Without it T1047-5 fails with "'wmic' is not recognized".
+      - name: Install WMIC optional feature
+        shell: powershell
+        run: |
+          if (-not (Get-Command wmic.exe -ErrorAction SilentlyContinue)) {
+            $cap = Get-WindowsCapability -Online -Name 'WMIC*' | Select-Object -First 1
+            if ($cap) {
+              Write-Host "adding $($cap.Name) (state $($cap.State))"
+              try { Add-WindowsCapability -Online -Name $cap.Name -ErrorAction Stop | Out-Null }
+              catch { Write-Warning "WMIC not installed: $_" }
+            } else { Write-Warning "no WMIC capability offered by this image" }
+          }
+          Get-Command wmic.exe -ErrorAction SilentlyContinue | Format-Table Name, Source
+
+      # Invoke-AtomicTest runs prereqs and powershell executors in a child powershell.exe
+      # (Windows PowerShell 5.1). Started from pwsh 7 that child could not load PowerShellGet
+      # (it inherits pwsh's PSModulePath), so the prereq of T1059.001-16 (Install-Module
+      # AtomicTestHarnesses) failed. Install the module from Windows PowerShell up front.
+      - name: Install AtomicTestHarnesses for Windows PowerShell
+        shell: powershell
+        run: |
+          Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope AllUsers | Out-Null
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          Install-Module -Name AtomicTestHarnesses -Scope AllUsers -Force -AllowClobber
+          Get-Module AtomicTestHarnesses -ListAvailable | Format-Table Name, Version, ModuleBase
+
       - name: List Windows atomic tests from scenarios
         run: |
           tripline atomics windows | Out-File tests.txt -Encoding ascii
           Get-Content tests.txt
 
+      # Run from Windows PowerShell 5.1 so the child powershell.exe processes the atomics spawn
+      # get a native 5.1 module path (see the AtomicTestHarnesses step above). Add-Content with
+      # ASCII avoids the BOM that 5.1's Out-File -Encoding utf8 writes into GITHUB_ENV.
       - name: Run atomics between tripline markers
+        shell: powershell
         run: |
           $runGuid = [guid]::NewGuid().ToString()
-          "RUN_GUID=$runGuid" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          Add-Content -Path $env:GITHUB_ENV -Value "RUN_GUID=$runGuid" -Encoding ascii
           $start = (Get-Date).AddSeconds(-5)
-          "EXPORT_SINCE=$($start.ToString('o'))" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          Add-Content -Path $env:GITHUB_ENV -Value "EXPORT_SINCE=$($start.ToString('o'))" -Encoding ascii
           Write-Host "run guid $runGuid, export since $start"
           Import-Module 'C:\AtomicRedTeam\invoke-atomicredteam\Invoke-AtomicRedTeam.psd1' -Force
           foreach ($line in Get-Content tests.txt) {
