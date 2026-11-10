@@ -120,7 +120,7 @@ def test_score_writes_artifacts_and_markdown(repo_root, tmp_path):
     )
     assert result.exit_code == 0, result.output
     card = read_scorecard(out)
-    assert card.totals.passed == 7 and card.totals.pending == 7 and card.gate.passed
+    assert card.totals.passed == 10 and card.totals.pending == 4 and card.gate.passed
     text = md.read_text(encoding="utf-8")
     assert (
         "| Scenario |" in text
