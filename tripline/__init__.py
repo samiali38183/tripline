@@ -6,4 +6,4 @@ request when an expected rule stops firing. Precision, robustness and cost scori
 roadmap, not implemented.
 """
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"

@@ -59,8 +59,8 @@ def _ps4104(rec: int, seconds: int, text: str):
     }
 
 
-def _marker(rec: int, seconds: int, test: str, phase: str, channel: str = SYSMON):
-    cmd = f'cmd.exe /c "echo tripline-marker {RUN} {test} {phase}"'
+def _marker(rec: int, seconds: int, test: str, phase: str, channel: str = SYSMON, run: str = RUN):
+    cmd = f'cmd.exe /c "echo tripline-marker {run} {test} {phase}"'
     if channel == SYSMON:
         return _sysmon1(
             rec,
@@ -111,7 +111,7 @@ def test_marker_detection_only_on_process_creation():
 
 def test_slicing_orders_by_time_across_channels():
     shuffled = list(reversed(EVENTS))
-    buckets = slice_by_markers(shuffled)
+    buckets = slice_by_markers(shuffled, run_guid=RUN)
     assert set(buckets) == {T_ENC, T_WMIC}
     assert [e["RecordNumber"] for e in buckets[T_ENC]] == [2, 501, 901]
     assert [e["RecordNumber"] for e in buckets[T_WMIC]] == [6, 7]
@@ -155,3 +155,56 @@ def test_collect_writes_fixtures_and_manifest(repo_root, tmp_path):
     }
     raw = (tmp_path / "t1047-wmic-process-call-create" / "run.ndjson").read_bytes()
     assert raw.count(b"\n") == 2 and b"\r\n" not in raw
+
+
+OTHER_RUN = "88888888-aaaa-4bbb-8ccc-000000000008"
+
+
+def _proc(rec: int, seconds: int, name: str):
+    return _sysmon1(rec, seconds, rf"C:\Windows\System32\{name}.exe", name)
+
+
+def test_slice_ignores_markers_of_another_run():
+    events = [
+        _marker(1, 1, T_ENC, "start"),
+        _proc(2, 2, "whoami"),
+        _marker(3, 3, T_WMIC, "start", run=OTHER_RUN),
+        _proc(4, 4, "hostname"),
+        _marker(5, 5, T_ENC, "end"),
+    ]
+    buckets = slice_by_markers(events, run_guid=RUN)
+    assert set(buckets) == {T_ENC}
+    assert [e["RecordNumber"] for e in buckets[T_ENC]] == [2, 4]
+
+
+def test_slice_two_sequential_runs_in_one_export():
+    """Run 1 never closed its window; run 2's slice must not contain run 1's events."""
+    events = [
+        _marker(1, 1, T_ENC, "start", run=OTHER_RUN),
+        _proc(2, 2, "stale"),
+        _marker(3, 3, T_ENC, "start"),
+        _proc(4, 4, "whoami"),
+        _marker(5, 5, T_ENC, "end"),
+        _marker(6, 6, T_WMIC, "start", run=OTHER_RUN),
+        _proc(7, 7, "stale-too"),
+        _marker(8, 8, T_WMIC, "end", run=OTHER_RUN),
+    ]
+    mine = slice_by_markers(list(reversed(events)), run_guid=RUN)
+    assert {g: [e["RecordNumber"] for e in v] for g, v in mine.items()} == {T_ENC: [4]}
+    theirs = slice_by_markers(events, run_guid=OTHER_RUN)
+    assert [e["RecordNumber"] for e in theirs[T_ENC]] == [2, 4]
+    assert all(e["tripline"]["run_guid"] == OTHER_RUN for e in theirs[T_ENC])
+
+
+def test_collect_only_writes_events_of_the_requested_run(repo_root, tmp_path):
+    scenarios = load_scenarios(repo_root / "scenarios")
+    events = [
+        _marker(1, 1, T_ENC, "start", run=OTHER_RUN),
+        _proc(2, 2, "stale"),
+        _marker(3, 3, T_WMIC, "start"),
+        _proc(4, 4, "whoami"),
+        _marker(5, 5, T_WMIC, "end"),
+    ]
+    written = collect(events, scenarios, tmp_path, run_guid=RUN, source="x")
+    assert set(written) == {"t1047-wmic-process-call-create"}
+    assert b"stale" not in written["t1047-wmic-process-call-create"].read_bytes()

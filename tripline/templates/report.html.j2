@@ -207,7 +207,7 @@ footer { margin-top: 36px; color: var(--ink-3); font-size: 12px; }
           <li>
             {% if s.status is sameas Status.PENDING %}<span class="na">&#9675;</span>{% elif e.fired %}<span class="ok">&#10003;</span>{% else %}<span class="no">&#10007;</span>{% endif %}
             {{ e.title or e.rule_id }}<br>
-            <span class="na">{% if e.error %}{{ e.error }}{% elif s.status is sameas Status.PENDING %}no fixtures{% else %}{{ e.hits }}/{{ e.evaluated }} applicable events{% endif %}</span>
+            <span class="na">{{ describe(e, s.events) }}</span>
           </li>
           {% endfor %}
         </ul>
@@ -242,7 +242,7 @@ footer { margin-top: 36px; color: var(--ink-3); font-size: 12px; }
         <ul class="rules">
         {% if s.evidence %}
           {% for e in s.evidence %}
-          <li>{{ e.title or e.rule_id }} <span style="color:var(--ink-3)">{% if s.status is sameas Status.PENDING %}(no fixtures){% elif e.error %}({{ e.error }}){% else %}({{ e.hits }}/{{ e.evaluated }}){% endif %}</span></li>
+          <li>{{ e.title or e.rule_id }} <span style="color:var(--ink-3)">{% if e.outcome.value == "no_applicable_events" %}(no applicable events: routing problem){% elif e.outcome.value in ("pending", "error") %}({{ describe(e, s.events) }}){% else %}({{ e.hits }}/{{ e.evaluated }}){% endif %}</span></li>
           {% endfor %}
         {% else %}
           {% for rid in s.expected_rules %}<li>{{ rule_titles.get(rid, rid) }}</li>{% endfor %}

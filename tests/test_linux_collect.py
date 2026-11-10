@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from tripline.engine.rules import evaluate, load_rules
 from tripline.linux.collect import collect, command_line, marker_of, parse_records, slice_by_markers
 from tripline.logsource import classify, normalize
@@ -46,9 +48,9 @@ def _file_create(serial: int, ts: float, name: str) -> list[str]:
     ]
 
 
-def _marker(serial: int, ts: float, test: str, phase: str) -> list[str]:
+def _marker(serial: int, ts: float, test: str, phase: str, run: str = RUN) -> list[str]:
     return _execve(
-        serial, ts, ["sh", "-c", f"true tripline-marker {RUN} {test} {phase}"], "/usr/bin/dash"
+        serial, ts, ["sh", "-c", f"true tripline-marker {run} {test} {phase}"], "/usr/bin/dash"
     )
 
 
@@ -110,7 +112,7 @@ def test_markers_and_slicing():
     events = parse_records(LOG)
     assert marker_of(events[1]).test_guid == T_SETUID and marker_of(events[1]).phase == "start"
     assert marker_of(events[0]) is None
-    buckets = slice_by_markers(events)
+    buckets = slice_by_markers(events, run_guid=RUN)
     assert set(buckets) == {T_SETUID, T_CRON}
     assert [e["serial"] for e in buckets[T_SETUID]] == ["3", "4"]
     assert [e["serial"] for e in buckets[T_CRON]] == ["8", "9"]
@@ -172,3 +174,125 @@ def test_setuid_any_form_rule_covers_what_sigmahq_misses(repo_root):
         _execve(98, 1700000098.0, ["sh", "-c", "chmod u+xs /tmp/x"], "/usr/bin/dash")
     )
     assert evaluate(tripline_rule, wrapper) is False  # Image must be chmod itself
+
+
+# Synthetic chmod events (built by _execve, not recorded telemetry): regression cases for the
+# gaps in the any-form setuid rule found in review.
+TRIPLINE_SETUID = "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d"
+
+
+def _chmod_event(*args: str, exe: str = "/usr/bin/chmod", argv0: str = "chmod"):
+    (event,) = parse_records(_execve(97, 1700000097.0, [argv0, *args], exe))
+    return event
+
+
+def _setuid_rule(repo_root):
+    rules = load_rules(repo_root / "rules" / "sigma")
+    return {r.id: r for r in rules.rules}[TRIPLINE_SETUID]
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ("3755", "/tmp/x"),  # setgid + sticky
+        ("5755", "/tmp/x"),  # setuid + sticky
+        ("04755", "/tmp/x"),  # leading zero
+        ("02755", "/tmp/x"),
+        ("07777", "/tmp/x"),
+        ("-R", "4755", "/tmp/x"),
+        ("--", "4755", "/tmp/x"),
+        ("g+w,u+s", "/tmp/x"),  # setuid in a later clause of a symbolic list
+        ("a+rx,g+xs", "/tmp/x"),
+        ("u=rwxs,go=rx", "/tmp/x"),
+        ("u+s,g+w", "/tmp/x"),
+        ("4755", "/tmp/x", "/usr/share/doc/y/../../../../tmp/z"),  # traversal is not a doc path
+        ("u+s", "/tmp/x", "/usr/share/doc/"),  # filter must not be satisfiable by an extra arg
+        ("u+s", "/usr/share/doc/pkg", "/tmp/x"),  # one operand outside the doc tree
+        ("4755", "/tmp/x", "/usr/share/doc/pkg"),
+        ("u+s", "/tmp/usr/share/doc/x"),  # not under /usr/share/doc
+    ],
+)
+def test_setuid_rule_catches_forms_and_filter_evasions(repo_root, args):
+    assert evaluate(_setuid_rule(repo_root), _chmod_event(*args)) is True, args
+
+
+def test_setuid_rule_catches_full_path_invocation(repo_root):
+    event = _chmod_event("4755", "/tmp/x", argv0="/usr/bin/chmod")
+    assert evaluate(_setuid_rule(repo_root), event) is True
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ("1755", "/tmp/x"),  # sticky only
+        ("01755", "/tmp/x"),
+        ("0755", "/tmp/x"),
+        ("755", "/tmp/x"),
+        ("0644", "/tmp/x"),
+        ("u+x", "/tmp/x"),
+        ("+x", "/tmp/scripts/run.sh"),
+        ("u-s", "/tmp/x"),  # clearing the bit is not setting it
+        ("a+rx,u+t", "/tmp/x"),
+        ("-R", "u+rwX", "/home/u/sdir"),
+        # what the filter exists for: package documentation directories only
+        ("u+s", "/usr/share/doc/pkg"),
+        ("2755", "/usr/share/doc/pkg/", "/usr/share/doc/other/README"),
+    ],
+)
+def test_setuid_rule_ignores_benign_modes(repo_root, args):
+    assert evaluate(_setuid_rule(repo_root), _chmod_event(*args)) is False, args
+
+
+OTHER_RUN = "99999999-aaaa-4bbb-8ccc-000000000009"
+
+
+def _cmd(serial: int, ts: float, *argv: str) -> list[str]:
+    return _execve(serial, ts, list(argv), f"/usr/bin/{argv[0]}")
+
+
+def test_slice_ignores_markers_of_another_run():
+    """A foreign marker inside our window neither closes it nor opens a bucket of its own."""
+    log = (
+        _marker(1, 1.0, T_SETUID, "start")
+        + _cmd(2, 2.0, "id")
+        + _marker(3, 3.0, T_CRON, "start", run=OTHER_RUN)
+        + _cmd(4, 4.0, "ls")
+        + _marker(5, 5.0, T_SETUID, "end")
+    )
+    buckets = slice_by_markers(parse_records(log), run_guid=RUN)
+    assert set(buckets) == {T_SETUID}
+    assert [command_line(e) for e in buckets[T_SETUID]] == ["id", "ls"]
+    assert {e["tripline"]["run_guid"] for e in buckets[T_SETUID]} == {RUN}
+
+
+def test_slice_two_sequential_runs_in_one_log():
+    """Run 1 leaves a window open (no end marker); run 2 must not inherit its events."""
+    log = (
+        _marker(1, 1.0, T_SETUID, "start", run=OTHER_RUN)
+        + _cmd(2, 2.0, "stale-from-run-1")
+        + _marker(3, 3.0, T_SETUID, "start")
+        + _cmd(4, 4.0, "id")
+        + _marker(5, 5.0, T_SETUID, "end")
+        + _marker(6, 6.0, T_CRON, "start", run=OTHER_RUN)
+        + _cmd(7, 7.0, "stale-too")
+        + _marker(8, 8.0, T_CRON, "end", run=OTHER_RUN)
+    )
+    events = parse_records(log)
+    mine = slice_by_markers(events, run_guid=RUN)
+    assert {g: [command_line(e) for e in v] for g, v in mine.items()} == {T_SETUID: ["id"]}
+    theirs = slice_by_markers(events, run_guid=OTHER_RUN)
+    assert [command_line(e) for e in theirs[T_SETUID]] == ["stale-from-run-1", "id"]
+
+
+def test_collect_only_writes_events_of_the_requested_run(repo_root, tmp_path):
+    scenarios = load_scenarios(repo_root / "scenarios")
+    log = (
+        _marker(1, 1.0, T_CRON, "start", run=OTHER_RUN)
+        + _cmd(2, 2.0, "stale")
+        + _marker(3, 3.0, T_SETUID, "start")
+        + _cmd(4, 4.0, "id")
+        + _marker(5, 5.0, T_SETUID, "end")
+    )
+    written = collect(log, scenarios, tmp_path, run_guid=RUN, source="x")
+    assert set(written) == {"t1548-001-setuid-setgid"}
+    assert b"stale" not in written["t1548-001-setuid-setgid"].read_bytes()

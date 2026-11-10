@@ -64,8 +64,14 @@ def _sort_key(event: Event) -> tuple[str, int]:
     return str(event.get("TimeCreated") or ""), int(record) if isinstance(record, int) else 0
 
 
-def slice_by_markers(events: list[Event]) -> dict[str, list[Event]]:
+def slice_by_markers(events: list[Event], *, run_guid: str) -> dict[str, list[Event]]:
     """Group events by Atomic test GUID using the start/end markers; markers are dropped.
+
+    Only markers carrying ``run_guid`` are boundaries. A marker from another run (a log that was
+    not rotated, or two runs sharing a host) is ignored: it neither opens nor closes a window, so
+    it cannot attribute events to the wrong run. Its own events fall outside any window and are
+    dropped. Events cannot be tied to a run except through the window they fall in, so two runs
+    executing *at the same time* on one host still cannot be separated.
 
     Events are ordered by ``TimeCreated`` across channels first, so Security and PowerShell
     records that land between a Sysmon start and end marker are attributed correctly. Both
@@ -76,6 +82,8 @@ def slice_by_markers(events: list[Event]) -> dict[str, list[Event]]:
     current: Marker | None = None
     for event in sorted(events, key=_sort_key):
         marker = marker_of(event)
+        if marker is not None and marker.run_guid != run_guid:
+            continue
         if marker is not None:
             current = marker if marker.phase == "start" else None
             continue
@@ -98,7 +106,7 @@ def collect(
 
     Returns ``{scenario_id: fixture_path}``. Scenarios whose tests produced no events are skipped.
     """
-    buckets = slice_by_markers(events)
+    buckets = slice_by_markers(events, run_guid=run_guid)
     written: dict[str, Path] = {}
     for scenario in scenarios:
         if scenario.plane is not Plane.WINDOWS:

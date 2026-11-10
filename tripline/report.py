@@ -14,7 +14,13 @@ from xml.sax.saxutils import escape
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from tripline.events import write_text_lf
-from tripline.models import Plane, ScenarioScore, ScenarioStatus, Scorecard
+from tripline.models import (
+    Plane,
+    ScenarioScore,
+    ScenarioStatus,
+    Scorecard,
+    describe_outcome,
+)
 
 TACTICS: list[tuple[str, str]] = [
     ("reconnaissance", "Reconnaissance"),
@@ -120,6 +126,7 @@ def render_html(card: Scorecard, *, title: str = "tripline coverage report") -> 
         rule_titles=rule_titles,
         tactic_labels=dict(TACTICS),
         Status=ScenarioStatus,
+        describe=describe_outcome,
     )
 
 

@@ -16,6 +16,7 @@ import ipaddress
 import re
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Any
 
 from sigma.conditions import (
@@ -39,6 +40,7 @@ from sigma.types import (
     SigmaNumber,
     SigmaRegularExpression,
     SigmaString,
+    SigmaTimestampPart,
     SpecialChars,
 )
 
@@ -154,7 +156,32 @@ def _compile_keyword(value: Any, rule: SigmaRule) -> Predicate:
     )
 
 
+_TIMESTAMP_PARTS = ("minute", "hour", "day", "week", "month", "year")
+
+
+def _timestamp_part(actual: Any, part: str) -> int | None:
+    """Extract ``part`` from an ISO 8601 timestamp, in the timestamp's own offset.
+
+    Returns ``None`` for anything that is not a parseable timestamp, so the comparison is false.
+    """
+    if not isinstance(actual, str):
+        return None
+    try:
+        when = datetime.fromisoformat(actual.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if part == "week":
+        return when.isocalendar().week
+    return int(getattr(when, part))
+
+
 def _value_matcher(value: Any, rule: SigmaRule) -> Callable[[Any], bool]:
+    if isinstance(value, SigmaTimestampPart):
+        part = str(value.timestamp_part.name).lower()
+        if part not in _TIMESTAMP_PARTS:
+            raise UnsupportedRuleError(f"{rule.title}: timestamp part {part!r} is not supported")
+        wanted = value.number
+        return lambda actual: _timestamp_part(actual, part) == wanted
     if isinstance(value, SigmaString):
         pattern = _string_to_regex(value, anchored=True)
         return lambda actual: pattern.fullmatch(_to_text(actual)) is not None

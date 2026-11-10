@@ -1,0 +1,39 @@
+title: Scheduled Task Created With a Command Interpreter or LOLBin Action
+id: eb3f5405-928e-441c-a867-0612f0f66dc9
+status: experimental
+description: |
+    Detects a scheduled task creation (Security 4698) whose action runs a command interpreter or
+    living-off-the-land binary (cmd, powershell, pwsh, wscript, cscript, mshta, rundll32,
+    regsvr32, certutil, bitsadmin, wmic), regardless of where the binary lives. Tasks under the
+    built-in \Microsoft\ folder are excluded.
+    Complements the SigmaHQ 'Suspicious Scheduled Task Creation' rule, which also requires the
+    task XML to name a user-writable path and therefore misses an action such as
+    C:\windows\system32\cmd.exe (docs/findings.md F-003, T1053.005).
+    Needs 'Audit Other Object Access Events'. Synthetic-event unit tests only so far: not yet
+    confirmed on recorded Windows telemetry.
+references:
+    - https://attack.mitre.org/techniques/T1053/005/
+    - https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4698
+author: Sami Ali (tripline)
+date: 2026-11-10
+tags:
+    - attack.execution
+    - attack.persistence
+    - attack.privilege-escalation
+    - attack.t1053.005
+logsource:
+    product: windows
+    service: security
+detection:
+    selection_eid:
+        EventID: 4698
+    selection_action:
+        # <Command>...cmd.exe</Command>, with or without a path, quotes or .exe
+        TaskContent|re: '(cmd|powershell|pwsh|wscript|cscript|mshta|rundll32|regsvr32|certutil|bitsadmin|wmic)(\.exe)?"?\s*</Command>'
+    filter_builtin:
+        # Spoofable: an attacker can name a task under \Microsoft\ too. Residual risk.
+        TaskName|startswith: '\Microsoft\'
+    condition: selection_eid and selection_action and not filter_builtin
+falsepositives:
+    - Administrators and software installers that schedule a script through cmd or PowerShell
+level: medium

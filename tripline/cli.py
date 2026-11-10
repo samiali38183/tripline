@@ -16,7 +16,15 @@ from tripline import __version__
 from tripline.engine.rules import RuleSet, load_rules
 from tripline.events import write_text_lf
 from tripline.heatmap import write_layer
-from tripline.models import Plane, ReplayResult, Scenario, ScenarioStatus, Scorecard
+from tripline.models import (
+    Plane,
+    ReplayResult,
+    RuleOutcome,
+    Scenario,
+    ScenarioStatus,
+    Scorecard,
+    describe_outcome,
+)
 from tripline.replay import replay_all, replay_scenario
 from tripline.scenarios import ScenarioLoadError, load_scenarios, validate_fixture_paths
 from tripline.scorer import build_scorecard, read_scorecard, write_junit, write_scorecard
@@ -390,6 +398,15 @@ def scorecard_markdown(card: Scorecard, *, heading: bool = False) -> str:
         )
     if card.gate.failures:
         lines += ["", "**Failures**", ""] + [f"- {f}" for f in card.gate.failures]
+    routing = [
+        f"{s.scenario_id}: {e.title or e.rule_id}"
+        for s in card.scenarios
+        for e in s.evidence
+        if e.outcome is RuleOutcome.NO_APPLICABLE_EVENTS
+    ]
+    if routing:
+        lines += ["", "**Routing problems** (no fixture event matches the rule's logsource)", ""]
+        lines += [f"- {r}" for r in routing]
     lines += [
         "",
         f"_tripline {card.tripline_version}, generated {card.generated_at:%Y-%m-%d %H:%M} UTC_",
@@ -416,7 +433,7 @@ def _print_results(
         )
         for hit in result.rules:
             mark = "+" if hit.fired else ("~" if result.status is ScenarioStatus.PENDING else "-")
-            detail = hit.error or f"{hit.hits}/{hit.evaluated} applicable events"
+            detail = describe_outcome(hit, result.events)
             typer.echo(f"     {mark} {hit.rule_id}  {hit.title or '?'}  ({detail})")
             if show_events and hit.first_match is not None:
                 typer.echo("       " + json.dumps(hit.first_match, sort_keys=True)[:400])

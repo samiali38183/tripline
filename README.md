@@ -15,7 +15,7 @@ is supposed to fire does not, and scores the result by how common each technique
 | Gate today | 7 of 7 scenarios with fixtures pass (AWS 4/4, Linux 3/3); 7 Windows pending |
 | Weighted coverage | 47% of all 14 scenarios (29 of 62 prevalence points) |
 | Gaps found | SigmaHQ *Setuid and Setgid* matched 0 of 36 Atomic events ([F-001](docs/findings.md)); 3 Windows rules that miss their Atomic tests ([F-003](docs/findings.md)) |
-| Code | 113 tests, 89% line+branch coverage, ruff and mypy strict clean |
+| Code | 186 tests, 89% line+branch coverage, ruff and mypy strict clean |
 
 [![tripline coverage report](docs/img/report.png)](docs/report.html)
 
@@ -64,8 +64,8 @@ All figures below were reproduced from a clean checkout on 2026-11-10.
 
 - **Prevalence-weighted coverage: 47% of all 14 scenarios, 100% of the scenarios that have
   fixtures** (29 of 62 weight points; pending scenarios count as zero in the headline figure).
-- `tripline replay --all`: 7 passed, 0 failed, 7 pending; 24 rules compiled, 22 expected rules.
-- Test suite: **113 tests, 89% line+branch coverage**. `ruff format`, `ruff check` and `mypy`
+- `tripline replay --all`: 7 passed, 0 failed, 7 pending; 26 rules compiled, 22 expected rules.
+- Test suite: **186 tests, 89% line+branch coverage**. `ruff format`, `ruff check` and `mypy`
   (strict) are clean; `sigma check rules/` reports 0 errors and 1 medium tagging issue (see
   [Limitations](#limitations)).
 - The scorecard also exports an ATT&CK Navigator layer (v4.5, ATT&CK v16):
@@ -79,9 +79,10 @@ On the first Linux recording the vendored SigmaHQ rule `c21c4eaa` *Setuid and Se
 **0 of 36** applicable events. It looks for the literal text ` chmod u+s`; the Atomic test ran
 `chmod u+xs`, and `chmod 4755`, `chmod ug+s` or `chmod a+s` would be missed the same way. The
 emulation run that recorded it ([run 41838714456](https://github.com/samiali38183/tripline/actions/runs/41838714456))
-failed its own gate for exactly this reason. The fix is a new rule,
+failed its own gate for exactly this reason. The repo includes a replacement rule,
 `tripline_lnx_chmod_setuid_setgid_any_form.yml`, that anchors on the `chmod` binary and matches
-symbolic and 4-digit octal forms: **2 of 36**, the two `chmod` executions. Reproduced:
+symbolic forms and octal modes with the setuid or setgid bit set: **2 of 36**, the two `chmod`
+executions. Reproduced:
 
 ```
 Setuid and Setgid                                  applicable 36  matched 0
@@ -169,8 +170,10 @@ and each `manifest.json`.
   rule is missing or failed to compile is a failed scenario. A gate that cannot evaluate a rule
   must not pass it.
 - **Count only applicable events.** A rule is evaluated only on events its logsource matches, and
-  results read `1/7 applicable events`. A `0/0` line means a routing problem (wrong
-  product/category/service), not a missed detection, and is visible on every run.
+  results read `1/7 applicable events`. A rule with no applicable events at all is reported as a
+  routing problem (`no applicable events`, wrong product/category/service), not as a missed
+  detection; `0/7 applicable events (rule did not match)` is the real miss. The two are separate
+  outcomes in `scorecard.json` (`outcome`), the CLI, the JUnit file and the HTML report.
 - **Weight by technique prevalence.** Coverage is `sum(weight x coverage) / sum(weight)` with
   weights 1-10 taken from the Red Canary 2026 Threat Detection Report ranking (mapped by hand in
   each scenario). Breaking T1078.004 (weight 10) moves the headline number more than breaking
@@ -256,7 +259,7 @@ still passes `sigma check`) in a scratch copy of the repo:
 
 ```
 [   FAIL] t1078-004-console-login-without-mfa (T1078.004, aws) - 7 events
-     - 3b1f0d2e-7c4a-4d5b-9e8f-2a6c1d0b9f41  AWS Console Login Without MFA  (0/7 applicable events)
+     - 3b1f0d2e-7c4a-4d5b-9e8f-2a6c1d0b9f41  AWS Console Login Without MFA  (0/7 applicable events (rule did not match))
 GATE FAILED: 1 scenario(s) missed an expected rule: t1078-004-console-login-without-mfa
 ```
 (exit code 1)
@@ -280,8 +283,9 @@ GATE FAILED: 1 scenario(s) missed an expected rule: t1078-004-console-login-with
 | Linux | T1070.003 Clear Command History | ART `a934276e`, `b1251c35` | 2 | pass |
 | Linux | T1548.001 Setuid / Setgid | ART `759055b3`, `db55f666` | 2 | pass |
 
-Rules: 24 compiled, of which 20 are vendored unmodified from SigmaHQ (DRL 1.1) and 4 are written
-for this project (three AWS, one Linux). Weight is the technique's rank in Red Canary's 2026
+Rules: 26 compiled, of which 20 are vendored unmodified from SigmaHQ (DRL 1.1) and 6 are
+authored for this project (three AWS, one Linux, two Windows; the Windows two are not yet
+expected by any scenario, see [F-003](docs/findings.md)). Weight is the technique's rank in Red Canary's 2026
 Threat Detection Report, mapped by hand (10 = most common). ART = Atomic Red Team test GUID prefix.
 
 ## Real-world applicability
@@ -316,7 +320,9 @@ Stated plainly so the numbers are read correctly (full text in
   (Sysmon config logs no lsass access, WMIC missing on Server 2025, a PowerShellGet failure in
   an Atomic prereq), now addressed in the workflow but not yet re-run; the other three are
   vendored rules that do not match the chosen Atomic tests, plus one scenario that points at a
-  manual-only Atomic test. Those need a scenario decision, not a workflow fix.
+  manual-only Atomic test. Those need a scenario decision, not a workflow fix. Two tripline rules
+  for the T1059.003 and T1053.005 gaps exist but are only tested on hand-written synthetic
+  events; they count for nothing until a recorded Windows run confirms them.
 - **The cloud plane is replayed, not detonated by this project.** The records are real
   CloudTrail from public datasets, but the three cloud rules written for this project sit
   alongside fixtures from the same datasets (two of them cite flaws.cloud, the source of the
@@ -343,7 +349,6 @@ Items below are stated in the repo's docs as planned, not done:
 - Evasion variants (casing, encoding, argument order) to score how robust each rule is.
 - A benign log set to measure false positives per rule.
 - Parity test against a real backend (OpenSearch) for the Python evaluator.
-- A `--strict-logsource` flag so a `0/0 applicable events` rule fails the gate.
 - Signed provenance (`actions/attest-build-provenance`) for fixture artifacts.
 
 ## Repository layout

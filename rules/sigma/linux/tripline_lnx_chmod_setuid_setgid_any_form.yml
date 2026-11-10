@@ -3,7 +3,11 @@ id: 7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d
 status: experimental
 description: |
     Detects chmod setting the setuid or setgid bit in any symbolic form (u+s, g+s, u+xs, ug+s, a+s,
-    +s) or in a 4-digit octal mode with the 4 (setuid) or 2 (setgid) bit set (2xxx, 4xxx, 6xxx).
+    +s, also in a later clause of a list such as g+w,u+s) or in an octal mode whose special-bits
+    digit includes setuid (4) or setgid (2): 2xxx to 7xxx, with or without a leading zero (04755).
+    Sticky-only modes (1xxx) and clearing the bit (u-s) do not match. The only exclusion is a
+    chmod whose every file operand is under /usr/share/doc/ (package documentation directories);
+    a doc path appended to another target, or a path containing '..', does not exclude the event.
     Complements the SigmaHQ 'Setuid and Setgid' rule, which only matches ' chmod u+s' / ' chmod g+s'
     and misses Atomic Red Team T1548.001-3/-5 ('chmod u+xs', 'chmod g+xs') as recorded by tripline.
 references:
@@ -11,6 +15,7 @@ references:
     - https://github.com/redcanaryco/atomic-red-team/blob/master/atomics/T1548.001/T1548.001.md
 author: tripline
 date: 2026-11-04
+modified: 2026-11-10
 tags:
     - attack.privilege-escalation
     - attack.defense-evasion
@@ -22,11 +27,11 @@ detection:
     selection_image:
         Image|endswith: '/chmod'
     selection_symbolic:
-        CommandLine|re: '(^|\s)chmod\s+(-[A-Za-z]+\s+)*[ugoa]*[+=][rwxXt]*s'
+        CommandLine|re: '(^|[\s/])chmod\s+(-[A-Za-z-]+\s+)*([ugoa]*[-+=][rwxXst]*,)*[ugoa]*[+=][rwxXt]*s[rwxXt]*(,\S*)?(\s|$)'
     selection_octal:
-        CommandLine|re: '(^|\s)chmod\s+(-[A-Za-z]+\s+)*[2467][0-7]{3}(\s|$)'
+        CommandLine|re: '(^|[\s/])chmod\s+(-[A-Za-z-]+\s+)*0?[2-7][0-7]{3}(\s|$)'
     filter_tmp_runner:
-        CommandLine|contains: '/usr/share/doc/'
+        CommandLine|re: '^(\S*/)?chmod\s+(-[A-Za-z-]+\s+)*\S+(\s+/usr/share/doc/([\w+~:@%/-]|\.[\w+~:@%/-])*\.?)+\s*$'
     condition: selection_image and (selection_symbolic or selection_octal) and not filter_tmp_runner
 falsepositives:
     - Package installation scripts legitimately setting setuid helpers (dpkg, rpm postinst)

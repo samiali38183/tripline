@@ -267,3 +267,56 @@ def test_near_condition_is_rejected():
     )
     with pytest.raises((UnsupportedRuleError, SigmaError)):
         compile_rule(rule)
+
+
+# --------------------------------------------------------------------------- timestamp parts
+
+_LOGIN = {"eventName": "ConsoleLogin", "eventTime": "2026-03-07T03:15:42Z"}
+
+
+@pytest.mark.parametrize(
+    ("modifier", "hit", "miss"),
+    [
+        ("minute", 15, 16),
+        ("hour", 3, 14),
+        ("day", 7, 8),
+        ("week", 10, 11),
+        ("month", 3, 4),
+        ("year", 2026, 2025),
+    ],
+)
+def test_timestamp_part_modifiers(make_rule, modifier, hit, miss):
+    yes = make_rule(f"sel:\n  eventTime|{modifier}: {hit}\ncondition: sel")
+    no = make_rule(f"sel:\n  eventTime|{modifier}: {miss}\ncondition: sel")
+    assert yes.matches(_LOGIN)
+    assert not no.matches(_LOGIN)
+
+
+def test_timestamp_part_handles_offsets_and_garbage(make_rule):
+    rule = make_rule("sel:\n  eventTime|hour: 3\ncondition: sel")
+    assert rule.matches({"eventTime": "2026-03-07T03:00:00.123+00:00"})
+    assert not rule.matches({"eventTime": "nope"})
+    assert not rule.matches({"eventTime": 3})
+    assert not rule.matches({})
+
+
+def test_timestamp_part_inside_a_real_condition(make_rule):
+    rule = make_rule(
+        "sel:\n  eventName: ConsoleLogin\n  eventTime|hour: 3\ncondition: sel",
+        logsource="product: aws\nservice: cloudtrail",
+    )
+    assert rule.matches(_LOGIN)
+    assert not rule.matches({**_LOGIN, "eventTime": "2026-03-07T14:15:42Z"})
+
+
+def test_unknown_timestamp_part_is_unsupported():
+    from types import SimpleNamespace
+
+    from sigma.types import SigmaTimestampPart, TimestampPart
+
+    from tripline.engine.compiler import _value_matcher
+
+    value = SigmaTimestampPart(TimestampPart.HOUR, 3)
+    value.timestamp_part = SimpleNamespace(name="FORTNIGHT")  # type: ignore[assignment]
+    with pytest.raises(UnsupportedRuleError, match="timestamp part"):
+        _value_matcher(value, SimpleNamespace(title="t"))  # type: ignore[arg-type]

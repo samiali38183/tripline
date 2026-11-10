@@ -26,6 +26,7 @@ from tripline.models import (
     GateResult,
     ReplayResult,
     RuleEvidence,
+    RuleOutcome,
     RuleScore,
     Scenario,
     ScenarioScore,
@@ -33,6 +34,7 @@ from tripline.models import (
     Scorecard,
     ScorecardTotals,
     TechniqueCoverage,
+    describe_outcome,
 )
 
 
@@ -63,12 +65,26 @@ def build_scorecard(
 def apply_gate(scenario_scores: list[ScenarioScore]) -> GateResult:
     """Fail when any scenario with fixtures has an expected rule that did not fire."""
     failures = [
-        f"{s.scenario_id} ({s.technique}): expected rule(s) did not fire: "
-        + ", ".join(s.missing_rules)
+        f"{s.scenario_id} ({s.technique}): expected rule(s) did not fire: " + _missing_text(s)
         for s in scenario_scores
         if s.status is ScenarioStatus.FAILED
     ]
     return GateResult(passed=not failures, failures=failures)
+
+
+_OUTCOME_NOTE = {
+    RuleOutcome.NO_APPLICABLE_EVENTS: " [no applicable events: routing problem]",
+    RuleOutcome.ERROR: " [could not be evaluated]",
+}
+
+
+def _missing_text(score: ScenarioScore) -> str:
+    """Missing rule ids; a rule that never ran is annotated so it is not read as a miss."""
+    outcome = {e.rule_id: e.outcome for e in score.evidence}
+    return ", ".join(
+        rid + (_OUTCOME_NOTE[outcome[rid]] if outcome.get(rid) in _OUTCOME_NOTE else "")
+        for rid in score.missing_rules
+    )
 
 
 def weighted_coverage(pairs: list[tuple[int, float]]) -> float | None:
@@ -104,7 +120,11 @@ def write_junit(results: list[ReplayResult], scenarios: list[Scenario], path: Pa
             counts["failures"] += 1
             lines = [
                 f"{hit.rule_id} ({hit.title or 'unknown rule'}): "
-                + (hit.error or f"0 of {hit.evaluated} applicable events matched")
+                + (
+                    f"0 of {hit.evaluated} applicable events matched"
+                    if hit.outcome is RuleOutcome.MISSED
+                    else describe_outcome(hit, result.events)
+                )
                 for hit in result.rules
                 if not hit.fired
             ]
@@ -156,6 +176,9 @@ def _score_scenario(scenario: Scenario, result: ReplayResult) -> ScenarioScore:
                 hits=h.hits,
                 evaluated=h.evaluated,
                 error=h.error,
+                outcome=(
+                    RuleOutcome.PENDING if result.status is ScenarioStatus.PENDING else h.outcome
+                ),
             )
             for h in result.rules
         ],

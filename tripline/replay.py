@@ -11,7 +11,7 @@ from pathlib import Path
 
 from tripline.engine.rules import RuleSet, evaluate
 from tripline.events import read_ndjson
-from tripline.models import Event, ReplayResult, RuleHit, Scenario, ScenarioStatus
+from tripline.models import Event, ReplayResult, RuleHit, RuleOutcome, Scenario, ScenarioStatus
 
 
 def load_fixture_events(scenario: Scenario, root: Path) -> list[Event]:
@@ -32,7 +32,14 @@ def replay_scenario(scenario: Scenario, rules: RuleSet, root: Path) -> ReplayRes
     fixture_paths = [str(f.path).replace("\\", "/") for f in scenario.fixtures]
     if not scenario.fixtures:
         hits = [
-            RuleHit(rule_id=rid, title=_title(rules, rid), fired=False, hits=0, evaluated=0)
+            RuleHit(
+                rule_id=rid,
+                title=_title(rules, rid),
+                fired=False,
+                hits=0,
+                evaluated=0,
+                outcome=RuleOutcome.PENDING,
+            )
             for rid in scenario.expected_rules
         ]
         return ReplayResult(
