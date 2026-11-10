@@ -6,7 +6,7 @@
     "layer": "4.5"
   },
   "domain": "enterprise-attack",
-  "description": "Prevalence-weighted Sigma coverage from tripline scorecard (7/14 scenarios passed, 7 pending). Weighted coverage 47% overall, 100% over scenarios with fixtures.",
+  "description": "Prevalence-weighted Sigma coverage from tripline scorecard (10/14 scenarios passed, 4 pending). Weighted coverage 68% overall, 100% over scenarios with fixtures.",
   "sorting": 3,
   "layout": {
     "layout": "side",
@@ -17,10 +17,10 @@
   "techniques": [
     {
       "techniqueID": "T1003.001",
-      "score": 0,
+      "score": 100,
       "enabled": true,
       "showSubtechniques": true,
-      "comment": "weight 3; coverage 0%; scenarios: t1003-001-lsass-memory-dump; fixtures pending",
+      "comment": "weight 3; coverage 100%; scenarios: t1003-001-lsass-memory-dump",
       "metadata": [
         {
           "name": "weight",
@@ -28,7 +28,7 @@
         },
         {
           "name": "coverage",
-          "value": "0.00"
+          "value": "1.00"
         },
         {
           "name": "rules",
@@ -36,10 +36,9 @@
         },
         {
           "name": "status",
-          "value": "pending"
+          "value": "scored"
         }
-      ],
-      "color": "#e0e0e0"
+      ]
     },
     {
       "techniqueID": "T1027",
@@ -69,10 +68,10 @@
     },
     {
       "techniqueID": "T1047",
-      "score": 0,
+      "score": 100,
       "enabled": true,
       "showSubtechniques": false,
-      "comment": "weight 4; coverage 0%; scenarios: t1047-wmic-process-call-create; fixtures pending",
+      "comment": "weight 4; coverage 100%; scenarios: t1047-wmic-process-call-create",
       "metadata": [
         {
           "name": "weight",
@@ -80,7 +79,7 @@
         },
         {
           "name": "coverage",
-          "value": "0.00"
+          "value": "1.00"
         },
         {
           "name": "rules",
@@ -88,10 +87,9 @@
         },
         {
           "name": "status",
-          "value": "pending"
+          "value": "scored"
         }
-      ],
-      "color": "#e0e0e0"
+      ]
     },
     {
       "techniqueID": "T1053.003",
@@ -273,10 +271,10 @@
     },
     {
       "techniqueID": "T1105",
-      "score": 0,
+      "score": 100,
       "enabled": true,
       "showSubtechniques": false,
-      "comment": "weight 6; coverage 0%; scenarios: t1105-certutil-bitsadmin-download; fixtures pending",
+      "comment": "weight 6; coverage 100%; scenarios: t1105-certutil-bitsadmin-download",
       "metadata": [
         {
           "name": "weight",
@@ -284,7 +282,7 @@
         },
         {
           "name": "coverage",
-          "value": "0.00"
+          "value": "1.00"
         },
         {
           "name": "rules",
@@ -292,10 +290,9 @@
         },
         {
           "name": "status",
-          "value": "pending"
+          "value": "scored"
         }
-      ],
-      "color": "#e0e0e0"
+      ]
     },
     {
       "techniqueID": "T1530",
@@ -446,7 +443,7 @@
   "metadata": [
     {
       "name": "generated_at",
-      "value": "2026-11-10T23:04:29.477851+00:00"
+      "value": "2026-11-10T23:09:25.034561+00:00"
     },
     {
       "name": "tripline_version",

@@ -123,7 +123,7 @@ footer { margin-top: 36px; color: var(--ink-3); font-size: 12px; }
   <div>
     <h1>tripline coverage report</h1>
     <p class="sub">Sigma rules replayed against recorded ATT&amp;CK emulation telemetry.
-      Generated 2026-11-10 23:04 UTC by tripline 0.2.1.</p>
+      Generated 2026-11-10 23:09 UTC by tripline 0.2.1.</p>
   </div>
   <span class="gate ok" role="status"><span aria-hidden="true">&#10003;</span> Gate passed</span>
 </header>
@@ -131,18 +131,18 @@ footer { margin-top: 36px; color: var(--ink-3); font-size: 12px; }
 <section class="tiles" aria-label="Headline numbers">
   <div class="tile">
     <div class="k">Weighted coverage, all scenarios</div>
-    <div class="v">47%</div>
+    <div class="v">68%</div>
     <div class="n">pending scenarios count as zero</div>
   </div>
   <div class="tile">
     <div class="k">Weighted coverage, scenarios with fixtures</div>
     <div class="v">100%</div>
-    <div class="n">7 of 14 scenarios have fixtures</div>
+    <div class="n">10 of 14 scenarios have fixtures</div>
   </div>
   <div class="tile">
     <div class="k">Scenarios</div>
-    <div class="v">7<span style="font-size:15px;color:var(--ink-3)"> / 14 pass</span></div>
-    <div class="n">0 failed, 7 pending</div>
+    <div class="v">10<span style="font-size:15px;color:var(--ink-3)"> / 14 pass</span></div>
+    <div class="n">0 failed, 4 pending</div>
   </div>
   <div class="tile">
     <div class="k">Expected rules</div>
@@ -153,12 +153,12 @@ footer { margin-top: 36px; color: var(--ink-3); font-size: 12px; }
 
 <section class="split" aria-label="Prevalence weight by status">
   <div class="k" style="color:var(--ink-2);font-size:12px">Prevalence weight points (62 total, weight 1-10 per technique)</div>
-  <div class="bar" role="img" aria-label="29 passed, 0 failed, 33 pending weight points">
-<span class="p" style="width:46.77%" title="passed: 29 points"></span><span class="q" style="width:53.23%" title="pending: 33 points"></span>  </div>
+  <div class="bar" role="img" aria-label="42 passed, 0 failed, 20 pending weight points">
+<span class="p" style="width:67.74%" title="passed: 42 points"></span><span class="q" style="width:32.26%" title="pending: 20 points"></span>  </div>
   <div class="legend">
-    <span><i class="sw p"></i>Passed 29</span>
+    <span><i class="sw p"></i>Passed 42</span>
     <span><i class="sw f"></i>Failed 0</span>
-    <span><i class="sw q"></i>Pending (no fixtures) 33</span>
+    <span><i class="sw q"></i>Pending (no fixtures) 20</span>
   </div>
 </section>
 
@@ -245,24 +245,24 @@ rules: 1 expected      </div>
         </ul>
       </details>
     </article>
-    <article class="cell pending" title="t1047-wmic-process-call-create">
+    <article class="cell passed" title="t1047-wmic-process-call-create">
       <div class="tid">T1047</div>
       <div class="nm">WMI: wmic process call create</div>
       <div class="meta">
-        <span class="st pending">&#9675; Pending</span>
+        <span class="st passed">&#10003; Pass</span>
         <span class="chip">Windows</span>
       </div>
       <div class="meta" style="margin-top:4px">
         <span class="w" title="prevalence weight 4 of 10">weight 4 <i><b style="width:40%"></b></i></span>
       </div>
       <div class="meta" style="margin-top:4px">
-rules: 1 expected      </div>
+rules fired: 1/1 &middot; 12 events      </div>
       <details>
         <summary>Rule evidence</summary>
         <ul class="ev">
           <li>
-<span class="na">&#9675;</span>            Process Creation Attempt via Wmic.EXE<br>
-            <span class="na">no fixtures</span>
+<span class="ok">&#10003;</span>            Process Creation Attempt via Wmic.EXE<br>
+            <span class="na">1/5 applicable events</span>
           </li>
         </ul>
       </details>
@@ -445,28 +445,28 @@ rules: 1 expected      </div>
   </div>
   <div class="col">
     <h3>Credential Access <small>1</small></h3>
-    <article class="cell pending" title="t1003-001-lsass-memory-dump">
+    <article class="cell passed" title="t1003-001-lsass-memory-dump">
       <div class="tid">T1003.001</div>
       <div class="nm">OS Credential Dumping: LSASS memory via comsvcs MiniDump</div>
       <div class="meta">
-        <span class="st pending">&#9675; Pending</span>
+        <span class="st passed">&#10003; Pass</span>
         <span class="chip">Windows</span>
       </div>
       <div class="meta" style="margin-top:4px">
         <span class="w" title="prevalence weight 3 of 10">weight 3 <i><b style="width:30%"></b></i></span>
       </div>
       <div class="meta" style="margin-top:4px">
-rules: 2 expected      </div>
+rules fired: 2/2 &middot; 70 events      </div>
       <details>
         <summary>Rule evidence</summary>
         <ul class="ev">
           <li>
-<span class="na">&#9675;</span>            Process Memory Dump Via Comsvcs.DLL<br>
-            <span class="na">no fixtures</span>
+<span class="ok">&#10003;</span>            Process Memory Dump Via Comsvcs.DLL<br>
+            <span class="na">2/6 applicable events</span>
           </li>
           <li>
-<span class="na">&#9675;</span>            Potential Credential Dumping Activity Via LSASS<br>
-            <span class="na">no fixtures</span>
+<span class="ok">&#10003;</span>            Potential Credential Dumping Activity Via LSASS<br>
+            <span class="na">1/4 applicable events</span>
           </li>
         </ul>
       </details>
@@ -503,28 +503,28 @@ rules fired: 2/2 &middot; 10 events      </div>
   </div>
   <div class="col">
     <h3>Command and Control <small>1</small></h3>
-    <article class="cell pending" title="t1105-certutil-bitsadmin-download">
+    <article class="cell passed" title="t1105-certutil-bitsadmin-download">
       <div class="tid">T1105</div>
       <div class="nm">Ingress Tool Transfer: certutil and bitsadmin downloads</div>
       <div class="meta">
-        <span class="st pending">&#9675; Pending</span>
+        <span class="st passed">&#10003; Pass</span>
         <span class="chip">Windows</span>
       </div>
       <div class="meta" style="margin-top:4px">
         <span class="w" title="prevalence weight 6 of 10">weight 6 <i><b style="width:60%"></b></i></span>
       </div>
       <div class="meta" style="margin-top:4px">
-rules: 2 expected      </div>
+rules fired: 2/2 &middot; 33 events      </div>
       <details>
         <summary>Rule evidence</summary>
         <ul class="ev">
           <li>
-<span class="na">&#9675;</span>            Suspicious Download Via Certutil.EXE<br>
-            <span class="na">no fixtures</span>
+<span class="ok">&#10003;</span>            Suspicious Download Via Certutil.EXE<br>
+            <span class="na">1/9 applicable events</span>
           </li>
           <li>
-<span class="na">&#9675;</span>            File Download Via Bitsadmin<br>
-            <span class="na">no fixtures</span>
+<span class="ok">&#10003;</span>            File Download Via Bitsadmin<br>
+            <span class="na">1/9 applicable events</span>
           </li>
         </ul>
       </details>
@@ -602,11 +602,11 @@ rules: 2 expected      </div>
       <td>Command and Control</td>
       <td>Windows</td>
       <td class="num">6</td>
-      <td><span class="st pending">&#9675; Pending</span></td>
+      <td><span class="st passed">&#10003; Pass</span></td>
       <td>
         <ul class="rules">
-          <li>Suspicious Download Via Certutil.EXE <span style="color:var(--ink-3)">(no fixtures)</span></li>
-          <li>File Download Via Bitsadmin <span style="color:var(--ink-3)">(no fixtures)</span></li>
+          <li>Suspicious Download Via Certutil.EXE <span style="color:var(--ink-3)">(1/9)</span></li>
+          <li>File Download Via Bitsadmin <span style="color:var(--ink-3)">(1/9)</span></li>
         </ul>
       </td>
     </tr>
@@ -616,10 +616,10 @@ rules: 2 expected      </div>
       <td>Execution</td>
       <td>Windows</td>
       <td class="num">4</td>
-      <td><span class="st pending">&#9675; Pending</span></td>
+      <td><span class="st passed">&#10003; Pass</span></td>
       <td>
         <ul class="rules">
-          <li>Process Creation Attempt via Wmic.EXE <span style="color:var(--ink-3)">(no fixtures)</span></li>
+          <li>Process Creation Attempt via Wmic.EXE <span style="color:var(--ink-3)">(1/5)</span></li>
         </ul>
       </td>
     </tr>
@@ -629,11 +629,11 @@ rules: 2 expected      </div>
       <td>Credential Access</td>
       <td>Windows</td>
       <td class="num">3</td>
-      <td><span class="st pending">&#9675; Pending</span></td>
+      <td><span class="st passed">&#10003; Pass</span></td>
       <td>
         <ul class="rules">
-          <li>Process Memory Dump Via Comsvcs.DLL <span style="color:var(--ink-3)">(no fixtures)</span></li>
-          <li>Potential Credential Dumping Activity Via LSASS <span style="color:var(--ink-3)">(no fixtures)</span></li>
+          <li>Process Memory Dump Via Comsvcs.DLL <span style="color:var(--ink-3)">(2/6)</span></li>
+          <li>Potential Credential Dumping Activity Via LSASS <span style="color:var(--ink-3)">(1/4)</span></li>
         </ul>
       </td>
     </tr>

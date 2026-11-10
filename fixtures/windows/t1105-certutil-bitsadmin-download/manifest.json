@@ -1,0 +1,21 @@
+{
+  "scenario_id": "t1105-certutil-bitsadmin-download",
+  "run_guid": "b0461db3-9566-444b-aad4-ad2a80011fe3",
+  "source": "https://github.com/samiali38183/tripline/actions/runs/42917025570",
+  "events": 33,
+  "atomic_tests": {
+    "dd3b61dd-7bbc-48cd-ab51-49ad1a776df0": 16,
+    "a1921cd3-9a2d-47d5-a891-f1d0f2a7a31b": 17
+  },
+  "events_by_channel_and_id": {
+    "Microsoft-Windows-Sysmon/Operational:1": 9,
+    "Microsoft-Windows-Sysmon/Operational:10": 6,
+    "Microsoft-Windows-Sysmon/Operational:22": 3,
+    "Microsoft-Windows-Sysmon/Operational:3": 3,
+    "Security:4688": 12
+  },
+  "time_window": [
+    "2026-11-10T22:57:16.7853278Z",
+    "2026-11-10T22:57:24.4354593Z"
+  ]
+}

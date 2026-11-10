@@ -1,0 +1,18 @@
+{
+  "scenario_id": "t1047-wmic-process-call-create",
+  "run_guid": "b0461db3-9566-444b-aad4-ad2a80011fe3",
+  "source": "https://github.com/samiali38183/tripline/actions/runs/42917025570",
+  "events": 12,
+  "atomic_tests": {
+    "b3bdfc91-b33e-4c6d-a5c8-d64bee0276b3": 12
+  },
+  "events_by_channel_and_id": {
+    "Microsoft-Windows-PowerShell/Operational:4104": 1,
+    "Microsoft-Windows-Sysmon/Operational:1": 5,
+    "Security:4688": 6
+  },
+  "time_window": [
+    "2026-11-10T22:56:51.7401389Z",
+    "2026-11-10T22:56:52.0497212Z"
+  ]
+}

@@ -12,6 +12,10 @@ emulation:
     - b3bdfc91-b33e-4c6d-a5c8-d64bee0276b3  # ART #5: WMI Execute Local Process
 expected_rules:
   - 526be59f-a573-4eea-b5f7-f0973207634d  # Process Creation Attempt via Wmic.EXE (SigmaHQ)
-fixtures: []  # Phase A2: recorded on a GitHub Actions windows runner
+fixtures:
+  - path: fixtures/windows/t1047-wmic-process-call-create/run.ndjson
+    provenance: recorded
+    source: https://github.com/samiali38183/tripline/actions/runs/42917025570
+    notes: Sysmon, Security 4688 and PowerShell logs on windows-latest (Server 2025), Invoke-AtomicTest between tripline markers; see manifest.json
 notes: >-
   Red Canary 2026 #7.

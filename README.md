@@ -12,8 +12,8 @@ is supposed to fire does not, and scores the result by how common each technique
 | | |
 |---|---|
 | Scenarios | 14 ATT&CK techniques: 4 AWS, 3 Linux, 7 Windows |
-| Gate today | 7 of 7 scenarios with fixtures pass (AWS 4/4, Linux 3/3); 7 Windows pending |
-| Weighted coverage | 47% of all 14 scenarios (29 of 62 prevalence points) |
+| Gate today | 10 of 10 scenarios with fixtures pass (AWS 4/4, Linux 3/3, Windows 3/7); 4 Windows pending |
+| Weighted coverage | 68% of all 14 scenarios (42 of 62 prevalence points) |
 | Gaps found | SigmaHQ *Setuid and Setgid* matched 0 of 36 Atomic events ([F-001](docs/findings.md)); 3 Windows rules that miss their Atomic tests ([F-003](docs/findings.md)) |
 | Code | 186 tests, 89% line+branch coverage, ruff and mypy strict clean |
 
@@ -60,11 +60,11 @@ All figures below were reproduced from a clean checkout on 2026-11-10.
 |---|---|---|---|
 | AWS | CloudTrail | **4 / 4** | Stratus Red Team detonation logs and the flaws.cloud CloudTrail dataset (public, replayed) |
 | Linux | auditd (execve + cron watches) | **3 / 3** | Atomic Red Team on a GitHub-hosted `ubuntu-latest` runner |
-| Windows | Sysmon / Security / PowerShell | **0 / 7 (pending)** | Workflow and collector exist; no fixtures committed. See [Limitations](#limitations) |
+| Windows | Sysmon / Security / PowerShell | **3 / 7** (4 pending) | Atomic Red Team on a GitHub-hosted `windows-latest` runner ([run 42917025570](https://github.com/samiali38183/tripline/actions/runs/42917025570)): T1003.001, T1047, T1105 pass; see [Limitations](#limitations) |
 
-- **Prevalence-weighted coverage: 47% of all 14 scenarios, 100% of the scenarios that have
-  fixtures** (29 of 62 weight points; pending scenarios count as zero in the headline figure).
-- `tripline replay --all`: 7 passed, 0 failed, 7 pending; 26 rules compiled, 22 expected rules.
+- **Prevalence-weighted coverage: 68% of all 14 scenarios, 100% of the scenarios that have
+  fixtures** (42 of 62 weight points; pending scenarios count as zero in the headline figure).
+- `tripline replay --all`: 10 passed, 0 failed, 4 pending; 26 rules compiled, 22 expected rules.
 - Test suite: **186 tests, 89% line+branch coverage**. `ruff format`, `ruff check` and `mypy`
   (strict) are clean; `sigma check rules/` reports 0 errors and 1 medium tagging issue (see
   [Limitations](#limitations)).
@@ -229,7 +229,7 @@ the scorecard as a comment.
 
 ## Example output
 
-`tripline replay --all` (Linux and AWS scenarios shown; the 7 Windows scenarios print as
+`tripline replay --all` (Linux and AWS scenarios shown; the 4 pending Windows scenarios print as
 `PENDING` with `0/0 applicable events`):
 
 ```
@@ -274,10 +274,10 @@ GATE FAILED: 1 scenario(s) missed an expected rule: t1078-004-console-login-with
 | AWS | T1098.001 Additional Cloud Credentials - IAM backdoor key | Stratus detonation replay | 3 | pass |
 | Win | T1059.001 PowerShell - encoded command + download cradle | ART `0d181431`, `cc50fa2a` | 9 | pending |
 | Win | T1059.003 Command Shell - suspicious output redirect | ART `d0eb3597`, `00682c9f` | 8 | pending |
-| Win | T1105 Ingress Tool Transfer - certutil / bitsadmin | ART `dd3b61dd`, `a1921cd3` | 6 | pending |
-| Win | T1047 WMI - `wmic process call create` | ART `b3bdfc91` | 4 | pending |
+| Win | T1105 Ingress Tool Transfer - certutil / bitsadmin | ART `dd3b61dd`, `a1921cd3` | 6 | pass |
+| Win | T1047 WMI - `wmic process call create` | ART `b3bdfc91` | 4 | pass |
 | Win | T1027 Obfuscated PowerShell one-liner | ART `8b3f4ed6`, `6683baf0` | 1 | pending |
-| Win | T1003.001 LSASS Memory - comsvcs MiniDump | ART `2536dee2` | 3 | pending |
+| Win | T1003.001 LSASS Memory - comsvcs MiniDump | ART `2536dee2` | 3 | pass |
 | Win | T1053.005 Scheduled Task persistence | ART `42f53695` | 2 | pending |
 | Linux | T1053.003 Cron persistence | ART `078e69eb`, `435057fb` | 2 | pass |
 | Linux | T1070.003 Clear Command History | ART `a934276e`, `b1251c35` | 2 | pass |
@@ -311,18 +311,16 @@ Stated plainly so the numbers are read correctly (full text in
   on at least one event. There is no benign corpus yet, so a rule that fires on everything also
   passes. There are no evasion variants yet, so robustness is untested beyond what F-001 showed.
 - **Small, project-chosen coverage.** 14 techniques; ATT&CK Enterprise has 600+ (sub-)techniques.
-  The 47% is progress against this repo's own scenario list weighted by prevalence, not a claim
+  The 68% is progress against this repo's own scenario list weighted by prevalence, not a claim
   about any organisation's coverage.
-- **Windows is not done.** No Windows fixtures are committed. The `emulate-windows` workflow
-  has run three times on `windows-latest` and failed its gate each time. The latest
-  ([run 42658659666](https://github.com/samiali38183/tripline/actions/runs/42658659666)) passed
-  1 of 7 (T1105). [F-003](docs/findings.md) breaks down the other 6: three were runner problems
-  (Sysmon config logs no lsass access, WMIC missing on Server 2025, a PowerShellGet failure in
-  an Atomic prereq), now addressed in the workflow but not yet re-run; the other three are
-  vendored rules that do not match the chosen Atomic tests, plus one scenario that points at a
-  manual-only Atomic test. Those need a scenario decision, not a workflow fix. Two tripline rules
-  for the T1059.003 and T1053.005 gaps exist but are only tested on hand-written synthetic
-  events; they count for nothing until a recorded Windows run confirms them.
+- **Windows is partly done.** The `emulate-windows` workflow's latest run
+  ([run 42917025570](https://github.com/samiali38183/tripline/actions/runs/42917025570)) passed 3 of 7
+  scenarios (T1003.001, T1047, T1105); their recorded telemetry is committed and counted. The other four
+  are not counted. [F-003](docs/findings.md) explains why: the T1059.001 scenario points at a manual-only
+  Atomic test and its one passing rule matched the test wrapper's parameter text, not an encoded command;
+  the T1027 rule only matches one download cradle; the T1053.005 and T1059.003 vendored rules do not match
+  the chosen tests. Two tripline rules for the T1059.003 and T1053.005 gaps exist but are only tested on
+  hand-written synthetic events, so they count for nothing until a recorded Windows run confirms them.
 - **The cloud plane is replayed, not detonated by this project.** The records are real
   CloudTrail from public datasets, but the three cloud rules written for this project sit
   alongside fixtures from the same datasets (two of them cite flaws.cloud, the source of the
@@ -344,8 +342,8 @@ Stated plainly so the numbers are read correctly (full text in
 
 Items below are stated in the repo's docs as planned, not done:
 
-- Re-run the Windows workflow with the F-003 fixes, resolve the three rule/atomic mismatches,
-  and commit fixtures for the 7 pending scenarios.
+- Resolve the remaining Windows rule/atomic mismatches (F-003) and commit fixtures for the 4 pending
+  Windows scenarios.
 - Evasion variants (casing, encoding, argument order) to score how robust each rule is.
 - A benign log set to measure false positives per rule.
 - Parity test against a real backend (OpenSearch) for the Python evaluator.
