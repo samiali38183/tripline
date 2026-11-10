@@ -3,12 +3,28 @@
 [![ci](https://github.com/samiali38183/tripline/actions/workflows/ci.yml/badge.svg)](https://github.com/samiali38183/tripline/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![python](https://img.shields.io/badge/python-3.12-blue)
+[![weighted coverage](docs/coverage.svg)](docs/scorecard.md)
 
-**A CI gate for detection content.** tripline replays recorded ATT&CK emulation telemetry
-(auditd, CloudTrail) through your Sigma rules in a pull request, fails the build when a rule that
+tripline is a CI gate for detection rules. It replays recorded ATT&CK emulation telemetry
+(auditd, CloudTrail) through Sigma rules on every pull request, fails the build when a rule that
 is supposed to fire does not, and scores the result by how common each technique is in the wild.
 
-It already caught a real gap: the stock SigmaHQ *Setuid and Setgid* rule matched **0 of 36**
+| | |
+|---|---|
+| Scenarios | 14 ATT&CK techniques: 4 AWS, 3 Linux, 7 Windows |
+| Gate today | 7 of 7 scenarios with fixtures pass (AWS 4/4, Linux 3/3); 7 Windows pending |
+| Weighted coverage | 47% of all 14 scenarios (29 of 62 prevalence points) |
+| Gaps found | SigmaHQ *Setuid and Setgid* matched 0 of 36 Atomic events ([F-001](docs/findings.md)); 3 Windows rules that miss their Atomic tests ([F-003](docs/findings.md)) |
+| Code | 113 tests, 89% line+branch coverage, ruff and mypy strict clean |
+
+[![tripline coverage report](docs/img/report.png)](docs/report.html)
+
+The report above is `tripline report` run on the committed scorecard: an ATT&CK-style matrix by
+tactic, colored by pass/fail/pending, with prevalence weight and per-rule hit counts. It is one
+self-contained HTML file ([`docs/report.html`](docs/report.html)), and
+[`pages.yml`](.github/workflows/pages.yml) rebuilds and publishes it to GitHub Pages from `main`.
+
+It already caught a real gap: the stock SigmaHQ *Setuid and Setgid* rule matched 0 of 36
 events recorded from Atomic Red Team's own T1548.001 tests. A replacement rule matches 2 of 36
 ([finding F-001](docs/findings.md)).
 
@@ -38,7 +54,7 @@ rules and exits non-zero if an expected rule misses.
 
 ## Current results
 
-All figures below were reproduced from a clean checkout on 2026-11-05.
+All figures below were reproduced from a clean checkout on 2026-11-10.
 
 | Plane | Telemetry | Scenarios passing | Source of the fixtures |
 |---|---|---|---|
@@ -49,12 +65,13 @@ All figures below were reproduced from a clean checkout on 2026-11-05.
 - **Prevalence-weighted coverage: 47% of all 14 scenarios, 100% of the scenarios that have
   fixtures** (29 of 62 weight points; pending scenarios count as zero in the headline figure).
 - `tripline replay --all`: 7 passed, 0 failed, 7 pending; 24 rules compiled, 22 expected rules.
-- Test suite: **104 tests, 88% line+branch coverage**. `ruff format`, `ruff check` and `mypy`
+- Test suite: **113 tests, 89% line+branch coverage**. `ruff format`, `ruff check` and `mypy`
   (strict) are clean; `sigma check rules/` reports 0 errors and 1 medium tagging issue (see
   [Limitations](#limitations)).
 - The scorecard also exports an ATT&CK Navigator layer (v4.5, ATT&CK v16):
   [`docs/navigator_layer.json`](docs/navigator_layer.json), plus
-  [`docs/scorecard.md`](docs/scorecard.md) and [`docs/scorecard.json`](docs/scorecard.json).
+  [`docs/scorecard.md`](docs/scorecard.md), [`docs/scorecard.json`](docs/scorecard.json), the HTML
+  report [`docs/report.html`](docs/report.html) and the badge [`docs/coverage.svg`](docs/coverage.svg).
 
 ### What it caught
 
@@ -112,7 +129,7 @@ flowchart LR
 4. **Replay and scoring** (`tripline/replay.py`, `tripline/scorer.py`): per-rule hit counts
    reported as `N/M applicable events`, per-scenario pass/fail, per-technique weighted coverage.
 5. **Outputs**: `scorecard.json`, JUnit XML, Markdown (posted as a PR comment by CI), Navigator
-   layer.
+   layer, and a static HTML report plus SVG badge (`tripline/report.py`, no JavaScript, no CDN).
 
 ### Telemetry capture
 
@@ -191,6 +208,7 @@ tripline replay t1548-001-setuid-setgid --show-events
 tripline score -o docs/scorecard.json --junit junit.xml --markdown scorecard.md
 tripline heatmap docs/scorecard.json -o docs/navigator_layer.json   # ATT&CK Navigator layer v4.5
 tripline docs docs/scorecard.json                                   # Markdown scorecard page
+tripline report docs/scorecard.json --html report.html --badge coverage.svg   # HTML matrix + badge
 tripline atomics linux                              # Atomic test GUIDs the Linux workflow runs
 ```
 
@@ -292,11 +310,13 @@ Stated plainly so the numbers are read correctly (full text in
   The 47% is progress against this repo's own scenario list weighted by prevalence, not a claim
   about any organisation's coverage.
 - **Windows is not done.** No Windows fixtures are committed. The `emulate-windows` workflow
-  exists and has been run twice on `windows-latest`; both runs failed their gate. In the latest
-  ([run 41856635432](https://github.com/samiali38183/tripline/actions/runs/41856635432)) 1 of 7
-  scenarios passed (T1105) and 6 failed, but the log also shows provisioning errors
-  (`Install-Module` and an Atomic helper function not found), so those misses are not yet
-  trustworthy verdicts on the rules.
+  has run three times on `windows-latest` and failed its gate each time. The latest
+  ([run 42658659666](https://github.com/samiali38183/tripline/actions/runs/42658659666)) passed
+  1 of 7 (T1105). [F-003](docs/findings.md) breaks down the other 6: three were runner problems
+  (Sysmon config logs no lsass access, WMIC missing on Server 2025, a PowerShellGet failure in
+  an Atomic prereq), now addressed in the workflow but not yet re-run; the other three are
+  vendored rules that do not match the chosen Atomic tests, plus one scenario that points at a
+  manual-only Atomic test. Those need a scenario decision, not a workflow fix.
 - **The cloud plane is replayed, not detonated by this project.** The records are real
   CloudTrail from public datasets, but the three cloud rules written for this project sit
   alongside fixtures from the same datasets (two of them cite flaws.cloud, the source of the
@@ -318,7 +338,8 @@ Stated plainly so the numbers are read correctly (full text in
 
 Items below are stated in the repo's docs as planned, not done:
 
-- Get the Windows workflow to a passing run and commit fixtures for the 7 pending scenarios.
+- Re-run the Windows workflow with the F-003 fixes, resolve the three rule/atomic mismatches,
+  and commit fixtures for the 7 pending scenarios.
 - Evasion variants (casing, encoding, argument order) to score how robust each rule is.
 - A benign log set to measure false positives per rule.
 - Parity test against a real backend (OpenSearch) for the Python evaluator.
@@ -333,9 +354,11 @@ rules/sigma/      Sigma rules by plane (vendored SigmaHQ + tripline_*), DRL 1.1 
 fixtures/         recorded NDJSON telemetry + manifest.json (aws, linux)
 tripline/         CLI, compiler, router, replay, scorer, heatmap, collectors
 scripts/windows/  winlog NDJSON exporter used by the Windows workflow
-tests/            104 tests
-docs/             findings, limitations, threat model, gate proof, committed scorecard + layer
-.github/workflows ci.yml (lint/types/tests + gate), emulate-linux.yml, emulate-windows.yml
+tests/            113 tests
+docs/             findings, limitations, threat model, gate proof, committed scorecard, layer,
+                  HTML report, badge
+.github/workflows ci.yml (lint/types/tests + gate), pages.yml (HTML report to Pages),
+                  emulate-linux.yml, emulate-windows.yml
 ```
 
 ## License

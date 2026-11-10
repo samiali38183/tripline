@@ -34,7 +34,7 @@ is a recall check on a known-good recording. It says nothing about:
   There is no file-integrity, network or syslog telemetry, and the runner is a single-user VM, so
   rules that depend on user context or lateral activity cannot be exercised there.
 * **Windows** fixtures (when present) are recorded on `windows-latest` with Sysmon
-  (SwiftOnSecurity config), Security 4688/4698 and PowerShell 4103/4104. Defender is relaxed for
+  (SwiftOnSecurity config plus an lsass ProcessAccess include), Security 4688/4698 and PowerShell 4103/4104. Defender is relaxed for
   the run, so a tactic that Defender would block on a hardened host still produces telemetry here.
   Endpoint-protection evasion is out of scope.
 * Runner noise is real: 20-40 wrapper processes per atomic. Scores are reported as "N of M

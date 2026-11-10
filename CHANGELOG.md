@@ -1,6 +1,35 @@
 # Changelog
 
-## Unreleased - Phase A2 (Linux)
+## 0.2.0 - 2026-11-10
+
+### Reporting
+
+* `tripline report scorecard.json --html report.html --badge coverage.svg`: one self-contained
+  HTML file (inline CSS, no JavaScript, no CDN) with headline numbers, prevalence weight points by
+  status, an ATT&CK-style matrix of scenarios by tactic (pass / fail / pending, weight, rules
+  fired, per-rule `hits/applicable` evidence) and a scenario table. Light and dark mode.
+  Optional flat SVG badge of weighted coverage.
+* `scorecard.json` now records each scenario's `tactic` and per-rule `evidence` (hits, applicable
+  events, error). Both default to empty, so older scorecards still load.
+* `.github/workflows/pages.yml`: builds the report from a fresh replay of `main` and uploads it as
+  an artifact; deploys to GitHub Pages only when the repository variable `PAGES_ENABLED` is
+  `true`. `ci.yml` is unchanged and does not depend on it.
+* Committed `docs/report.html`, `docs/coverage.svg` and `docs/img/report.png` (README).
+* 9 new tests (`tests/test_report.py`): 113 tests, 89 % line+branch coverage.
+
+### Windows plane
+
+* `scripts/windows/Export-TriplineEvents.ps1`, `tripline windows collect --replay` and the
+  `emulate-windows` workflow (Sysmon, Security 4688/4698, PowerShell 4104); `tripline atomics
+  <plane>` lists the Atomic tests the emulation workflows run.
+* `emulate-windows.yml` fixes from the failed scheduled run 42658659666 (finding F-003): the
+  Sysmon config now logs ProcessAccess to `lsass.exe` (the SwiftOnSecurity config logs none), the
+  WMIC optional feature is installed on the Server 2025 image, AtomicTestHarnesses is installed
+  from Windows PowerShell, and the atomics run under `shell: powershell`. Not yet re-run.
+* `docs/findings.md` F-003: why 6 of 7 Windows scenarios failed, split into runner problems
+  (fixed above) and rule/atomic mismatches that still need a scenario decision.
+
+### Linux plane (Phase A2)
 
 * `tripline/linux/collect.py`: auditd log parser (records merged by serial, EXECVE hex decoding,
   chunked-argument joining, `TargetFilename` from PATH CREATE), tripline marker slicing, per-scenario
