@@ -183,6 +183,28 @@ def docs(
     typer.echo(f"written {output}")
 
 
+@app.command()
+def report(
+    scorecard: Annotated[Path, typer.Argument(help="scorecard.json produced by `score`.")],
+    html: Annotated[
+        Path | None, typer.Option("--html", help="Write a self-contained HTML report here.")
+    ] = Path("report.html"),
+    badge: Annotated[
+        Path | None, typer.Option("--badge", help="Also write an SVG coverage badge here.")
+    ] = None,
+) -> None:
+    """Render scorecard.json as an HTML coverage matrix (and optionally an SVG badge)."""
+    from tripline.report import write_badge, write_html
+
+    card = read_scorecard(scorecard)
+    if html is not None:
+        write_html(card, html)
+        typer.echo(f"html report written to {html}")
+    if badge is not None:
+        write_badge(card, badge)
+        typer.echo(f"badge written to {badge}")
+
+
 @cloud_app.command("build")
 def cloud_build(
     root: RootOpt = Path(),

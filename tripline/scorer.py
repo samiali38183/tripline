@@ -25,6 +25,7 @@ from tripline.events import write_text_lf
 from tripline.models import (
     GateResult,
     ReplayResult,
+    RuleEvidence,
     RuleScore,
     Scenario,
     ScenarioScore,
@@ -139,6 +140,7 @@ def _score_scenario(scenario: Scenario, result: ReplayResult) -> ScenarioScore:
         name=scenario.name,
         plane=scenario.plane,
         technique=scenario.technique,
+        tactic=scenario.tactic,
         weight=scenario.weight,
         status=result.status,
         provenance=sorted({f.provenance for f in scenario.fixtures}),
@@ -146,6 +148,17 @@ def _score_scenario(scenario: Scenario, result: ReplayResult) -> ScenarioScore:
         expected_rules=list(scenario.expected_rules),
         fired_rules=fired,
         missing_rules=[] if result.status is ScenarioStatus.PENDING else result.missing_rules,
+        evidence=[
+            RuleEvidence(
+                rule_id=h.rule_id,
+                title=h.title,
+                fired=h.fired,
+                hits=h.hits,
+                evaluated=h.evaluated,
+                error=h.error,
+            )
+            for h in result.rules
+        ],
     )
 
 

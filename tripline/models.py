@@ -203,6 +203,17 @@ class RuleScore(BaseModel):
     """Detected / (detected + missed). ``None`` when every expecting scenario is pending."""
 
 
+class RuleEvidence(BaseModel):
+    """Hit counts for one expected rule in one scenario, kept for the HTML report."""
+
+    rule_id: str
+    title: str | None
+    fired: bool
+    hits: int
+    evaluated: int
+    error: str | None = None
+
+
 class ScenarioScore(BaseModel):
     """Per-scenario view: did every expected rule fire on the committed fixtures?"""
 
@@ -210,6 +221,8 @@ class ScenarioScore(BaseModel):
     name: str
     plane: Plane
     technique: str
+    tactic: str = ""
+    """ATT&CK tactic short name. Empty in scorecards written before 0.2.0."""
     weight: int
     status: ScenarioStatus
     provenance: list[Provenance]
@@ -217,6 +230,8 @@ class ScenarioScore(BaseModel):
     expected_rules: list[str]
     fired_rules: list[str]
     missing_rules: list[str]
+    evidence: list[RuleEvidence] = Field(default_factory=list)
+    """Per-rule ``hits/evaluated`` counts. Empty in scorecards written before 0.2.0."""
 
 
 class TechniqueCoverage(BaseModel):
