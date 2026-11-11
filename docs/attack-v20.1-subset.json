@@ -1,0 +1,214 @@
+{
+  "source": "https://github.com/mitre-attack/attack-stix-data/blob/master/enterprise-attack/enterprise-attack-20.1.json",
+  "attack_release": "v20 (2026-10-13)",
+  "stix_collection_version": "20.1",
+  "stix_modified": "2026-11-05",
+  "stix_sha256": "539a843a7b53ed9749740b2123dddae3726b1a4831841c32aca740b011b910b5",
+  "note": "Subset of the STIX bundle: only the techniques tripline scenarios and known gaps reference, plus the tactic list in matrix order. Revoked objects are excluded; T1562.008 was revoked and replaced by T1685.002.",
+  "tactics_matrix_order": [
+    {
+      "shortname": "reconnaissance",
+      "name": "Reconnaissance",
+      "id": "TA0043"
+    },
+    {
+      "shortname": "resource-development",
+      "name": "Resource Development",
+      "id": "TA0042"
+    },
+    {
+      "shortname": "initial-access",
+      "name": "Initial Access",
+      "id": "TA0001"
+    },
+    {
+      "shortname": "execution",
+      "name": "Execution",
+      "id": "TA0002"
+    },
+    {
+      "shortname": "persistence",
+      "name": "Persistence",
+      "id": "TA0003"
+    },
+    {
+      "shortname": "privilege-escalation",
+      "name": "Privilege Escalation",
+      "id": "TA0004"
+    },
+    {
+      "shortname": "stealth",
+      "name": "Stealth",
+      "id": "TA0005"
+    },
+    {
+      "shortname": "defense-impairment",
+      "name": "Defense Impairment",
+      "id": "TA0112"
+    },
+    {
+      "shortname": "credential-access",
+      "name": "Credential Access",
+      "id": "TA0006"
+    },
+    {
+      "shortname": "discovery",
+      "name": "Discovery",
+      "id": "TA0007"
+    },
+    {
+      "shortname": "lateral-movement",
+      "name": "Lateral Movement",
+      "id": "TA0008"
+    },
+    {
+      "shortname": "collection",
+      "name": "Collection",
+      "id": "TA0009"
+    },
+    {
+      "shortname": "command-and-control",
+      "name": "Command and Control",
+      "id": "TA0011"
+    },
+    {
+      "shortname": "exfiltration",
+      "name": "Exfiltration",
+      "id": "TA0010"
+    },
+    {
+      "shortname": "impact",
+      "name": "Impact",
+      "id": "TA0040"
+    }
+  ],
+  "techniques": {
+    "T1003.001": {
+      "name": "LSASS Memory",
+      "tactics": [
+        "credential-access"
+      ],
+      "version": "1.5"
+    },
+    "T1027": {
+      "name": "Obfuscated Files or Information",
+      "tactics": [
+        "stealth"
+      ],
+      "version": "2.0"
+    },
+    "T1047": {
+      "name": "Windows Management Instrumentation",
+      "tactics": [
+        "execution"
+      ],
+      "version": "1.6"
+    },
+    "T1053.003": {
+      "name": "Cron",
+      "tactics": [
+        "execution",
+        "persistence",
+        "privilege-escalation"
+      ],
+      "version": "1.3"
+    },
+    "T1053.005": {
+      "name": "Scheduled Task",
+      "tactics": [
+        "execution",
+        "persistence",
+        "privilege-escalation"
+      ],
+      "version": "1.8"
+    },
+    "T1059.001": {
+      "name": "PowerShell",
+      "tactics": [
+        "execution"
+      ],
+      "version": "1.6"
+    },
+    "T1059.003": {
+      "name": "Windows Command Shell",
+      "tactics": [
+        "execution"
+      ],
+      "version": "1.5"
+    },
+    "T1070.003": {
+      "name": "Clear Command History",
+      "tactics": [
+        "stealth"
+      ],
+      "version": "2.0"
+    },
+    "T1078.004": {
+      "name": "Cloud Accounts",
+      "tactics": [
+        "stealth",
+        "persistence",
+        "privilege-escalation",
+        "initial-access"
+      ],
+      "version": "2.0"
+    },
+    "T1098.001": {
+      "name": "Additional Cloud Credentials",
+      "tactics": [
+        "persistence",
+        "privilege-escalation"
+      ],
+      "version": "2.8"
+    },
+    "T1105": {
+      "name": "Ingress Tool Transfer",
+      "tactics": [
+        "command-and-control"
+      ],
+      "version": "2.6"
+    },
+    "T1114.003": {
+      "name": "Email Forwarding Rule",
+      "tactics": [
+        "collection"
+      ],
+      "version": "1.4"
+    },
+    "T1204.004": {
+      "name": "Malicious Copy and Paste",
+      "tactics": [
+        "execution"
+      ],
+      "version": "1.1"
+    },
+    "T1530": {
+      "name": "Data from Cloud Storage",
+      "tactics": [
+        "collection"
+      ],
+      "version": "2.2"
+    },
+    "T1548.001": {
+      "name": "Setuid and Setgid",
+      "tactics": [
+        "privilege-escalation"
+      ],
+      "version": "2.0"
+    },
+    "T1564.008": {
+      "name": "Email Hiding Rules",
+      "tactics": [
+        "stealth"
+      ],
+      "version": "2.0"
+    },
+    "T1685.002": {
+      "name": "Disable or Modify Cloud Log",
+      "tactics": [
+        "defense-impairment"
+      ],
+      "version": "1.0"
+    }
+  }
+}

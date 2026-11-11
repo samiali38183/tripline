@@ -1,8 +1,8 @@
 id: t1562-008-cloudtrail-stop
-name: "Impair Defenses: CloudTrail logging stopped"
+name: "Disable or Modify Cloud Log: CloudTrail logging stopped"
 plane: aws
-technique: T1562.008
-tactic: defense-evasion
+technique: T1685.002
+tactic: defense-impairment
 weight: 3
 emulation:
   kind: replay
@@ -17,4 +17,6 @@ fixtures:
     source: https://raw.githubusercontent.com/DataDog/stratus-red-team/main/docs/detonation-logs/aws.defense-evasion.cloudtrail-stop.json
     notes: Stratus detonation log captured with Grimoire (Apache-2.0)
 notes: >-
+  T1562.008 (Disable or Modify Cloud Logs) was revoked in ATT&CK v19 and replaced by T1685.002 (Disable or
+  Modify Cloud Log, Defense Impairment); the vendored SigmaHQ rule still carries the old tag.
   Single StopLogging event; UpdateTrail / DeleteTrail are covered by the same rule.

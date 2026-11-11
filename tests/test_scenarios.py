@@ -139,7 +139,7 @@ def test_committed_scenarios_cover_design_table(repo_root):
     assert techniques == {
         "T1078.004",
         "T1530",
-        "T1562.008",
+        "T1685.002",
         "T1098.001",
         "T1059.001",
         "T1059.003",
@@ -173,3 +173,18 @@ def test_every_cloud_scenario_has_recorded_fixtures(repo_root):
         if scenario.plane is Plane.AWS:
             assert scenario.fixtures, scenario.id
             assert all(f.provenance is Provenance.RECORDED for f in scenario.fixtures)
+
+
+def test_scenario_techniques_and_tactics_match_attack_v20(repo_root):
+    """Each scenario's technique exists (not revoked) in ATT&CK v20.1 and lists its tactic."""
+    import json
+
+    data = json.loads((repo_root / "docs" / "attack-v20.1-subset.json").read_text("utf-8"))
+    known_tactics = {t["shortname"] for t in data["tactics_matrix_order"]}
+    for scenario in load_scenarios(repo_root / "scenarios"):
+        entry = data["techniques"].get(scenario.technique)
+        assert entry is not None, f"{scenario.id}: {scenario.technique} missing or revoked in v20.1"
+        assert scenario.tactic in known_tactics, f"{scenario.id}: unknown tactic {scenario.tactic}"
+        assert scenario.tactic in entry["tactics"], (
+            f"{scenario.id}: {scenario.tactic} not in {entry['tactics']}"
+        )

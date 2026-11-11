@@ -1,5 +1,3 @@
-# Scorecard
-
 **Gate:** passed - 10 passed, 0 failed, 4 pending of 14 scenarios; 22 expected rules.
 **Prevalence-weighted coverage:** 68% of all scenarios, 100% of scenarios with fixtures.
 
@@ -18,6 +16,6 @@
 | t1105-certutil-bitsadmin-download | T1105 | windows | 6 | PASS | 2/2 | 33 |
 | t1530-s3-bucket-exposure | T1530 | aws | 7 | PASS | 2/2 | 10 |
 | t1548-001-setuid-setgid | T1548.001 | linux | 2 | PASS | 1/1 | 84 |
-| t1562-008-cloudtrail-stop | T1562.008 | aws | 3 | PASS | 1/1 | 1 |
+| t1562-008-cloudtrail-stop | T1685.002 | aws | 3 | PASS | 1/1 | 1 |
 
-_tripline 0.2.1, generated 2026-11-10 23:09 UTC_
+_tripline 0.2.1, generated 2026-11-11 19:34 UTC_

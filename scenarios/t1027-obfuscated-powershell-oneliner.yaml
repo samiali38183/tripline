@@ -2,7 +2,7 @@ id: t1027-obfuscated-powershell-oneliner
 name: "Obfuscated Files or Information: obfuscated PowerShell one-liner"
 plane: windows
 technique: T1027
-tactic: defense-evasion
+tactic: stealth
 weight: 1
 emulation:
   kind: atomic

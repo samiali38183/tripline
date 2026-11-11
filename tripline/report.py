@@ -29,7 +29,8 @@ TACTICS: list[tuple[str, str]] = [
     ("execution", "Execution"),
     ("persistence", "Persistence"),
     ("privilege-escalation", "Privilege Escalation"),
-    ("defense-evasion", "Defense Evasion"),
+    ("stealth", "Stealth"),
+    ("defense-impairment", "Defense Impairment"),
     ("credential-access", "Credential Access"),
     ("discovery", "Discovery"),
     ("lateral-movement", "Lateral Movement"),
@@ -38,7 +39,14 @@ TACTICS: list[tuple[str, str]] = [
     ("exfiltration", "Exfiltration"),
     ("impact", "Impact"),
 ]
-"""ATT&CK Enterprise tactics in kill-chain order (short name, display name)."""
+"""ATT&CK Enterprise v20 tactics in matrix order (short name, display name).
+
+ATT&CK v19 split Defense Evasion into Stealth (TA0005) and Defense Impairment (TA0112); the order
+and names match the ``x-mitre-matrix`` object in enterprise-attack-20.1.json.
+"""
+
+LEGACY_TACTICS: dict[str, str] = {"defense-evasion": "Defense Evasion (ATT&CK v18 and earlier)"}
+"""Tactic short names that no longer exist, so scorecards written before 0.3.0 still render."""
 
 PLANE_LABEL = {Plane.AWS: "AWS", Plane.LINUX: "Linux", Plane.WINDOWS: "Windows"}
 UNKNOWN_TACTIC = "Unmapped"
@@ -79,12 +87,15 @@ def tactic_columns(card: Scorecard) -> tuple[list[TacticColumn], list[str]]:
     tactic is empty (older scorecards) or unknown land in a trailing "Unmapped" column.
     """
     columns = {key: TacticColumn(key, label) for key, label in TACTICS}
+    legacy = {key: TacticColumn(key, label) for key, label in LEGACY_TACTICS.items()}
     extra = TacticColumn("unmapped", UNKNOWN_TACTIC)
     for scenario in card.scenarios:
-        columns.get(scenario.tactic, extra).scenarios.append(scenario)
-    for column in [*columns.values(), extra]:
+        (columns.get(scenario.tactic) or legacy.get(scenario.tactic) or extra).scenarios.append(
+            scenario
+        )
+    for column in [*columns.values(), *legacy.values(), extra]:
         column.scenarios.sort(key=lambda s: (-s.weight, s.technique, s.scenario_id))
-    populated = [c for c in columns.values() if c.scenarios]
+    populated = [c for c in [*columns.values(), *legacy.values()] if c.scenarios]
     if extra.scenarios:
         populated.append(extra)
     empty = [c.label for c in columns.values() if not c.scenarios]
@@ -124,7 +135,7 @@ def render_html(card: Scorecard, *, title: str = "tripline coverage report") -> 
         split=weight_split(card),
         planes=PLANE_LABEL,
         rule_titles=rule_titles,
-        tactic_labels=dict(TACTICS),
+        tactic_labels={**dict(TACTICS), **LEGACY_TACTICS},
         Status=ScenarioStatus,
         describe=describe_outcome,
     )
