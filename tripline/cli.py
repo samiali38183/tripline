@@ -17,6 +17,7 @@ from tripline.engine.rules import RuleSet, load_rules
 from tripline.events import write_text_lf
 from tripline.heatmap import write_layer
 from tripline.models import (
+    BenignReport,
     Plane,
     ReplayResult,
     RuleOutcome,
@@ -328,6 +329,80 @@ def linux_collect(
         require_all=require_all,
         replay_after=replay_after,
     )
+
+
+@linux_app.command("collect-benign")
+def linux_collect_benign(
+    audit_log: Annotated[Path, typer.Argument(help="Raw auditd log from the benign workload.")],
+    run_guid: Annotated[str, typer.Option(help="Run GUID used in the tripline-marker commands.")],
+    source: Annotated[str, typer.Option(help="Provenance URL (e.g. the workflow run).")],
+    workload: Annotated[
+        str, typer.Option(help="One-line description of the benign workload that ran.")
+    ] = "scripts/linux/benign_workload.sh",
+    redact_host: Annotated[
+        list[str] | None, typer.Option("--redact-host", help="Hostname to strip (repeatable).")
+    ] = None,
+    root: RootOpt = Path(),
+) -> None:
+    """Slice the benign window out of an auditd log, sanitize it, write fixtures/benign/linux."""
+    from tripline.benign import collect_benign
+
+    out_dir = root / "fixtures" / "benign" / "linux"
+    try:
+        with audit_log.open(encoding="utf-8", errors="replace") as handle:
+            target = collect_benign(
+                handle,
+                out_dir,
+                run_guid=run_guid,
+                source=source,
+                workload=workload,
+                hosts=tuple(redact_host or ()),
+            )
+    except ValueError as exc:
+        typer.secho(f"benign collection failed: {exc}", err=True, fg=typer.colors.RED)
+        raise typer.Exit(code=1) from exc
+    typer.echo(f"wrote {target}")
+
+
+@app.command()
+def benign(
+    root: RootOpt = Path(),
+    fail_on_match: Annotated[
+        bool, typer.Option("--fail-on-match", help="Exit 1 if any rule matches a benign event.")
+    ] = False,
+) -> None:
+    """Replay ALL rules over fixtures/benign and report per-rule false positives."""
+    from tripline.benign import load_corpus, replay_benign
+
+    _, rules = _load(root)
+    events = load_corpus(root / "fixtures" / "benign")
+    if not events:
+        typer.secho("no benign corpus under fixtures/benign", err=True, fg=typer.colors.RED)
+        raise typer.Exit(code=2)
+    report = replay_benign(rules, events)
+    print_benign(report)
+    if fail_on_match and report.total_matches:
+        raise typer.Exit(code=1)
+
+
+def print_benign(report: BenignReport) -> None:
+    """Print the benign replay table."""
+    typer.echo(f"benign corpus: {report.events} events")
+    for r in report.rules:
+        if r.applicable == 0:
+            continue
+        colour = typer.colors.RED if r.matched else typer.colors.GREEN
+        typer.secho(
+            f"  {'FP  ' if r.matched else 'ok  '} {r.rule_id}  {r.title}  "
+            f"({r.matched}/{r.applicable} applicable events)",
+            fg=colour,
+        )
+        for example in r.examples:
+            typer.echo(f"        matched: {example}")
+    skipped = [r for r in report.rules if r.applicable == 0]
+    if skipped:
+        typer.echo(f"  not evaluated (no applicable benign events): {len(skipped)} rules")
+    typer.echo(report.summary())
 
 
 @windows_app.command("collect")

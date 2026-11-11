@@ -327,6 +327,50 @@ class ScorecardTotals(BaseModel):
     """Same, restricted to scenarios that have fixtures. ``None`` if nothing is scored."""
 
 
+class BenignRuleResult(BaseModel):
+    """One rule replayed over the benign corpus."""
+
+    rule_id: str
+    title: str
+    applicable: int
+    """Benign events the rule's logsource applies to. 0 means the rule was not evaluated."""
+    matched: int
+    """Benign events the rule matched. Every one is a false positive."""
+    examples: list[str] = Field(default_factory=list)
+    """Up to three matched command lines or paths, so the false positive can be judged."""
+
+
+class BenignReport(BaseModel):
+    """False-positive measurement: every compiled rule replayed over a benign corpus."""
+
+    events: int
+    rules: list[BenignRuleResult]
+
+    @property
+    def evaluated(self) -> list[BenignRuleResult]:
+        """Rules with at least one applicable benign event."""
+        return [r for r in self.rules if r.applicable > 0]
+
+    @property
+    def firing(self) -> list[BenignRuleResult]:
+        """Rules that matched at least one benign event."""
+        return [r for r in self.rules if r.matched > 0]
+
+    @property
+    def total_matches(self) -> int:
+        """Sum of benign events matched, over all rules."""
+        return sum(r.matched for r in self.rules)
+
+    def summary(self) -> str:
+        """One line for the CLI, the scorecard and the README."""
+        return (
+            f"{self.total_matches} false-positive matches from {len(self.firing)} of "
+            f"{len(self.evaluated)} evaluated rules on {self.events} benign events "
+            f"({len(self.rules) - len(self.evaluated)} of {len(self.rules)} rules had no "
+            "applicable benign events and were not evaluated)"
+        )
+
+
 class GateResult(BaseModel):
     """Outcome of applying the gate to a scorecard."""
 
@@ -344,6 +388,8 @@ class Scorecard(BaseModel):
     scenarios: list[ScenarioScore]
     techniques: list[TechniqueCoverage]
     gate: GateResult
+    benign: BenignReport | None = None
+    """Added in 0.3.0: false positives on the benign corpus. ``None`` when no corpus was found."""
 
     def rule(self, rule_id: str) -> RuleScore | None:
         """Look up a rule score by Sigma rule id."""
