@@ -357,7 +357,7 @@ rules/sigma/      Sigma rules by plane (vendored SigmaHQ + tripline_*), DRL 1.1 
 fixtures/         recorded NDJSON telemetry + manifest.json (aws, linux)
 tripline/         CLI, compiler, router, replay, scorer, heatmap, collectors
 scripts/windows/  winlog NDJSON exporter used by the Windows workflow
-tests/            113 tests
+tests/            186 tests
 docs/             findings, limitations, threat model, gate proof, committed scorecard, layer,
                   HTML report, badge
 .github/workflows ci.yml (lint/types/tests + gate), pages.yml (HTML report to Pages),
