@@ -5,24 +5,41 @@
 ![python](https://img.shields.io/badge/python-3.12-blue)
 [![weighted coverage](docs/coverage.svg)](docs/scorecard.md)
 
-tripline is a CI gate for detection rules. It replays recorded ATT&CK emulation telemetry
-(auditd, CloudTrail) through Sigma rules on every pull request, fails the build when a rule that
-is supposed to fire does not, and scores the result by how common each technique is in the wild.
+tripline is a small, self-contained CI gate for Sigma detection rules. It replays recorded
+telemetry (auditd, Sysmon/Security/PowerShell, CloudTrail) through the rules on every pull
+request, fails the build when a rule that is supposed to fire on a technique does not, and reports
+prevalence-weighted coverage, false positives on a benign corpus and a first evasion-variant sweep.
+
+It is not the first tool that tests detections against recorded or generated telemetry.
+SigmaHQ's own [regression tests](https://github.com/SigmaHQ/sigma/tree/master/regression_data)
+replay EVTX/JSON samples against rules in CI, [rsigma `backtest`](https://rsigma.io/cli/rule/backtest/)
+replays a corpus against per-rule expectations and flags unexpected fires, SCYTHE's
+[pipeline](https://scythe.io/sigma) runs Atomic Red Team tests and queries a live Splunk, and Splunk's
+[attack_data](https://github.com/splunk/attack_data) publishes recorded Atomic telemetry. What
+tripline adds is a small scenario layer on top of the same idea: a technique, the rules expected to
+catch it and the recorded fixture live in one repo, the evaluator is plain Python that runs offline
+on a stock runner, the output is an ATT&CK-weighted scorecard, and it publishes what it finds, such
+as the setuid rule gap below. What it does not do: it evaluates rules with its own compiler rather than
+a production backend, it covers 14 techniques, and it is not a substitute for any of the tools above
+([comparison](docs/related-work.md)).
 
 | | |
 |---|---|
-| Scenarios | 14 ATT&CK techniques: 4 AWS, 3 Linux, 7 Windows |
-| Gate today | 10 of 10 scenarios with fixtures pass (AWS 4/4, Linux 3/3, Windows 3/7); 4 Windows pending |
-| Weighted coverage | 68% of all 14 scenarios (42 of 62 prevalence points) |
+| Scenarios | 14 ATT&CK techniques: 4 AWS (public replay), 3 Linux, 7 Windows (recorded on runners) |
+| Gate today | 13 of 14 scenarios pass (AWS 4/4, Linux 3/3, Windows 6/7); 1 Windows scenario pending |
+| Weighted coverage | 98% of all 14 scenarios (61 of 62 weight points); 45 of the 62 points follow a published ranking, 17 are hand-assigned ([weights](docs/weights.md)) |
+| False positives | 2 matches from 1 of 6 evaluated rules on a 675-event benign Linux corpus; 20 of 26 rules not evaluated ([benign corpus](docs/benign-corpus.md)) |
+| Evasion sweep | 200 of 251 command-line variants of the three Linux attacks caught by an expected rule ([robustness](docs/robustness.md)) |
 | Gaps found | SigmaHQ *Setuid and Setgid* matched 0 of 36 Atomic events ([F-001](docs/findings.md)); 3 Windows rules that miss their Atomic tests ([F-003](docs/findings.md)) |
-| Code | 186 tests, 89% line+branch coverage, ruff and mypy strict clean |
+| Code | 211 tests, 91% coverage, ruff and mypy strict clean, ATT&CK v20 ([version notes](docs/attack-version.md)) |
 
 [![tripline coverage report](docs/img/report.png)](docs/report.html)
 
 The report above is `tripline report` run on the committed scorecard: an ATT&CK-style matrix by
-tactic, colored by pass/fail/pending, with prevalence weight and per-rule hit counts. It is one
-self-contained HTML file ([`docs/report.html`](docs/report.html)), and
-[`pages.yml`](.github/workflows/pages.yml) rebuilds and publishes it to GitHub Pages from `main`.
+tactic (ATT&CK v20 names), colored by pass/fail/pending, with prevalence weight, per-rule hit counts,
+the benign-corpus table and the evasion table. It is one self-contained HTML file
+([`docs/report.html`](docs/report.html)), and [`pages.yml`](.github/workflows/pages.yml) rebuilds and
+publishes it to GitHub Pages from `main`.
 
 It already caught a real gap: the stock SigmaHQ *Setuid and Setgid* rule matched 0 of 36
 events recorded from Atomic Red Team's own T1548.001 tests. A replacement rule matches 2 of 36
@@ -42,33 +59,41 @@ a few seconds.
 ## The problem
 
 Detection teams track how many rules they have and which ATT&CK techniques those rules are tagged
-with. Neither number says whether a rule still fires on the behaviour it is named after.
-Rules break quietly: a modifier is edited, an upstream rule changes, a field name drifts, or the
-rule never matched the real command line in the first place. A syntax linter (`sigma check`) will
-pass all of these.
+with. Neither number says whether a rule still fires on the behaviour it is named after, or how
+often it fires on normal work. Rules break quietly: a modifier is edited, an upstream rule changes,
+a field name drifts, or the rule never matched the real command line in the first place. A syntax
+linter (`sigma check`) will pass all of these.
 
 tripline treats a detection like code under test. A *scenario* (`scenarios/*.yaml`) declares a
 technique, how it is emulated, which Sigma rules must fire, and a prevalence weight. Recorded
 telemetry from that emulation is committed as a fixture. CI replays the fixture through the
-rules and exits non-zero if an expected rule misses.
+rules and exits non-zero if an expected rule misses. Separately, every rule is replayed over a benign
+corpus and over generated variants of the attack commands, and the counts are reported.
 
 ## Current results
 
-All figures below were reproduced from a clean checkout on 2026-11-10.
+All figures were produced by the commands in [Quick start](#quick-start) on 2026-11-11.
 
 | Plane | Telemetry | Scenarios passing | Source of the fixtures |
 |---|---|---|---|
-| AWS | CloudTrail | **4 / 4** | Stratus Red Team detonation logs and the flaws.cloud CloudTrail dataset (public, replayed) |
-| Linux | auditd (execve + cron watches) | **3 / 3** | Atomic Red Team on a GitHub-hosted `ubuntu-latest` runner |
-| Windows | Sysmon / Security / PowerShell | **3 / 7** (4 pending) | Atomic Red Team on a GitHub-hosted `windows-latest` runner ([run 42917025570](https://github.com/samiali38183/tripline/actions/runs/42917025570)): T1003.001, T1047, T1105 pass; see [Limitations](#limitations) |
+| AWS | CloudTrail | **4 / 4** | **Public replay**: Stratus Red Team's published detonation logs and the flaws.cloud CloudTrail dataset, re-timestamped; nothing was recorded by this project |
+| Linux | auditd (execve + cron watches) | **3 / 3** | **Recorded** with Atomic Red Team on a GitHub-hosted `ubuntu-latest` runner |
+| Windows | Sysmon / Security / PowerShell | **6 / 7** (1 pending) | **Recorded** with Atomic Red Team on a GitHub-hosted `windows-latest` runner: T1003.001, T1047, T1105 from [run 42917025570](https://github.com/samiali38183/tripline/actions/runs/42917025570); T1059.001, T1059.003, T1053.005 from [run 43090565998](https://github.com/samiali38183/tripline/actions/runs/43090565998) |
 
-- **Prevalence-weighted coverage: 68% of all 14 scenarios, 100% of the scenarios that have
-  fixtures** (42 of 62 weight points; pending scenarios count as zero in the headline figure).
-- `tripline replay --all`: 10 passed, 0 failed, 4 pending; 26 rules compiled, 22 expected rules.
-- Test suite: **186 tests, 89% line+branch coverage**. `ruff format`, `ruff check` and `mypy`
-  (strict) are clean; `sigma check rules/` reports 0 errors and 1 medium tagging issue (see
-  [Limitations](#limitations)).
-- The scorecard also exports an ATT&CK Navigator layer (v4.5, ATT&CK v16):
+- **Prevalence-weighted coverage: 98% of all 14 scenarios, 100% of the scenarios that have
+  fixtures** (61 of 62 weight points; the pending scenario counts as zero). Two of the Windows
+  passes rest on tripline replacement rules and one on a narrowed scenario, not on the vendored
+  SigmaHQ rule: see [F-003](docs/findings.md).
+- `tripline replay --all`: 13 passed, 0 failed, 1 pending; 26 rules compiled, 21 expected rules.
+- **False positives:** 2 matches from 1 of 6 evaluated rules (SigmaHQ *New Cron File Created* on a
+  `chkrootkit` package install) over 675 benign events from one 33-second runner recording; the 20
+  Windows and AWS rules have no benign corpus and were not evaluated.
+- **Evasion sweep:** for the three Linux scenarios, 200 of 251 command-line variants are caught by
+  at least one expected rule (setuid 106/108, history clearing 71/103, cron 23/40); alternative
+  tools 0 of 4. The variant lists are hand-written and not exhaustive.
+- Test suite: **211 tests, 91% coverage**. `ruff format`, `ruff check`, `mypy` (strict),
+  `sigma check rules/` (0 issues), `actionlint` and `zizmor` are clean.
+- The scorecard also exports an ATT&CK Navigator layer (layer format 4.5, ATT&CK v20):
   [`docs/navigator_layer.json`](docs/navigator_layer.json), plus
   [`docs/scorecard.md`](docs/scorecard.md), [`docs/scorecard.json`](docs/scorecard.json), the HTML
   report [`docs/report.html`](docs/report.html) and the badge [`docs/coverage.svg`](docs/coverage.svg).
@@ -174,12 +199,14 @@ and each `manifest.json`.
   routing problem (`no applicable events`, wrong product/category/service), not as a missed
   detection; `0/7 applicable events (rule did not match)` is the real miss. The two are separate
   outcomes in `scorecard.json` (`outcome`), the CLI, the JUnit file and the HTML report.
-- **Weight by technique prevalence.** Coverage is `sum(weight x coverage) / sum(weight)` with
-  weights 1-10 taken from the Red Canary 2026 Threat Detection Report ranking (mapped by hand in
-  each scenario). Breaking T1078.004 (weight 10) moves the headline number more than breaking
-  T1027 (weight 1). [`docs/gate-proof.md`](docs/gate-proof.md) records a PR where one edited
-  line dropped weighted coverage from 37% to 21% and turned CI red. Pending scenarios count as
-  zero in the headline so the number cannot be inflated by scenarios without evidence.
+- **Weight by technique prevalence.** Coverage is `sum(weight x coverage) / sum(weight)`. For the
+  seven scenario techniques in Red Canary's published 2026 top 10 the weight is 11 minus the rank
+  (45 of 62 points, checked against the public chart on 2026-11-11); the other seven weights are
+  hand-assigned low values with no source ([`docs/weights.md`](docs/weights.md)). Breaking T1078.004
+  (weight 10) moves the headline number more than breaking T1027 (weight 1).
+  [`docs/gate-proof.md`](docs/gate-proof.md) records a PR where one edited line dropped weighted
+  coverage from 37% to 21% and turned CI red. Pending scenarios count as zero in the headline so the
+  number cannot be inflated by scenarios without evidence.
 - **Replace, don't patch, vendored rules.** The SigmaHQ rule stays byte-for-byte (DRL 1.1,
   attribution header) and the scenario expects a separate tripline rule. If upstream fixes the
   rule, `tripline replay` picks that up without a merge conflict.
@@ -213,10 +240,13 @@ tripline heatmap docs/scorecard.json -o docs/navigator_layer.json   # ATT&CK Nav
 tripline docs docs/scorecard.json                                   # Markdown scorecard page
 tripline report docs/scorecard.json --html report.html --badge coverage.svg   # HTML matrix + badge
 tripline atomics linux                              # Atomic test GUIDs the Linux workflow runs
+tripline benign                                     # replay ALL rules over fixtures/benign: false positives
+tripline robustness --markdown docs/robustness.md   # evasion-variant sweep for the Linux scenarios
 ```
 
 Quality gates (same as CI): `ruff format --check tripline tests`, `ruff check tripline tests`,
-`mypy tripline`, `pytest --cov=tripline`, `sigma check rules/`, `tripline replay --all`.
+`mypy tripline`, `pytest --cov=tripline`, `sigma check rules/`, `tripline replay --all`,
+`actionlint` and `zizmor --offline --persona auditor .github`.
 
 To rebuild the cloud fixtures from the public datasets, run `tripline cloud build` (about 450 MB
 download into `.cache/`). Do **not** run the Atomic tests on a workstation; see
@@ -229,8 +259,8 @@ the scorecard as a comment.
 
 ## Example output
 
-`tripline replay --all` (Linux and AWS scenarios shown; the 4 pending Windows scenarios print as
-`PENDING` with `0/0 applicable events`):
+`tripline replay --all` (Linux and AWS scenarios shown; the Windows scenarios and the one pending
+scenario print in the same format):
 
 ```
 [   PASS] t1053-003-cron-persistence (T1053.003, linux) - 42 events
@@ -249,7 +279,7 @@ the scorecard as a comment.
      + 5c0d9e7b-3a21-4f68-b8d4-7e9f0a1b2c3d  AWS S3 Bucket Enumeration by IAM User from Non-AWS Tooling  (4/10 applicable events)
 [   PASS] t1548-001-setuid-setgid (T1548.001, linux) - 84 events
      + 7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d  Setuid or Setgid Bit Set via Chmod (Any Mode Form)  (2/36 applicable events)
-[   PASS] t1562-008-cloudtrail-stop (T1562.008, aws) - 1 events
+[   PASS] t1562-008-cloudtrail-stop (T1685.002, aws) - 1 events
      + 4db60cc0-36fb-42b7-9b58-a5b53019fb74  AWS CloudTrail Important Change  (1/1 applicable events)
 gate passed
 ```
@@ -266,33 +296,33 @@ GATE FAILED: 1 scenario(s) missed an expected rule: t1078-004-console-login-with
 
 ## Scenarios
 
-| Plane | Technique | Emulation | Weight | Status |
+| Plane | Technique | Telemetry | Weight | Status |
 |---|---|---|---|---|
-| AWS | T1078.004 Cloud Accounts - console login without MFA | Stratus detonation + flaws.cloud replay | 10 | pass |
-| AWS | T1530 Data from Cloud Storage - S3 made public, enumerated | flaws.cloud replay | 7 | pass |
-| AWS | T1562.008 Impair Defenses - CloudTrail StopLogging | Stratus detonation replay | 3 | pass |
-| AWS | T1098.001 Additional Cloud Credentials - IAM backdoor key | Stratus detonation replay | 3 | pass |
-| Win | T1059.001 PowerShell - encoded command + download cradle | ART `0d181431`, `cc50fa2a` | 9 | pending |
-| Win | T1059.003 Command Shell - suspicious output redirect | ART `d0eb3597`, `00682c9f` | 8 | pending |
-| Win | T1105 Ingress Tool Transfer - certutil / bitsadmin | ART `dd3b61dd`, `a1921cd3` | 6 | pass |
-| Win | T1047 WMI - `wmic process call create` | ART `b3bdfc91` | 4 | pass |
-| Win | T1027 Obfuscated PowerShell one-liner | ART `8b3f4ed6`, `6683baf0` | 1 | pending |
-| Win | T1003.001 LSASS Memory - comsvcs MiniDump | ART `2536dee2` | 3 | pass |
-| Win | T1053.005 Scheduled Task persistence | ART `42f53695` | 2 | pending |
-| Linux | T1053.003 Cron persistence | ART `078e69eb`, `435057fb` | 2 | pass |
-| Linux | T1070.003 Clear Command History | ART `a934276e`, `b1251c35` | 2 | pass |
-| Linux | T1548.001 Setuid / Setgid | ART `759055b3`, `db55f666` | 2 | pass |
+| AWS | T1078.004 Cloud Accounts - console login without MFA | public replay (Stratus log + flaws.cloud) | 10 | pass |
+| AWS | T1530 Data from Cloud Storage - S3 made public, enumerated | public replay (flaws.cloud) | 7 | pass |
+| AWS | T1685.002 Disable or Modify Cloud Log - CloudTrail StopLogging (T1562.008 before ATT&CK v19) | public replay (Stratus log) | 3 | pass |
+| AWS | T1098.001 Additional Cloud Credentials - IAM backdoor key | public replay (Stratus log) | 3 | pass |
+| Win | T1059.001 PowerShell - encoded command | recorded, ART `0d181431`, `a538de64` | 9 | pass |
+| Win | T1059.003 Command Shell - suspicious output redirect | recorded, ART `d0eb3597`, `00682c9f` | 8 | pass (tripline rule) |
+| Win | T1105 Ingress Tool Transfer - certutil / bitsadmin | recorded, ART `dd3b61dd`, `a1921cd3` | 6 | pass |
+| Win | T1047 WMI - `wmic process call create` | recorded, ART `b3bdfc91` | 4 | pass |
+| Win | T1027 Obfuscated PowerShell one-liner | ART `8b3f4ed6`, `6683baf0` recorded; expected rule matched 0 of 15 events | 1 | pending |
+| Win | T1003.001 LSASS Memory - comsvcs MiniDump | recorded, ART `2536dee2` | 3 | pass |
+| Win | T1053.005 Scheduled Task persistence | recorded, ART `42f53695` | 2 | pass (tripline rule) |
+| Linux | T1053.003 Cron persistence | recorded, ART `078e69eb`, `435057fb` | 2 | pass |
+| Linux | T1070.003 Clear Command History | recorded, ART `a934276e`, `b1251c35` | 2 | pass |
+| Linux | T1548.001 Setuid / Setgid | recorded, ART `759055b3`, `db55f666` | 2 | pass |
 
 Rules: 26 compiled, of which 20 are vendored unmodified from SigmaHQ (DRL 1.1) and 6 are
-authored for this project (three AWS, one Linux, two Windows; the Windows two are not yet
-expected by any scenario, see [F-003](docs/findings.md)). Weight is the technique's rank in Red Canary's 2026
-Threat Detection Report, mapped by hand (10 = most common). ART = Atomic Red Team test GUID prefix.
+authored for this project (three AWS, two Windows, one Linux). Weight provenance is in
+[`docs/weights.md`](docs/weights.md). ART = Atomic Red Team test GUID prefix.
 
 ## Real-world applicability
 
-- **Detection-as-code pipelines.** If your rules live in a Git repo, this pattern adds the
-  missing test: a PR that edits a rule or its upstream gets a pass/fail on real technique
-  telemetry, not just a syntax check.
+- **Detection-as-code pipelines.** If your rules live in a Git repo, this pattern gives a PR a
+  pass/fail on recorded technique telemetry as well as a syntax check. If you already use SigmaHQ
+  regression data or rsigma, tripline overlaps; its extra pieces are the scenario/weight layer and
+  the scorecard outputs.
 - **Upstream rule triage.** Before adopting a SigmaHQ rule, replay it against the technique it
   claims to cover. F-001 is an example where the answer was "it does not, on the standard
   atomic".
@@ -308,44 +338,39 @@ Stated plainly so the numbers are read correctly (full text in
 [`docs/limitations.md`](docs/limitations.md)):
 
 - **A pass is a recall check on one recording.** A scenario passes when every expected rule fires
-  on at least one event. There is no benign corpus yet, so a rule that fires on everything also
-  passes. There are no evasion variants yet, so robustness is untested beyond what F-001 showed.
+  on at least one event. The benign and evasion measurements are separate and narrow (below); the
+  gate does not use them.
 - **Small, project-chosen coverage.** 14 techniques; ATT&CK Enterprise has 600+ (sub-)techniques.
-  The 68% is progress against this repo's own scenario list weighted by prevalence, not a claim
-  about any organisation's coverage.
-- **Windows is partly done.** The `emulate-windows` workflow's latest run
-  ([run 42917025570](https://github.com/samiali38183/tripline/actions/runs/42917025570)) passed 3 of 7
-  scenarios (T1003.001, T1047, T1105); their recorded telemetry is committed and counted. The other four
-  are not counted. [F-003](docs/findings.md) explains why: the T1059.001 scenario points at a manual-only
-  Atomic test and its one passing rule matched the test wrapper's parameter text, not an encoded command;
-  the T1027 rule only matches one download cradle; the T1053.005 and T1059.003 vendored rules do not match
-  the chosen tests. Two tripline rules for the T1059.003 and T1053.005 gaps exist but are only tested on
-  hand-written synthetic events, so they count for nothing until a recorded Windows run confirms them.
+  The 98% is progress against this repo's own scenario list weighted by prevalence, not a claim
+  about any organisation's coverage. Seven of the weights are hand-assigned.
+- **Three of the six Windows passes are conditional.** T1059.003 and T1053.005 pass on tripline
+  replacement rules written for the gaps F-003 found (the vendored rules matched 0 events on
+  the same recordings), and T1059.001 passes on its encoded-command half only (the download-cradle
+  half was dropped because no automated atomic exercises it). T1027 stays pending.
 - **The cloud plane is replayed, not detonated by this project.** The records are real
   CloudTrail from public datasets, but the three cloud rules written for this project sit
-  alongside fixtures from the same datasets (two of them cite flaws.cloud, the source of the
-  S3 fixture). Those passes show the wiring works; they are not independent evidence the rules
-  generalise. Public datasets also lack S3 data
-  events, so T1530 is detected via exposure and enumeration, not bulk reads.
+  alongside fixtures from the same datasets. Those passes show the wiring works; they are not
+  independent evidence the rules generalise. Public datasets also lack S3 data events.
+- **False positives are measured on Linux only**, on one 33-second recording on one runner
+  image. A rule with zero matches there is not shown to be quiet in production.
+- **The evasion sweep is a first version.** Hand-written variant lists, event-level evaluation,
+  Linux scenarios only. Misses (for example 32 of 103 history-clearing variants) are documented in
+  [`docs/robustness.md`](docs/robustness.md) and [F-004](docs/findings.md), not all fixed.
 - **Linux telemetry is narrow.** auditd `execve` plus cron watches on a single-user runner VM,
-  with 20-40 wrapper processes per atomic, so rules that need user context, network or file
-  integrity data cannot be exercised.
+  with 20-40 wrapper processes per atomic.
 - **Different evaluator from production.** There is no parity test against a real SIEM backend
   yet. Treat a tripline pass as necessary, not sufficient.
-- **`sigma check rules/` reports one medium issue** (`InvalidATTACKTagIssue`: the tag
-  `attack.defense-evasion` on the authored setuid rule). It is a tagging warning, exit code 0.
 - Emulation workflows are not bit-reproducible (Atomic Red Team, Sysmon and the runner image
   move); committed fixtures pin the snapshot. Installers are fetched unpinned from upstream
   `master` ([threat model](docs/threat-model.md), T3).
 
 ## Roadmap
 
-Items below are stated in the repo's docs as planned, not done:
+Planned, not done:
 
-- Resolve the remaining Windows rule/atomic mismatches (F-003) and commit fixtures for the 4 pending
-  Windows scenarios.
-- Evasion variants (casing, encoding, argument order) to score how robust each rule is.
-- A benign log set to measure false positives per rule.
+- T1027 (and a download-cradle atomic for T1059.001) on recorded telemetry.
+- Benign corpora for Windows and AWS; a larger and longer Linux corpus.
+- Evasion variants for the Windows and cloud scenarios.
 - Parity test against a real backend (OpenSearch) for the Python evaluator.
 - Signed provenance (`actions/attest-build-provenance`) for fixture artifacts.
 
@@ -354,10 +379,10 @@ Items below are stated in the repo's docs as planned, not done:
 ```
 scenarios/        ATT&CK scenario definitions (14)
 rules/sigma/      Sigma rules by plane (vendored SigmaHQ + tripline_*), DRL 1.1 attribution
-fixtures/         recorded NDJSON telemetry + manifest.json (aws, linux)
+fixtures/         recorded NDJSON telemetry + manifest.json (aws, linux, windows, benign)
 tripline/         CLI, compiler, router, replay, scorer, heatmap, collectors
 scripts/windows/  winlog NDJSON exporter used by the Windows workflow
-tests/            186 tests
+tests/            211 tests
 docs/             findings, limitations, threat model, gate proof, committed scorecard, layer,
                   HTML report, badge
 .github/workflows ci.yml (lint/types/tests + gate), pages.yml (HTML report to Pages),

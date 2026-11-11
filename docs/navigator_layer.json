@@ -6,7 +6,7 @@
     "layer": "4.5"
   },
   "domain": "enterprise-attack",
-  "description": "Prevalence-weighted Sigma coverage from tripline scorecard (10/14 scenarios passed, 4 pending). Weighted coverage 68% overall, 100% over scenarios with fixtures.",
+  "description": "Prevalence-weighted Sigma coverage from tripline scorecard (13/14 scenarios passed, 1 pending). Weighted coverage 98% overall, 100% over scenarios with fixtures.",
   "sorting": 3,
   "layout": {
     "layout": "side",
@@ -118,10 +118,10 @@
     },
     {
       "techniqueID": "T1053.005",
-      "score": 0,
+      "score": 100,
       "enabled": true,
       "showSubtechniques": true,
-      "comment": "weight 2; coverage 0%; scenarios: t1053-005-scheduled-task-persistence; fixtures pending",
+      "comment": "weight 2; coverage 100%; scenarios: t1053-005-scheduled-task-persistence",
       "metadata": [
         {
           "name": "weight",
@@ -129,25 +129,24 @@
         },
         {
           "name": "coverage",
-          "value": "0.00"
+          "value": "1.00"
         },
         {
           "name": "rules",
-          "value": "3a734d25-df5c-4b99-8034-af1ddb5883a4, 92626ddd-662c-49e3-ac59-f6535f12d189"
+          "value": "92626ddd-662c-49e3-ac59-f6535f12d189, eb3f5405-928e-441c-a867-0612f0f66dc9"
         },
         {
           "name": "status",
-          "value": "pending"
+          "value": "scored"
         }
-      ],
-      "color": "#e0e0e0"
+      ]
     },
     {
       "techniqueID": "T1059.001",
-      "score": 0,
+      "score": 100,
       "enabled": true,
       "showSubtechniques": true,
-      "comment": "weight 9; coverage 0%; scenarios: t1059-001-powershell-encoded-download; fixtures pending",
+      "comment": "weight 9; coverage 100%; scenarios: t1059-001-powershell-encoded-download",
       "metadata": [
         {
           "name": "weight",
@@ -155,25 +154,24 @@
         },
         {
           "name": "coverage",
-          "value": "0.00"
+          "value": "1.00"
         },
         {
           "name": "rules",
-          "value": "403c2cc0-7f6b-4925-9423-bfa573bed7eb, fb843269-508c-4b76-8b8d-88679db22ce7"
+          "value": "fb843269-508c-4b76-8b8d-88679db22ce7"
         },
         {
           "name": "status",
-          "value": "pending"
+          "value": "scored"
         }
-      ],
-      "color": "#e0e0e0"
+      ]
     },
     {
       "techniqueID": "T1059.003",
-      "score": 0,
+      "score": 100,
       "enabled": true,
       "showSubtechniques": true,
-      "comment": "weight 8; coverage 0%; scenarios: t1059-003-cmd-suspicious-redirect; fixtures pending",
+      "comment": "weight 8; coverage 100%; scenarios: t1059-003-cmd-suspicious-redirect",
       "metadata": [
         {
           "name": "weight",
@@ -181,18 +179,17 @@
         },
         {
           "name": "coverage",
-          "value": "0.00"
+          "value": "1.00"
         },
         {
           "name": "rules",
-          "value": "8e0bb260-d4b2-4fff-bb8d-3f82118e6892"
+          "value": "467585b7-9de8-40e5-bb2a-6626902ae295"
         },
         {
           "name": "status",
-          "value": "pending"
+          "value": "scored"
         }
-      ],
-      "color": "#e0e0e0"
+      ]
     },
     {
       "techniqueID": "T1070.003",
@@ -443,11 +440,11 @@
   "metadata": [
     {
       "name": "generated_at",
-      "value": "2026-11-11T19:34:22.985481+00:00"
+      "value": "2026-11-11T20:16:23.606532+00:00"
     },
     {
       "name": "tripline_version",
-      "value": "0.2.1"
+      "value": "0.3.0"
     }
   ]
 }

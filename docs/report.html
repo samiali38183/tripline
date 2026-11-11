@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="generator" content="tripline 0.2.1">
+<meta name="generator" content="tripline 0.3.0">
 <title>tripline coverage report</title>
 <style>
 :root {
@@ -78,7 +78,7 @@ header { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: flex-end; 
 .sw.p { background: var(--good); } .sw.f { background: var(--bad); }
 .sw.q { background: repeating-linear-gradient(45deg, var(--line-2) 0 2px, transparent 2px 4px); border: 1px solid var(--line-2); }
 .matrix-wrap { overflow-x: auto; padding-bottom: 6px; }
-.matrix { display: grid; grid-template-columns: repeat(8, minmax(136px, 1fr)); gap: 10px; min-width: 1168px; }
+.matrix { display: grid; grid-template-columns: repeat(9, minmax(136px, 1fr)); gap: 10px; min-width: 1314px; }
 .col h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-2); margin: 0 0 8px;
   padding-bottom: 6px; border-bottom: 2px solid var(--line-2); min-height: 46px; display: flex;
   align-items: flex-end; justify-content: space-between; gap: 6px; }
@@ -123,7 +123,7 @@ footer { margin-top: 36px; color: var(--ink-3); font-size: 12px; }
   <div>
     <h1>tripline coverage report</h1>
     <p class="sub">Sigma rules replayed against recorded ATT&amp;CK emulation telemetry.
-      Generated 2026-11-10 23:09 UTC by tripline 0.2.1.</p>
+      Generated 2026-11-11 20:16 UTC by tripline 0.3.0.</p>
   </div>
   <span class="gate ok" role="status"><span aria-hidden="true">&#10003;</span> Gate passed</span>
 </header>
@@ -131,34 +131,44 @@ footer { margin-top: 36px; color: var(--ink-3); font-size: 12px; }
 <section class="tiles" aria-label="Headline numbers">
   <div class="tile">
     <div class="k">Weighted coverage, all scenarios</div>
-    <div class="v">68%</div>
+    <div class="v">98%</div>
     <div class="n">pending scenarios count as zero</div>
   </div>
   <div class="tile">
     <div class="k">Weighted coverage, scenarios with fixtures</div>
     <div class="v">100%</div>
-    <div class="n">10 of 14 scenarios have fixtures</div>
+    <div class="n">13 of 14 scenarios have fixtures</div>
   </div>
   <div class="tile">
     <div class="k">Scenarios</div>
-    <div class="v">10<span style="font-size:15px;color:var(--ink-3)"> / 14 pass</span></div>
-    <div class="n">0 failed, 4 pending</div>
+    <div class="v">13<span style="font-size:15px;color:var(--ink-3)"> / 14 pass</span></div>
+    <div class="n">0 failed, 1 pending</div>
+  </div>
+  <div class="tile">
+    <div class="k">False positives, benign corpus</div>
+    <div class="v">2<span style="font-size:15px;color:var(--ink-3)"> matches</span></div>
+    <div class="n">1 of 6 evaluated rules fired on 675 benign events</div>
+  </div>
+  <div class="tile">
+    <div class="k">Evasion sweep (Linux)</div>
+    <div class="v">200<span style="font-size:15px;color:var(--ink-3)"> / 251 variants</span></div>
+    <div class="n">command-line variants caught by an expected rule</div>
   </div>
   <div class="tile">
     <div class="k">Expected rules</div>
-    <div class="v">22</div>
-    <div class="n">14 techniques across 8 tactics</div>
+    <div class="v">21</div>
+    <div class="n">14 techniques across 9 tactics</div>
   </div>
 </section>
 
 <section class="split" aria-label="Prevalence weight by status">
   <div class="k" style="color:var(--ink-2);font-size:12px">Prevalence weight points (62 total, weight 1-10 per technique)</div>
-  <div class="bar" role="img" aria-label="42 passed, 0 failed, 20 pending weight points">
-<span class="p" style="width:67.74%" title="passed: 42 points"></span><span class="q" style="width:32.26%" title="pending: 20 points"></span>  </div>
+  <div class="bar" role="img" aria-label="61 passed, 0 failed, 1 pending weight points">
+<span class="p" style="width:98.39%" title="passed: 61 points"></span><span class="q" style="width:1.61%" title="pending: 1 points"></span>  </div>
   <div class="legend">
-    <span><i class="sw p"></i>Passed 42</span>
+    <span><i class="sw p"></i>Passed 61</span>
     <span><i class="sw f"></i>Failed 0</span>
-    <span><i class="sw q"></i>Pending (no fixtures) 20</span>
+    <span><i class="sw q"></i>Pending (no fixtures) 1</span>
   </div>
 </section>
 
@@ -197,50 +207,46 @@ rules fired: 2/2 &middot; 7 events      </div>
   </div>
   <div class="col">
     <h3>Execution <small>3</small></h3>
-    <article class="cell pending" title="t1059-001-powershell-encoded-download">
+    <article class="cell passed" title="t1059-001-powershell-encoded-download">
       <div class="tid">T1059.001</div>
-      <div class="nm">PowerShell: encoded command and download cradle</div>
+      <div class="nm">PowerShell: encoded command</div>
       <div class="meta">
-        <span class="st pending">&#9675; Pending</span>
+        <span class="st passed">&#10003; Pass</span>
         <span class="chip">Windows</span>
       </div>
       <div class="meta" style="margin-top:4px">
         <span class="w" title="prevalence weight 9 of 10">weight 9 <i><b style="width:90%"></b></i></span>
       </div>
       <div class="meta" style="margin-top:4px">
-rules: 2 expected      </div>
+rules fired: 1/1 &middot; 154 events      </div>
       <details>
         <summary>Rule evidence</summary>
         <ul class="ev">
           <li>
-<span class="na">&#9675;</span>            Suspicious Execution of Powershell with Base64<br>
-            <span class="na">no fixtures</span>
-          </li>
-          <li>
-<span class="na">&#9675;</span>            Suspicious PowerShell Download - Powershell Script<br>
-            <span class="na">no fixtures</span>
+<span class="ok">&#10003;</span>            Suspicious Execution of Powershell with Base64<br>
+            <span class="na">3/22 applicable events</span>
           </li>
         </ul>
       </details>
     </article>
-    <article class="cell pending" title="t1059-003-cmd-suspicious-redirect">
+    <article class="cell passed" title="t1059-003-cmd-suspicious-redirect">
       <div class="tid">T1059.003</div>
       <div class="nm">Windows Command Shell: cmd output redirected to a suspicious folder</div>
       <div class="meta">
-        <span class="st pending">&#9675; Pending</span>
+        <span class="st passed">&#10003; Pass</span>
         <span class="chip">Windows</span>
       </div>
       <div class="meta" style="margin-top:4px">
         <span class="w" title="prevalence weight 8 of 10">weight 8 <i><b style="width:80%"></b></i></span>
       </div>
       <div class="meta" style="margin-top:4px">
-rules: 1 expected      </div>
+rules fired: 1/1 &middot; 26 events      </div>
       <details>
         <summary>Rule evidence</summary>
         <ul class="ev">
           <li>
-<span class="na">&#9675;</span>            Potentially Suspicious CMD Shell Output Redirect<br>
-            <span class="na">no fixtures</span>
+<span class="ok">&#10003;</span>            CMD Output Redirected to a Relative Path From a Suspicious Working Directory<br>
+            <span class="na">2/11 applicable events</span>
           </li>
         </ul>
       </details>
@@ -318,28 +324,28 @@ rules fired: 2/2 &middot; 42 events      </div>
         </ul>
       </details>
     </article>
-    <article class="cell pending" title="t1053-005-scheduled-task-persistence">
+    <article class="cell passed" title="t1053-005-scheduled-task-persistence">
       <div class="tid">T1053.005</div>
       <div class="nm">Scheduled Task persistence via schtasks</div>
       <div class="meta">
-        <span class="st pending">&#9675; Pending</span>
+        <span class="st passed">&#10003; Pass</span>
         <span class="chip">Windows</span>
       </div>
       <div class="meta" style="margin-top:4px">
         <span class="w" title="prevalence weight 2 of 10">weight 2 <i><b style="width:20%"></b></i></span>
       </div>
       <div class="meta" style="margin-top:4px">
-rules: 2 expected      </div>
+rules fired: 2/2 &middot; 11 events      </div>
       <details>
         <summary>Rule evidence</summary>
         <ul class="ev">
           <li>
-<span class="na">&#9675;</span>            Scheduled Task Creation Via Schtasks.EXE<br>
-            <span class="na">no fixtures</span>
+<span class="ok">&#10003;</span>            Scheduled Task Creation Via Schtasks.EXE<br>
+            <span class="na">1/4 applicable events</span>
           </li>
           <li>
-<span class="na">&#9675;</span>            Suspicious Scheduled Task Creation<br>
-            <span class="na">no fixtures</span>
+<span class="ok">&#10003;</span>            Scheduled Task Created With a Command Interpreter or LOLBin Action<br>
+            <span class="na">1/6 applicable events</span>
           </li>
         </ul>
       </details>
@@ -371,29 +377,7 @@ rules fired: 1/1 &middot; 84 events      </div>
     </article>
   </div>
   <div class="col">
-    <h3>Defense Evasion <small>3</small></h3>
-    <article class="cell passed" title="t1562-008-cloudtrail-stop">
-      <div class="tid">T1562.008</div>
-      <div class="nm">Impair Defenses: CloudTrail logging stopped</div>
-      <div class="meta">
-        <span class="st passed">&#10003; Pass</span>
-        <span class="chip">AWS</span>
-      </div>
-      <div class="meta" style="margin-top:4px">
-        <span class="w" title="prevalence weight 3 of 10">weight 3 <i><b style="width:30%"></b></i></span>
-      </div>
-      <div class="meta" style="margin-top:4px">
-rules fired: 1/1 &middot; 1 events      </div>
-      <details>
-        <summary>Rule evidence</summary>
-        <ul class="ev">
-          <li>
-<span class="ok">&#10003;</span>            AWS CloudTrail Important Change<br>
-            <span class="na">1/1 applicable events</span>
-          </li>
-        </ul>
-      </details>
-    </article>
+    <h3>Stealth <small>2</small></h3>
     <article class="cell passed" title="t1070-003-clear-command-history">
       <div class="tid">T1070.003</div>
       <div class="nm">Indicator Removal: clear command history</div>
@@ -438,6 +422,31 @@ rules: 1 expected      </div>
           <li>
 <span class="na">&#9675;</span>            Obfuscated PowerShell OneLiner Execution<br>
             <span class="na">no fixtures</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+  </div>
+  <div class="col">
+    <h3>Defense Impairment <small>1</small></h3>
+    <article class="cell passed" title="t1562-008-cloudtrail-stop">
+      <div class="tid">T1685.002</div>
+      <div class="nm">Disable or Modify Cloud Log: CloudTrail logging stopped</div>
+      <div class="meta">
+        <span class="st passed">&#10003; Pass</span>
+        <span class="chip">AWS</span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+        <span class="w" title="prevalence weight 3 of 10">weight 3 <i><b style="width:30%"></b></i></span>
+      </div>
+      <div class="meta" style="margin-top:4px">
+rules fired: 1/1 &middot; 1 events      </div>
+      <details>
+        <summary>Rule evidence</summary>
+        <ul class="ev">
+          <li>
+<span class="ok">&#10003;</span>            AWS CloudTrail Important Change<br>
+            <span class="na">1/1 applicable events</span>
           </li>
         </ul>
       </details>
@@ -561,11 +570,10 @@ rules fired: 2/2 &middot; 33 events      </div>
       <td>Execution</td>
       <td>Windows</td>
       <td class="num">9</td>
-      <td><span class="st pending">&#9675; Pending</span></td>
+      <td><span class="st passed">&#10003; Pass</span></td>
       <td>
         <ul class="rules">
-          <li>Suspicious Execution of Powershell with Base64 <span style="color:var(--ink-3)">(no fixtures)</span></li>
-          <li>Suspicious PowerShell Download - Powershell Script <span style="color:var(--ink-3)">(no fixtures)</span></li>
+          <li>Suspicious Execution of Powershell with Base64 <span style="color:var(--ink-3)">(3/22)</span></li>
         </ul>
       </td>
     </tr>
@@ -575,10 +583,10 @@ rules fired: 2/2 &middot; 33 events      </div>
       <td>Execution</td>
       <td>Windows</td>
       <td class="num">8</td>
-      <td><span class="st pending">&#9675; Pending</span></td>
+      <td><span class="st passed">&#10003; Pass</span></td>
       <td>
         <ul class="rules">
-          <li>Potentially Suspicious CMD Shell Output Redirect <span style="color:var(--ink-3)">(no fixtures)</span></li>
+          <li>CMD Output Redirected to a Relative Path From a Suspicious Working Directory <span style="color:var(--ink-3)">(2/11)</span></li>
         </ul>
       </td>
     </tr>
@@ -652,8 +660,8 @@ rules fired: 2/2 &middot; 33 events      </div>
     </tr>
     <tr>
       <td class="mono">t1562-008-cloudtrail-stop</td>
-      <td class="mono">T1562.008</td>
-      <td>Defense Evasion</td>
+      <td class="mono">T1685.002</td>
+      <td>Defense Impairment</td>
       <td>AWS</td>
       <td class="num">3</td>
       <td><span class="st passed">&#10003; Pass</span></td>
@@ -683,18 +691,18 @@ rules fired: 2/2 &middot; 33 events      </div>
       <td>Persistence</td>
       <td>Windows</td>
       <td class="num">2</td>
-      <td><span class="st pending">&#9675; Pending</span></td>
+      <td><span class="st passed">&#10003; Pass</span></td>
       <td>
         <ul class="rules">
-          <li>Scheduled Task Creation Via Schtasks.EXE <span style="color:var(--ink-3)">(no fixtures)</span></li>
-          <li>Suspicious Scheduled Task Creation <span style="color:var(--ink-3)">(no fixtures)</span></li>
+          <li>Scheduled Task Creation Via Schtasks.EXE <span style="color:var(--ink-3)">(1/4)</span></li>
+          <li>Scheduled Task Created With a Command Interpreter or LOLBin Action <span style="color:var(--ink-3)">(1/6)</span></li>
         </ul>
       </td>
     </tr>
     <tr>
       <td class="mono">t1070-003-clear-command-history</td>
       <td class="mono">T1070.003</td>
-      <td>Defense Evasion</td>
+      <td>Stealth</td>
       <td>Linux</td>
       <td class="num">2</td>
       <td><span class="st passed">&#10003; Pass</span></td>
@@ -721,7 +729,7 @@ rules fired: 2/2 &middot; 33 events      </div>
     <tr>
       <td class="mono">t1027-obfuscated-powershell-oneliner</td>
       <td class="mono">T1027</td>
-      <td>Defense Evasion</td>
+      <td>Stealth</td>
       <td>Windows</td>
       <td class="num">1</td>
       <td><span class="st pending">&#9675; Pending</span></td>
@@ -735,10 +743,106 @@ rules fired: 2/2 &middot; 33 events      </div>
 </table>
 </div>
 
+<h2>False positives on the benign corpus</h2>
+<p class="sub">Every compiled rule replayed over 675 events recorded while ordinary work ran on a runner
+(Linux only). Rules with no applicable benign events are listed as not evaluated, not as clean.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Rule</th><th class="num">Matched</th><th class="num">Applicable events</th><th>Example matches</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>History File Deletion</td>
+      <td class="num">0</td>
+      <td class="num">488</td>
+      <td class="mono"></td>
+    </tr>
+    <tr>
+      <td>Scheduled Cron Task/Job - Linux</td>
+      <td class="num">0</td>
+      <td class="num">488</td>
+      <td class="mono"></td>
+    </tr>
+    <tr>
+      <td>New Cron File Created</td>
+      <td class="num">2</td>
+      <td class="num">2</td>
+      <td class="mono">/etc/cron.daily/chkrootkit.dpkg-new<br>/etc/cron.daily/chkrootkit</td>
+    </tr>
+    <tr>
+      <td>Setuid or Setgid Bit Set via Chmod (Any Mode Form)</td>
+      <td class="num">0</td>
+      <td class="num">488</td>
+      <td class="mono"></td>
+    </tr>
+    <tr>
+      <td>Setuid and Setgid</td>
+      <td class="num">0</td>
+      <td class="num">488</td>
+      <td class="mono"></td>
+    </tr>
+    <tr>
+      <td>Linux Command History Tampering</td>
+      <td class="num">0</td>
+      <td class="num">613</td>
+      <td class="mono"></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p class="sub">Not evaluated (no applicable benign events): 20 of 26 rules.</p>
+
+<h2>Evasion sweep</h2>
+<p class="sub">Deterministic variants of each Linux attack command (seed 20261111); a rule catches a variant when it
+matches at least one event the variant produces. Counts are variants caught / variants the rule applies to.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Scenario</th><th>Rule</th><th class="num">Command-line variants</th><th class="num">Alternative-tool variants</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="mono">t1053-003-cron-persistence</td>
+      <td>Scheduled Cron Task/Job - Linux</td>
+      <td class="num">12 / 24</td>
+      <td class="num">-</td>
+    </tr>
+    <tr>
+      <td class="mono"></td>
+      <td>New Cron File Created</td>
+      <td class="num">11 / 16</td>
+      <td class="num">-</td>
+    </tr>
+    <tr>
+      <td class="mono">t1070-003-clear-command-history</td>
+      <td>Linux Command History Tampering</td>
+      <td class="num">69 / 103</td>
+      <td class="num">-</td>
+    </tr>
+    <tr>
+      <td class="mono"></td>
+      <td>History File Deletion</td>
+      <td class="num">34 / 103</td>
+      <td class="num">-</td>
+    </tr>
+    <tr>
+      <td class="mono">t1548-001-setuid-setgid</td>
+      <td>Setuid or Setgid Bit Set via Chmod (Any Mode Form)</td>
+      <td class="num">106 / 108</td>
+      <td class="num">0 / 4</td>
+    </tr>
+    <tr>
+      <td class="mono"></td>
+      <td>Setuid and Setgid <span style="color:var(--ink-3)">(comparison, not expected by the scenario)</span></td>
+      <td class="num">0 / 108</td>
+      <td class="num">0 / 4</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
 <footer>
   <p>A pass means every expected rule fired on at least one event of the scenario's recorded fixture. It is a recall
-  check on one recording, not a false-positive or evasion test. Weights are each technique's rank in the Red Canary
-  2026 Threat Detection Report, mapped by hand (10 = most common). Source:
+  check on one recording; the benign-corpus and evasion sections above measure false positives and robustness for the
+  Linux plane only. Weight provenance (published ranking versus
+  hand-assigned values) is in docs/weights.md. Source:
   <a href="https://github.com/samiali38183/tripline">github.com/samiali38183/tripline</a>.</p>
 </footer>
 </main>

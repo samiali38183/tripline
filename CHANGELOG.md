@@ -1,5 +1,58 @@
 # Changelog
 
+## 0.3.0 - 2026-11-11
+
+Credibility pass: accurate framing, current ATT&CK, a hardened pipeline, and the first false-positive
+and evasion measurements. Every number below comes from a command run on this commit.
+
+### Framing
+* README opening, `docs/related-work.md` and `docs/limitations.md` state the purpose against
+  SigmaHQ regression data, rsigma `backtest`, SCYTHE and Splunk `attack_data`, and say what tripline
+  does not do. The "missing test" claim is gone.
+* Scenario tables label AWS data as public replay and Linux/Windows data as recorded on a runner.
+* `docs/weights.md`: 45 of 62 weight points follow Red Canary's published 2026 top-10 ranking
+  (weight = 11 minus rank, seven scenarios); 17 points are hand-assigned (seven scenarios).
+
+### ATT&CK v20
+* Navigator layer `versions.attack` 16 to 20; tactic grid uses the v20 matrix (Defense Evasion split
+  into Stealth and Defense Impairment in v19); T1562.008 (revoked) became T1685.002; T1027, T1070.003
+  moved to Stealth; T1548.001 lost Defense Evasion and the authored setuid rule dropped that tag
+  (`sigma check` now 0 issues). Verified against `enterprise-attack-20.1.json`; a subset is committed
+  as `docs/attack-v20.1-subset.json` and tested. Notes: `docs/attack-version.md`.
+* Old scorecards that say `defense-evasion` still render, in a legacy column.
+
+### Pipeline hygiene
+* Every GitHub Action pinned by full commit SHA with a version comment; per-job `permissions`
+  (workflow default none); `persist-credentials: false`; expressions passed through `env`;
+  concurrency groups; Dependabot cooldown; `zizmor` (auditor persona) added to CI.
+  zizmor 1.32.0 on `.github`: 42 findings before (19 high, 3 medium, 5 low; 15 more shown only by
+  the pedantic persona), 0 after on every persona. actionlint clean.
+
+### False positives
+* `tripline benign`, `tripline linux collect-benign`, `emulate-linux.yml` input `record: benign` and
+  `scripts/linux/benign_workload.sh`. Corpus `fixtures/benign/linux` (675 events, 752 KB, run
+  43090057704), sanitized and scanned for secrets. Result: 2 matches from 1 of 6 evaluated rules
+  (New Cron File Created on a `chkrootkit` install); 20 Windows/AWS rules not evaluated.
+  Reported in the scorecard JSON, Markdown, HTML report and README. See `docs/benign-corpus.md`.
+
+### Evasion sweep
+* `tripline robustness`: deterministic variants (seed 20261111) for the three Linux scenarios, 251
+  command-line and 4 alternative-tool variants. Expected rules catch 200 of 251 (setuid 106/108,
+  history clearing 71/103, cron 23/40). Tables: `docs/robustness.md`, `docs/robustness.json`, scorecard.
+* Setuid replacement rule now matches `busybox chmod u+s` (found by the sweep, with tests). Other
+  misses are documented in F-004, not fixed.
+
+### Windows
+* Recorded in run 43090565998 and committed: T1059.001, T1059.003, T1053.005. They pass with the
+  expected rules firing on real events; T1059.003 and T1053.005 expect the tripline replacement rules,
+  T1059.001 dropped its download-cradle rule (no automated atomic runs one). T1027 stays pending
+  (expected rule 0 of 15 events). Gate: 13 passed, 0 failed, 1 pending; weighted coverage 68% to 98%
+  (42 to 61 of 62 points). Details in F-003.
+
+### Other
+* Tests 186 to 211, coverage 89% to 91%. Version 0.3.0.
+
+
 ## 0.2.1 - 2026-11-10
 
 Fixes from a code review. Each item was reproduced with a failing test first.
