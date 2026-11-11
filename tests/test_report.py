@@ -66,10 +66,10 @@ def _result(sid, status, *, fired, hits=0, evaluated=0):
 def _card(repo_root):
     rules = load_rules(repo_root / "rules" / "sigma")
     scenarios = [
-        _scenario("a", "T1562.008", "defense-evasion", 3),
+        _scenario("a", "T1685.002", "defense-impairment", 3),
         _scenario("b", "T1105", "command-and-control", 6, fixtures=False),
         _scenario("c", "T1078.004", "initial-access", 10),
-        _scenario("d", "T1027", "defense-evasion", 1, name="<script>alert(1)</script>"),
+        _scenario("d", "T1027", "defense-impairment", 1, name="<script>alert(1)</script>"),
         _scenario("e", "T1003", "not-a-tactic", 2),
     ]
     results = [
@@ -85,7 +85,7 @@ def _card(repo_root):
 def test_scorecard_carries_tactic_and_evidence(repo_root):
     card = _card(repo_root)
     a = card.scenario("a")
-    assert a is not None and a.tactic == "defense-evasion"
+    assert a is not None and a.tactic == "defense-impairment"
     assert [(e.rule_id, e.hits, e.evaluated, e.fired) for e in a.evidence] == [(R1, 1, 4, True)]
 
 
@@ -93,14 +93,14 @@ def test_tactic_columns_kill_chain_order_and_weight_sort(repo_root):
     columns, empty = tactic_columns(_card(repo_root))
     assert [c.label for c in columns] == [
         "Initial Access",
-        "Defense Evasion",
+        "Defense Impairment",
         "Command and Control",
         UNKNOWN_TACTIC,
     ]
     evasion = columns[1]
     assert [s.scenario_id for s in evasion.scenarios] == ["a", "d"]  # weight 3 before weight 1
-    assert "Execution" in empty and "Defense Evasion" not in empty
-    assert len(empty) == 14 - 3
+    assert "Execution" in empty and "Defense Impairment" not in empty
+    assert "Stealth" in empty and len(empty) == 15 - 3
 
 
 def test_weight_split(repo_root):
@@ -176,3 +176,44 @@ def test_report_command_writes_html_and_badge(repo_root, tmp_path):
     assert out.read_text(encoding="utf-8").startswith("<!doctype html>")
     assert b"\r\n" not in out.read_bytes()
     ET.fromstring(badge.read_text(encoding="utf-8"))
+
+
+def test_legacy_defense_evasion_tactic_still_renders(repo_root):
+    rules = load_rules(repo_root / "rules" / "sigma")
+    card = build_scorecard(
+        [_scenario("old", "T1070.003", "defense-evasion", 2)],
+        [_result("old", ScenarioStatus.PASSED, fired=True, hits=1, evaluated=1)],
+        rules,
+    )
+    columns, empty = tactic_columns(card)
+    assert [c.label for c in columns] == ["Defense Evasion (ATT&CK v18 and earlier)"]
+    assert "Stealth" in empty
+
+
+def test_tactic_list_matches_attack_v20_matrix(repo_root):
+    import json
+
+    from tripline.report import TACTICS
+
+    data = json.loads((repo_root / "docs" / "attack-v20.1-subset.json").read_text("utf-8"))
+    assert [(t["shortname"], t["name"]) for t in data["tactics_matrix_order"]] == TACTICS
+
+
+def test_report_html_has_benign_and_robustness_sections(repo_root):
+    from tripline.benign import load_corpus, replay_benign
+    from tripline.cli import _extras
+    from tripline.scenarios import load_scenarios
+
+    rules = load_rules(repo_root / "rules" / "sigma")
+    scenarios = load_scenarios(repo_root / "scenarios")
+    card = build_scorecard(
+        [_scenario("a", "T1685.002", "defense-impairment", 3)],
+        [_result("a", ScenarioStatus.PASSED, fired=True, hits=1, evaluated=4)],
+        rules,
+        **_extras(repo_root, rules, scenarios),
+    )
+    assert card.benign is not None and load_corpus(repo_root / "fixtures" / "benign")
+    assert replay_benign(rules, []).events == 0
+    html = render_html(card)
+    assert "False positives on the benign corpus" in html and "Evasion sweep" in html
+    assert "False positives, benign corpus" in html

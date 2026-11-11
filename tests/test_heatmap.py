@@ -72,7 +72,7 @@ def _card(repo_root):
 
 def test_layer_shape_and_versions(repo_root):
     layer = build_layer(_card(repo_root))
-    assert layer["versions"] == {"attack": "16", "navigator": "5.1.0", "layer": "4.5"}
+    assert layer["versions"] == {"attack": "20", "navigator": "5.1.0", "layer": "4.5"}
     assert layer["domain"] == "enterprise-attack"
     assert layer["gradient"]["minValue"] == 0 and layer["gradient"]["maxValue"] == 100
     ids = [t["techniqueID"] for t in layer["techniques"]]

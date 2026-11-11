@@ -12,7 +12,13 @@ emulation:
     - 42f53695-ad4a-4546-abb6-7d837f644a71  # ART #2: Scheduled task Local
 expected_rules:
   - 92626ddd-662c-49e3-ac59-f6535f12d189  # Scheduled Task Creation Via Schtasks.EXE (SigmaHQ)
-  - 3a734d25-df5c-4b99-8034-af1ddb5883a4  # Suspicious Scheduled Task Creation (SigmaHQ, Security 4698)
-fixtures: []  # Phase A2: recorded on a GitHub Actions windows runner
+  - eb3f5405-928e-441c-a867-0612f0f66dc9  # Scheduled Task Created With a Command Interpreter or LOLBin Action (tripline, Security 4698)
+fixtures:
+  - path: fixtures/windows/t1053-005-scheduled-task-persistence/run.ndjson
+    provenance: recorded
+    source: https://github.com/samiali38183/tripline/actions/runs/43090565998
+    notes: Sysmon, Security 4688/4698 and PowerShell logs on windows-latest (Server 2025), Invoke-AtomicTest between tripline markers; see manifest.json
 notes: >-
-  The 4698 rule needs 'Audit Other Object Access Events' enabled on the runner.
+  The 4698 rule needs 'Audit Other Object Access Events' enabled on the runner. SigmaHQ 'Suspicious Scheduled Task Creation' (3a734d25)
+  matched 0 of 6 applicable events (the task runs cmd.exe from System32, not a user-writable path), so the scenario expects the tripline
+  replacement, which matched 1 of 6 on the real 4698 event (docs/findings.md F-003). The replacement was written before this recording.

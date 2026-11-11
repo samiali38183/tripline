@@ -17,8 +17,10 @@ from tripline.events import write_text_lf
 from tripline.models import Scorecard, TechniqueCoverage
 
 LAYER_VERSION = "4.5"
-ATTACK_VERSION = "16"
+ATTACK_VERSION = "20"
 NAVIGATOR_VERSION = "5.1.0"
+# ATT&CK Navigator layer files carry the major ATT&CK version. 20 is the current release
+# (v20.0, 2026-10-13; data 20.1, 2026-11-05); see docs/attack-version.md.
 
 GAP_COLOR = "#9e9e9e"
 PENDING_COLOR = "#e0e0e0"

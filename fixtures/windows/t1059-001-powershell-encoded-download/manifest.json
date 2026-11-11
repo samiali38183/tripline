@@ -1,0 +1,22 @@
+{
+  "scenario_id": "t1059-001-powershell-encoded-download",
+  "run_guid": "c6808b6d-5809-4ade-9343-43223be2d3f9",
+  "source": "https://github.com/samiali38183/tripline/actions/runs/43090565998",
+  "events": 154,
+  "atomic_tests": {
+    "0d181431-ddf3-4826-8055-2dbf63ae848b": 141,
+    "a538de64-1c74-46ed-aa60-b995ed302598": 13
+  },
+  "events_by_channel_and_id": {
+    "Microsoft-Windows-PowerShell/Operational:4103": 7,
+    "Microsoft-Windows-PowerShell/Operational:4104": 75,
+    "Microsoft-Windows-Sysmon/Operational:1": 22,
+    "Microsoft-Windows-Sysmon/Operational:10": 1,
+    "Microsoft-Windows-Sysmon/Operational:11": 24,
+    "Security:4688": 25
+  },
+  "time_window": [
+    "2026-11-11T20:06:25.9400246Z",
+    "2026-11-11T20:06:33.3917376Z"
+  ]
+}

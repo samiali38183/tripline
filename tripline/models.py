@@ -327,6 +327,117 @@ class ScorecardTotals(BaseModel):
     """Same, restricted to scenarios that have fixtures. ``None`` if nothing is scored."""
 
 
+class BenignRuleResult(BaseModel):
+    """One rule replayed over the benign corpus."""
+
+    rule_id: str
+    title: str
+    applicable: int
+    """Benign events the rule's logsource applies to. 0 means the rule was not evaluated."""
+    matched: int
+    """Benign events the rule matched. Every one is a false positive."""
+    examples: list[str] = Field(default_factory=list)
+    """Up to three matched command lines or paths, so the false positive can be judged."""
+
+
+class BenignReport(BaseModel):
+    """False-positive measurement: every compiled rule replayed over a benign corpus."""
+
+    events: int
+    rules: list[BenignRuleResult]
+
+    @property
+    def evaluated(self) -> list[BenignRuleResult]:
+        """Rules with at least one applicable benign event."""
+        return [r for r in self.rules if r.applicable > 0]
+
+    @property
+    def firing(self) -> list[BenignRuleResult]:
+        """Rules that matched at least one benign event."""
+        return [r for r in self.rules if r.matched > 0]
+
+    @property
+    def total_matches(self) -> int:
+        """Sum of benign events matched, over all rules."""
+        return sum(r.matched for r in self.rules)
+
+    def summary(self) -> str:
+        """One line for the CLI, the scorecard and the README."""
+        return (
+            f"{self.total_matches} false-positive matches from {len(self.firing)} of "
+            f"{len(self.evaluated)} evaluated rules on {self.events} benign events "
+            f"({len(self.rules) - len(self.evaluated)} of {len(self.rules)} rules had no "
+            "applicable benign events and were not evaluated)"
+        )
+
+
+class RobustnessVariant(BaseModel):
+    """One generated variant of an attack command and which rules still match it."""
+
+    family: str
+    kind: str
+    """``cmdline`` (same tool, different spelling) or ``alt-tool`` (different tool, same effect)."""
+    label: str
+    caught: dict[str, bool | None]
+    """Rule id -> matched at least one event of the variant; ``None`` when the rule's logsource
+    applies to none of the variant's events (a file-event rule and a process variant)."""
+
+
+class RobustnessRule(BaseModel):
+    """How many of a scenario's variants one rule still catches."""
+
+    rule_id: str
+    title: str
+    expected: bool
+    """True when the scenario lists the rule under ``expected_rules`` (else a comparison rule)."""
+    cmdline_variants: int
+    """Command-line variants the rule's logsource applies to."""
+    cmdline_caught: int
+    alt_tool_variants: int
+    alt_tool_caught: int
+
+
+class RobustnessScenario(BaseModel):
+    """Evasion sweep for one scenario."""
+
+    scenario_id: str
+    technique: str
+    variants: list[RobustnessVariant]
+    rules: list[RobustnessRule]
+    cmdline_total: int = 0
+    cmdline_any_caught: int = 0
+    """Command-line variants caught by at least one *expected* rule (the scenario's own view)."""
+    alt_tool_total: int = 0
+    alt_tool_any_caught: int = 0
+
+
+class RobustnessReport(BaseModel):
+    """Deterministic variant sweep: how many spellings of each attack the rules still catch."""
+
+    seed: int
+    scenarios: list[RobustnessScenario]
+
+    @property
+    def cmdline_total(self) -> int:
+        """Command-line variants generated across all scenarios."""
+        return sum(s.cmdline_total for s in self.scenarios)
+
+    @property
+    def cmdline_any_caught(self) -> int:
+        """Command-line variants caught by at least one expected rule of their scenario."""
+        return sum(s.cmdline_any_caught for s in self.scenarios)
+
+    def summary(self) -> str:
+        """One line for the CLI, the scorecard and the README."""
+        alt = sum(s.alt_tool_total for s in self.scenarios)
+        alt_caught = sum(s.alt_tool_any_caught for s in self.scenarios)
+        return (
+            f"{self.cmdline_any_caught} of {self.cmdline_total} command-line variants caught by "
+            f"an expected rule across {len(self.scenarios)} Linux scenarios; "
+            f"{alt_caught} of {alt} alternative-tool variants"
+        )
+
+
 class GateResult(BaseModel):
     """Outcome of applying the gate to a scorecard."""
 
@@ -344,6 +455,10 @@ class Scorecard(BaseModel):
     scenarios: list[ScenarioScore]
     techniques: list[TechniqueCoverage]
     gate: GateResult
+    robustness: RobustnessReport | None = None
+    """Added in 0.3.0: variant sweep for the Linux scenarios. ``None`` when not computed."""
+    benign: BenignReport | None = None
+    """Added in 0.3.0: false positives on the benign corpus. ``None`` when no corpus was found."""
 
     def rule(self, rule_id: str) -> RuleScore | None:
         """Look up a rule score by Sigma rule id."""

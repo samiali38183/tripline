@@ -2,7 +2,7 @@ id: t1070-003-clear-command-history
 name: "Indicator Removal: clear command history"
 plane: linux
 technique: T1070.003
-tactic: defense-evasion
+tactic: stealth
 weight: 2
 emulation:
   kind: atomic

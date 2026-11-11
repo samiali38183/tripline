@@ -98,7 +98,27 @@ the rule that should have fired, why it did not, and what changed.
     atomics redirect to a relative file name (`> hello.txt`, `> AtomicTest.vbs`) after the
     working directory is already `%TEMP%`. The file still lands in a suspicious folder, but the
     command line does not say so. 0/13. This is a real evasion of the rule, same family as F-001.
-* **Added in 0.2.1, not yet confirmed on recorded telemetry.** Two tripline rules target the
+* **Update, run [43090565998](https://github.com/samiali38183/tripline/actions/runs/43090565998)
+  (0.3.0, `windows-latest`):** recorded telemetry confirms the two tripline rules below and the
+  encoded-command half of T1059.001, so three scenarios now pass with committed fixtures.
+  * T1059.003: SigmaHQ `8e0bb260` matched 0 of 11 applicable events; tripline
+    `467585b7` matched 2 of 11 (Sysmon EID 1, `echo ... > hello.txt` and `> AtomicTest.vbs` from a
+    Temp working directory). The scenario now expects the tripline rule.
+  * T1053.005: SigmaHQ `3a734d25` matched 0 of 6 applicable events; tripline `eb3f5405` matched 1
+    of 6 (the 4698 event for `schtasks /Create ... /TR C:\windows\system32\cmd.exe`). The
+    scenario expects the tripline rule next to SigmaHQ `92626ddd` (1 of 4).
+  * T1059.001: ART #17 (`powershell.exe -e <base64>`, replacing the manual-only #9) and #15 ran;
+    SigmaHQ `fb843269` matched 3 of 22 Sysmon/Security process events, including the real
+    `powershell.exe  -e  JgAg...` command line. The download-cradle rule `403c2cc0` matched 0 of 75
+    script blocks: no automated atomic runs a `System.Net.WebClient` cradle, so that half was
+    removed from the scenario rather than claimed.
+  * T1027: still pending. The recording (ART #7, #11 and #2) gave `44e24481` 0 of 15 applicable
+    events. `fb843269` fires on the base64 atomic (#2), but that is the T1059.001 rule, and
+    re-labelling T1027 to expect it would raise the number without testing an obfuscation rule.
+  * The tripline rules were written in 0.2.1 from the F-003 analysis and were not edited after
+    this recording; a caveat remains that two of them are tuned to the Atomic tests' command shape.
+  Attempts used: 1 (of 2 allowed).
+* **Added in 0.2.1 (original note, superseded by the update above).** Two tripline rules target the
   T1059.003 and T1053.005 gaps above. They are exercised only by hand-written synthetic events in
   `tests/test_windows_rules.py` (labelled synthetic there; nothing under `fixtures/`, nothing
   counted in the scorecard). No scenario expects them yet and all seven Windows scenarios stay
@@ -120,3 +140,34 @@ the rule that should have fired, why it did not, and what changed.
 * **Open observation:** for the same processes, Sysmon EID 1 `CommandLine` shows `%%TEMP%%` and
   `%%LOCALAPPDATA:~-3,1%%` while Security 4688 shows `%TEMP%`. Not explained yet; any rule that
   matches a literal `%VAR%` will behave differently per source.
+
+## F-004 - Evasion sweep: what the first variant run showed (0.3.0)
+
+* **Method:** `tripline robustness` (seed 20261111; [`robustness.md`](robustness.md)) generates
+  deterministic command-line variants of the three Linux attacks and replays them. 251
+  command-line variants and 4 alternative-tool variants in total.
+* **Setuid rule family (108 command-line variants):** the tripline replacement caught 105 before
+  and 106 after this change; the vendored SigmaHQ *Setuid and Setgid* rule caught 0 of 108 (it
+  requires `chown root` in the same command line and a literal ` chmod u+s`).
+  * **Fixed:** `busybox chmod u+s f` runs as `/usr/bin/busybox`, so the `Image` selection missed
+    it. The selection now accepts `/busybox`; the command-line patterns still need the `chmod`
+    token. Tests: `test_setuid_rule_catches_busybox_multicall_form` (also a benign busybox form and
+    another applet).
+  * **Documented, not fixed:** `chmod u+s` on a file under `/usr/share/doc/` is exempted by the
+    package-documentation filter (a deliberate false-positive trade-off); a renamed copy of
+    `chmod` (`Image` and argv no longer say chmod) cannot be matched on the command line; the four
+    alternative-tool variants (`install -m 4755`, `python3 os.chmod`, `perl chmod`) are outside the
+    rule's scope (0 of 4).
+* **History clearing (103 variants):** an expected rule catches 71. All `rm`, binary-path and flag
+  variants are caught; misses are concentrated in shell builtins and wrapper text. The vendored
+  keyword rule matches literal strings, so `history  -c` (two spaces), a tab, `"history" -c`,
+  `h''istory -c`, `HISTFILESIZE=0` without `export`, `export HISTSIZE=0`, `HISTFILE=/dev/null`,
+  `set +o history`, `> ~/.bash_history`, `: > file`, `truncate -s 0`, `truncate --size=0`,
+  `ln -s -f`, `cp /dev/null` and `dd if=/dev/null` are not caught. `unset HISTFILE` is excluded
+  upstream on purpose (false-positive prone). These are gaps in vendored rules, reported not patched.
+* **Cron (40 variants):** an expected rule catches 23. The crontab rule only fires when the
+  argument contains `/tmp/` (`crontab /dev/shm/x`, `./x`, `~/x`, `-` from stdin are missed); the
+  file rule's allow-list exempts `/etc/cron.daily/apt` and `/etc/cron.daily/dpkg` (an attacker
+  can use those names), it misses `/etc/./cron.d/x`, `/var/spool/cron/<user>` and `/etc/anacrontab`.
+* **Limits:** the lists are hand-written, not exhaustive; a catch rate over them does not
+  measure real-world evasion.

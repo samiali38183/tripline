@@ -6,19 +6,33 @@ name: emulate-linux
 
 on:
   workflow_dispatch:
+    inputs:
+      record:
+        description: "atomics = Atomic Red Team scenarios; benign = ordinary workload for the false-positive corpus"
+        type: choice
+        options: [atomics, benign]
+        default: atomics
   schedule:
     - cron: "17 6 * * 1" # weekly drift check (Monday 06:17 UTC)
 
 permissions:
   contents: read
 
+concurrency:
+  group: emulate-linux
+  cancel-in-progress: false
+
 jobs:
   emulate:
+    name: record Linux telemetry
+    if: github.event_name != 'workflow_dispatch' || inputs.record == 'atomics'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.12"
           cache: pip
@@ -59,6 +73,7 @@ jobs:
           RUN_GUID=$(cat /proc/sys/kernel/random/uuid)
           echo "RUN_GUID=$RUN_GUID" >> "$GITHUB_ENV"
           echo "run guid $RUN_GUID"
+          # shellcheck disable=SC2016  # single quotes are intentional: pwsh expands the variable
           ART='Import-Module /tmp/AtomicRedTeam/invoke-atomicredteam/Invoke-AtomicRedTeam.psd1 -Force; $PSDefaultParameterValues["Invoke-AtomicTest:PathToAtomicsFolder"] = "/tmp/AtomicRedTeam/atomics";'
           while read -r sid guid tech; do
             echo "::group::$sid $tech $guid"
@@ -74,22 +89,91 @@ jobs:
       - name: Export audit log
         run: |
           sleep 2
-          sudo cat /var/log/audit/audit.log* > audit.log
+          sudo sh -c 'cat /var/log/audit/audit.log*' | tee audit.log > /dev/null
           wc -l audit.log
           grep -c tripline-marker audit.log || true
 
       - name: Collect fixtures and assert expected rules fire
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           tripline linux collect audit.log \
             --run-guid "$RUN_GUID" \
-            --source "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --source "$RUN_URL" \
             --require-all --replay
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: linux-fixtures-${{ github.run_id }}
           path: |
             fixtures/linux/
             audit.log
+          retention-days: 30
+
+  benign:
+    name: record benign Linux telemetry (false-positive corpus)
+    if: github.event_name == 'workflow_dispatch' && inputs.record == 'benign'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e .
+
+      - name: Install auditd and load tripline audit rules (same as emulate-linux.yml)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq auditd
+          sudo systemctl start auditd || sudo service auditd start
+          sudo auditctl -D
+          sudo auditctl -a always,exit -F arch=b64 -S execve -k tripline_exec
+          sudo auditctl -a always,exit -F arch=b32 -S execve -k tripline_exec
+          for d in /etc/cron.d /etc/cron.daily /etc/cron.hourly /etc/cron.weekly /etc/cron.monthly /var/spool/cron/crontabs /etc/crontab; do
+            sudo auditctl -w "$d" -p wa -k tripline_cron || true
+          done
+          sudo auditctl -l
+          sudo auditctl -s
+
+      - name: Run the benign workload between tripline markers
+        run: |
+          RUN_GUID=$(cat /proc/sys/kernel/random/uuid)
+          echo "RUN_GUID=$RUN_GUID" >> "$GITHUB_ENV"
+          sh -c "true tripline-marker $RUN_GUID benign start"
+          bash scripts/linux/benign_workload.sh
+          sleep 2
+          sh -c "true tripline-marker $RUN_GUID benign end"
+
+      - name: Export audit log
+        run: |
+          sleep 2
+          sudo sh -c 'cat /var/log/audit/audit.log*' | tee audit.log > /dev/null
+          wc -l audit.log
+          grep -c tripline-marker audit.log || true
+
+      - name: Sanitize and collect the benign corpus
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          tripline linux collect-benign audit.log \
+            --run-guid "$RUN_GUID" \
+            --source "$RUN_URL" \
+            --redact-host "$(hostname)" \
+            --redact-host "$(hostname -f 2>/dev/null || true)"
+          wc -c fixtures/benign/linux/run.ndjson
+          cat fixtures/benign/linux/manifest.json
+          tripline benign
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: benign-linux-${{ github.run_id }}
+          path: fixtures/benign/
           retention-days: 30

@@ -22,8 +22,9 @@ tripline replay --all             # the detection gate; exit 1 = an expected rul
 ## Adding a scenario
 
 1. Create `scenarios/<technique>-<slug>.yaml` (strict schema: unknown keys are rejected, see
-   `tripline/models.py::Scenario`). Weight is the Red Canary Threat Detection Report prevalence
-   rank bucket (10 = most prevalent, 1 = niche).
+   `tripline/models.py::Scenario`). Weight is 11 minus the technique's rank in the Red Canary
+   Threat Detection Report top 10 when it is listed there; otherwise a low hand-assigned value
+   (see `docs/weights.md`; do not present a hand-assigned weight as sourced).
 2. Add or vendor the Sigma rule(s) under `rules/sigma/<plane>/`. SigmaHQ rules are copied verbatim
    with the two-line attribution header (`rules/sigma/LICENSE-DRL.md`).
 3. Cloud scenarios: add a `Recipe` to `tripline/cloud/sources.py` and run `tripline cloud build`.

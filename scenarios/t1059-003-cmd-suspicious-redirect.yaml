@@ -12,7 +12,13 @@ emulation:
     - d0eb3597-a1b3-4d65-b33b-2cda8d397f20  # ART #3: Suspicious Execution via Windows Command Shell
     - 00682c9f-7df4-4df8-950b-6dcaaa3ad9af  # ART #6: Command prompt writing script to file then executes it
 expected_rules:
-  - 8e0bb260-d4b2-4fff-bb8d-3f82118e6892  # Potentially Suspicious CMD Shell Output Redirect (SigmaHQ)
-fixtures: []  # Phase A2: recorded on a GitHub Actions windows runner
+  - 467585b7-9de8-40e5-bb2a-6626902ae295  # CMD Output Redirected to a Relative Path From a Suspicious Working Directory (tripline)
+fixtures:
+  - path: fixtures/windows/t1059-003-cmd-suspicious-redirect/run.ndjson
+    provenance: recorded
+    source: https://github.com/samiali38183/tripline/actions/runs/43090565998
+    notes: Sysmon, Security 4688/4698 and PowerShell logs on windows-latest (Server 2025), Invoke-AtomicTest between tripline markers; see manifest.json
 notes: >-
-  Red Canary 2026 #3.
+  Red Canary 2026 #3. SigmaHQ 'Potentially Suspicious CMD Shell Output Redirect' (8e0bb260) matched 0 of 11 applicable events on the
+  recording (relative redirect target), so the scenario expects the tripline replacement, which matched 2 of 11 real Sysmon EID 1 events
+  (docs/findings.md F-003). The replacement was written before this recording and not changed after it.

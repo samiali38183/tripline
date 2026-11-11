@@ -1,0 +1,2390 @@
+{
+  "seed": 20261111,
+  "scenarios": [
+    {
+      "scenario_id": "t1053-003-cron-persistence",
+      "technique": "T1053.003",
+      "variants": [
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "crontab /tmp/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": true,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "crontab //tmp//persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": true,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "crontab /tmp/../tmp/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": true,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "crontab /var/tmp/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": true,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "crontab /dev/shm/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": false,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "crontab ./persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": false,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "crontab /root/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": false,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "crontab /home/runner/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": false,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "crontab /run/user/1001/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": false,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "/usr/bin/crontab /tmp/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": true,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "/usr/bin/crontab //tmp//persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": true,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "/usr/bin/crontab /tmp/../tmp/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": true,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "/usr/bin/crontab /var/tmp/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": true,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "/usr/bin/crontab /dev/shm/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": false,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "/usr/bin/crontab ./persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": false,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "/usr/bin/crontab /root/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": false,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "/usr/bin/crontab /home/runner/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": false,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-invocation",
+          "kind": "cmdline",
+          "label": "/usr/bin/crontab /run/user/1001/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": false,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-flags",
+          "kind": "cmdline",
+          "label": "crontab -u root /tmp/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": true,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-flags",
+          "kind": "cmdline",
+          "label": "crontab /tmp/persistevil -u root",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": true,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-flags",
+          "kind": "cmdline",
+          "label": "crontab -i /tmp/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": true,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-flags",
+          "kind": "cmdline",
+          "label": "crontab -- /tmp/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": true,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-stdin",
+          "kind": "cmdline",
+          "label": "crontab - < /tmp/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": false,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "crontab-stdin",
+          "kind": "cmdline",
+          "label": "cat /tmp/persistevil | crontab -",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": false,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": null
+          }
+        },
+        {
+          "family": "cron-file-path",
+          "kind": "cmdline",
+          "label": "create /etc/cron.d/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": null,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": true
+          }
+        },
+        {
+          "family": "cron-file-path",
+          "kind": "cmdline",
+          "label": "create /etc/cron.d//persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": null,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": true
+          }
+        },
+        {
+          "family": "cron-file-path",
+          "kind": "cmdline",
+          "label": "create /etc/./cron.d/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": null,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": false
+          }
+        },
+        {
+          "family": "cron-file-path",
+          "kind": "cmdline",
+          "label": "create /etc/cron.d/../cron.d/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": null,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": true
+          }
+        },
+        {
+          "family": "cron-file-path",
+          "kind": "cmdline",
+          "label": "create /etc/cron.hourly/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": null,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": true
+          }
+        },
+        {
+          "family": "cron-file-path",
+          "kind": "cmdline",
+          "label": "create /etc/cron.daily/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": null,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": true
+          }
+        },
+        {
+          "family": "cron-file-path",
+          "kind": "cmdline",
+          "label": "create /etc/cron.weekly/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": null,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": true
+          }
+        },
+        {
+          "family": "cron-file-path",
+          "kind": "cmdline",
+          "label": "create /etc/cron.monthly/persistevil",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": null,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": true
+          }
+        },
+        {
+          "family": "cron-file-path",
+          "kind": "cmdline",
+          "label": "create /etc/cron.daily/apt",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": null,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": false
+          }
+        },
+        {
+          "family": "cron-file-path",
+          "kind": "cmdline",
+          "label": "create /etc/cron.daily/dpkg",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": null,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": false
+          }
+        },
+        {
+          "family": "cron-file-path",
+          "kind": "cmdline",
+          "label": "create /etc/crontab",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": null,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": true
+          }
+        },
+        {
+          "family": "cron-file-path",
+          "kind": "cmdline",
+          "label": "create /var/spool/cron/crontabs/root",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": null,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": true
+          }
+        },
+        {
+          "family": "cron-file-path",
+          "kind": "cmdline",
+          "label": "create /var/spool/cron/crontabs/alice",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": null,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": true
+          }
+        },
+        {
+          "family": "cron-file-path",
+          "kind": "cmdline",
+          "label": "create /var/spool/cron/root",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": null,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": true
+          }
+        },
+        {
+          "family": "cron-file-path",
+          "kind": "cmdline",
+          "label": "create /var/spool/cron/alice",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": null,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": false
+          }
+        },
+        {
+          "family": "cron-file-path",
+          "kind": "cmdline",
+          "label": "create /etc/anacrontab",
+          "caught": {
+            "6b14bac8-3e3a-4324-8109-42f0546a347f": null,
+            "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05": false
+          }
+        }
+      ],
+      "rules": [
+        {
+          "rule_id": "6b14bac8-3e3a-4324-8109-42f0546a347f",
+          "title": "Scheduled Cron Task/Job - Linux",
+          "expected": true,
+          "cmdline_variants": 24,
+          "cmdline_caught": 12,
+          "alt_tool_variants": 0,
+          "alt_tool_caught": 0
+        },
+        {
+          "rule_id": "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05",
+          "title": "New Cron File Created",
+          "expected": true,
+          "cmdline_variants": 16,
+          "cmdline_caught": 11,
+          "alt_tool_variants": 0,
+          "alt_tool_caught": 0
+        }
+      ],
+      "cmdline_total": 40,
+      "cmdline_any_caught": 23,
+      "alt_tool_total": 0,
+      "alt_tool_any_caught": 0
+    },
+    {
+      "scenario_id": "t1070-003-clear-command-history",
+      "technique": "T1070.003",
+      "variants": [
+        {
+          "family": "history-file-path",
+          "kind": "cmdline",
+          "label": "rm /root/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "history-file-path",
+          "kind": "cmdline",
+          "label": "rm /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "history-file-path",
+          "kind": "cmdline",
+          "label": "rm .bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "history-file-path",
+          "kind": "cmdline",
+          "label": "rm /home/runner/./.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "history-file-path",
+          "kind": "cmdline",
+          "label": "rm /home/runner/../runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "history-file-path",
+          "kind": "cmdline",
+          "label": "rm /root//.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "history-file-path",
+          "kind": "cmdline",
+          "label": "rm /home/runner/.zsh_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "history-file-path",
+          "kind": "cmdline",
+          "label": "rm /home/runner/.sh_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "history-file-path",
+          "kind": "cmdline",
+          "label": "rm /home/runner/.history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "history-file-path",
+          "kind": "cmdline",
+          "label": "rm /home/runner/.local/share/fish/fish_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "rm /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "rm -f /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "rm -rf /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "rm -v /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "rm --force /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "rm -- /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "rm -f -- /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "/bin/rm /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "/bin/rm -f /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "/bin/rm -rf /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "/bin/rm -v /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "/bin/rm --force /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "/bin/rm -- /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "/bin/rm -f -- /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "/usr/bin/rm /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "/usr/bin/rm -f /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "/usr/bin/rm -rf /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "/usr/bin/rm -v /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "/usr/bin/rm --force /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "/usr/bin/rm -- /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "rm-binary-and-flags",
+          "kind": "cmdline",
+          "label": "/usr/bin/rm -f -- /home/runner/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "other-tool",
+          "kind": "cmdline",
+          "label": "unlink f",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "other-tool",
+          "kind": "cmdline",
+          "label": "shred -u f",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "other-tool",
+          "kind": "cmdline",
+          "label": "shred -uz f",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": true
+          }
+        },
+        {
+          "family": "other-tool",
+          "kind": "cmdline",
+          "label": "truncate -s0 f",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "other-tool",
+          "kind": "cmdline",
+          "label": "truncate -s 0 f",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "other-tool",
+          "kind": "cmdline",
+          "label": "truncate --size=0 f",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "other-tool",
+          "kind": "cmdline",
+          "label": "ln -sf /dev/null f",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "other-tool",
+          "kind": "cmdline",
+          "label": "ln -s -f /dev/null f",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "other-tool",
+          "kind": "cmdline",
+          "label": "ln -fs /dev/null f",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "other-tool",
+          "kind": "cmdline",
+          "label": "cp /dev/null f",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "other-tool",
+          "kind": "cmdline",
+          "label": "dd if=/dev/null of=f",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "other-tool",
+          "kind": "cmdline",
+          "label": "chattr +i f",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-redirect",
+          "kind": "cmdline",
+          "label": "cat /dev/null > ~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-redirect",
+          "kind": "cmdline",
+          "label": "cat /dev/zero > ~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-redirect",
+          "kind": "cmdline",
+          "label": "cat /dev/null >~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-redirect",
+          "kind": "cmdline",
+          "label": ": > ~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-redirect",
+          "kind": "cmdline",
+          "label": "> ~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-redirect",
+          "kind": "cmdline",
+          "label": "echo \"\" > ~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-redirect",
+          "kind": "cmdline",
+          "label": "echo -n > ~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-redirect",
+          "kind": "cmdline",
+          "label": "printf '' > ~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-redirect",
+          "kind": "cmdline",
+          "label": "tee ~/.bash_history < /dev/null",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-builtin",
+          "kind": "cmdline",
+          "label": "history -c",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-builtin",
+          "kind": "cmdline",
+          "label": "history -w",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-builtin",
+          "kind": "cmdline",
+          "label": "history -c && history -w",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-builtin",
+          "kind": "cmdline",
+          "label": "export HISTFILESIZE=0",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-builtin",
+          "kind": "cmdline",
+          "label": "HISTFILESIZE=0",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-builtin",
+          "kind": "cmdline",
+          "label": "export HISTSIZE=0",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-builtin",
+          "kind": "cmdline",
+          "label": "unset HISTFILE",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-builtin",
+          "kind": "cmdline",
+          "label": "export HISTFILE=/dev/null",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-builtin",
+          "kind": "cmdline",
+          "label": "HISTFILE=/dev/null",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-builtin",
+          "kind": "cmdline",
+          "label": "set +o history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-builtin",
+          "kind": "cmdline",
+          "label": "shopt -ou history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "shell-builtin",
+          "kind": "cmdline",
+          "label": "shopt -uo history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "double-space: history  -c",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "tab: history\t-c",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "leading-space:  history -c",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "trailing-semicolon: history -c;",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "quoted-command: \"history\" -c",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "single-quoted-command: 'history' -c",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "split-quote: h''istory -c",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "backslash: \\history -c",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "command-prefix: command history -c",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "env-prefix: FOO=1 history -c",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "subshell: (history -c)",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "brace-group: { history -c; }",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "eval: eval \"history -c\"",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "double-space: export  HISTFILESIZE=0",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "tab: export\tHISTFILESIZE=0",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "leading-space:  export HISTFILESIZE=0",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "trailing-semicolon: export HISTFILESIZE=0;",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "quoted-command: \"export\" HISTFILESIZE=0",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "single-quoted-command: 'export' HISTFILESIZE=0",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "split-quote: e''xport HISTFILESIZE=0",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "backslash: \\export HISTFILESIZE=0",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "command-prefix: command export HISTFILESIZE=0",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "env-prefix: FOO=1 export HISTFILESIZE=0",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "subshell: (export HISTFILESIZE=0)",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "brace-group: { export HISTFILESIZE=0; }",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "eval: eval \"export HISTFILESIZE=0\"",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "double-space: cat  /dev/null > ~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "tab: cat\t/dev/null > ~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "leading-space:  cat /dev/null > ~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "trailing-semicolon: cat /dev/null > ~/.bash_history;",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "quoted-command: \"cat\" /dev/null > ~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "single-quoted-command: 'cat' /dev/null > ~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "split-quote: c''at /dev/null > ~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": false,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "backslash: \\cat /dev/null > ~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "command-prefix: command cat /dev/null > ~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "env-prefix: FOO=1 cat /dev/null > ~/.bash_history",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "subshell: (cat /dev/null > ~/.bash_history)",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "brace-group: { cat /dev/null > ~/.bash_history; }",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        },
+        {
+          "family": "wrapper-whitespace-quoting",
+          "kind": "cmdline",
+          "label": "eval: eval \"cat /dev/null > ~/.bash_history\"",
+          "caught": {
+            "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e": true,
+            "1182f3b3-e716-4efa-99ab-d2685d04360f": false
+          }
+        }
+      ],
+      "rules": [
+        {
+          "rule_id": "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e",
+          "title": "Linux Command History Tampering",
+          "expected": true,
+          "cmdline_variants": 103,
+          "cmdline_caught": 69,
+          "alt_tool_variants": 0,
+          "alt_tool_caught": 0
+        },
+        {
+          "rule_id": "1182f3b3-e716-4efa-99ab-d2685d04360f",
+          "title": "History File Deletion",
+          "expected": true,
+          "cmdline_variants": 103,
+          "cmdline_caught": 34,
+          "alt_tool_variants": 0,
+          "alt_tool_caught": 0
+        }
+      ],
+      "cmdline_total": 103,
+      "cmdline_any_caught": 71,
+      "alt_tool_total": 0,
+      "alt_tool_any_caught": 0
+    },
+    {
+      "scenario_id": "t1548-001-setuid-setgid",
+      "technique": "T1548.001",
+      "variants": [
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod u+s /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod u+xs /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod g+s /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod g+xs /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod ug+s /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod a+s /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod +s /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod u=rwxs /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod u+rwxs /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod g+w,u+s /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod u+s,g+w /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod a=rwxs /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod u+x,u+s /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod u+s,go-w /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod 4755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod 04755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod 2755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod 6755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod 7755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod 4777 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod 4000 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod 06755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "mode-form",
+          "kind": "cmdline",
+          "label": "chmod 4111 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "binary-path",
+          "kind": "cmdline",
+          "label": "chmod u+xs /tmp/evilBinary (exe /usr/bin/chmod)",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "binary-path",
+          "kind": "cmdline",
+          "label": "chmod u+xs /tmp/evilBinary (exe /bin/chmod)",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "binary-path",
+          "kind": "cmdline",
+          "label": "/bin/chmod u+xs /tmp/evilBinary (exe /usr/bin/chmod)",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "binary-path",
+          "kind": "cmdline",
+          "label": "/bin/chmod u+xs /tmp/evilBinary (exe /bin/chmod)",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "binary-path",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod u+xs /tmp/evilBinary (exe /usr/bin/chmod)",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "binary-path",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod u+xs /tmp/evilBinary (exe /bin/chmod)",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "binary-path",
+          "kind": "cmdline",
+          "label": "/usr/local/bin/../../bin/chmod u+xs /tmp/evilBinary (exe /usr/bin/chmod)",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "binary-path",
+          "kind": "cmdline",
+          "label": "/usr/local/bin/../../bin/chmod u+xs /tmp/evilBinary (exe /bin/chmod)",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "flags-before-mode",
+          "kind": "cmdline",
+          "label": "chmod 4755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "flags-before-mode",
+          "kind": "cmdline",
+          "label": "chmod -v 4755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "flags-before-mode",
+          "kind": "cmdline",
+          "label": "chmod -R 4755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "flags-before-mode",
+          "kind": "cmdline",
+          "label": "chmod -f 4755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "flags-before-mode",
+          "kind": "cmdline",
+          "label": "chmod -vR 4755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "flags-before-mode",
+          "kind": "cmdline",
+          "label": "chmod -Rf 4755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "flags-before-mode",
+          "kind": "cmdline",
+          "label": "chmod -c 4755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "flags-before-mode",
+          "kind": "cmdline",
+          "label": "chmod --verbose 4755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "flags-before-mode",
+          "kind": "cmdline",
+          "label": "chmod --recursive 4755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "flags-before-mode",
+          "kind": "cmdline",
+          "label": "chmod -- 4755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "flags-before-mode",
+          "kind": "cmdline",
+          "label": "chmod -v -- 4755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "flags-before-mode",
+          "kind": "cmdline",
+          "label": "chmod --quiet -- 4755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "argument-order",
+          "kind": "cmdline",
+          "label": "chmod u+s -v /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "argument-order",
+          "kind": "cmdline",
+          "label": "chmod u+s -- /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "argument-order",
+          "kind": "cmdline",
+          "label": "chmod u+s /tmp/evilBinary -R",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "argument-order",
+          "kind": "cmdline",
+          "label": "chmod -R u+s /tmp/evilBinary -v",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "argument-order",
+          "kind": "cmdline",
+          "label": "chmod u+s /tmp/evilBinary /tmp/second",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "argument-order",
+          "kind": "cmdline",
+          "label": "chmod u+s /tmp/first /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "argument-order",
+          "kind": "cmdline",
+          "label": "chmod -- 4755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "operand-path",
+          "kind": "cmdline",
+          "label": "chmod u+s /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "operand-path",
+          "kind": "cmdline",
+          "label": "chmod u+s ./evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "operand-path",
+          "kind": "cmdline",
+          "label": "chmod u+s /tmp//evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "operand-path",
+          "kind": "cmdline",
+          "label": "chmod u+s /tmp/../tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "operand-path",
+          "kind": "cmdline",
+          "label": "chmod u+s /home/runner/evil binary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "operand-path",
+          "kind": "cmdline",
+          "label": "chmod u+s /dev/shm/x",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "operand-path",
+          "kind": "cmdline",
+          "label": "chmod u+s evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "operand-path",
+          "kind": "cmdline",
+          "label": "chmod u+s /usr/share/doc/evil/bin",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": false,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "operand-path",
+          "kind": "cmdline",
+          "label": "chmod u+s /usr/share/doc/../../../tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "operand-path",
+          "kind": "cmdline",
+          "label": "chmod u+s /tmp/evilBinary /usr/share/doc/x",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "wrapper-prefix",
+          "kind": "cmdline",
+          "label": "sudo chmod u+xs /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "wrapper-prefix",
+          "kind": "cmdline",
+          "label": "sudo -n chmod u+xs /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "wrapper-prefix",
+          "kind": "cmdline",
+          "label": "env FOO=1 chmod u+xs /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "wrapper-prefix",
+          "kind": "cmdline",
+          "label": "nice -n 5 chmod u+xs /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "wrapper-prefix",
+          "kind": "cmdline",
+          "label": "timeout 5 chmod u+xs /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "wrapper-prefix",
+          "kind": "cmdline",
+          "label": "stdbuf -o0 chmod u+xs /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "renamed-binary",
+          "kind": "cmdline",
+          "label": "cp /bin/chmod /tmp/.c; /tmp/.c u+s f",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": false,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "multicall-binary",
+          "kind": "cmdline",
+          "label": "busybox chmod u+s f",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/local/bin/../../bin/chmod -vR a=rwxs ./evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/local/bin/../../bin/chmod -Rf 4000 /home/runner/evil binary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "chmod -R g+s /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/local/bin/../../bin/chmod --verbose u+rwxs ./evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod -Rf g+xs /dev/shm/x",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod --recursive +s /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/bin/chmod --quiet -- g+s /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/local/bin/../../bin/chmod -v -- 4000 evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod -v g+xs /tmp//evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/local/bin/../../bin/chmod -v -- u=rwxs /tmp//evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod --verbose 4755 /dev/shm/x",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/local/bin/../../bin/chmod -v -- ug+s /dev/shm/x",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/bin/chmod -R a+s /tmp/../tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod -R 04755 /tmp/../tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/bin/chmod --quiet -- u+s,go-w /dev/shm/x",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod ug+s /home/runner/evil binary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod --verbose u+x,u+s ./evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "chmod -vR u+s /tmp/../tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/local/bin/../../bin/chmod -v -- 4111 /dev/shm/x",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "chmod -Rf 6755 evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/bin/chmod --verbose +s /tmp/../tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod --verbose u+s,go-w /dev/shm/x",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod -v -- u=rwxs /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/bin/chmod -Rf 6755 /tmp/../tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod 06755 ./evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/bin/chmod --quiet -- u+x,u+s ./evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod -v u+x,u+s /home/runner/evil binary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod -vR 04755 /tmp/../tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "chmod -v 4000 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod -v -- 2755 /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "chmod -v -- 4111 evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod -v a+s /tmp/../tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/bin/chmod --recursive u+rwxs /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/local/bin/../../bin/chmod -v -- a+s evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/local/bin/../../bin/chmod --recursive u+rwxs /tmp//evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod -v u+s,go-w evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/local/bin/../../bin/chmod -R u+rwxs /tmp//evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod -f 2755 /home/runner/evil binary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/bin/chmod -f u+s,g+w /tmp/evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "random-combination",
+          "kind": "cmdline",
+          "label": "/usr/bin/chmod --recursive u+xs ./evilBinary",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": true,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "alternative-tool",
+          "kind": "alt-tool",
+          "label": "install -m 4755 /tmp/src /tmp/dst",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": false,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "alternative-tool",
+          "kind": "alt-tool",
+          "label": "install -m4755 /tmp/src /tmp/dst",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": false,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "alternative-tool",
+          "kind": "alt-tool",
+          "label": "python3 -c os.chmod(f, 0o4755)",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": false,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        },
+        {
+          "family": "alternative-tool",
+          "kind": "alt-tool",
+          "label": "perl -e chmod 04755, f",
+          "caught": {
+            "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d": false,
+            "c21c4eaa-ba2e-419a-92b2-8371703cbe21": false
+          }
+        }
+      ],
+      "rules": [
+        {
+          "rule_id": "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d",
+          "title": "Setuid or Setgid Bit Set via Chmod (Any Mode Form)",
+          "expected": true,
+          "cmdline_variants": 108,
+          "cmdline_caught": 106,
+          "alt_tool_variants": 4,
+          "alt_tool_caught": 0
+        },
+        {
+          "rule_id": "c21c4eaa-ba2e-419a-92b2-8371703cbe21",
+          "title": "Setuid and Setgid",
+          "expected": false,
+          "cmdline_variants": 108,
+          "cmdline_caught": 0,
+          "alt_tool_variants": 4,
+          "alt_tool_caught": 0
+        }
+      ],
+      "cmdline_total": 108,
+      "cmdline_any_caught": 106,
+      "alt_tool_total": 4,
+      "alt_tool_any_caught": 0
+    }
+  ]
+}

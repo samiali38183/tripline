@@ -65,8 +65,13 @@ the weekly drift run going red or by artifact review.
 
 *Example:* a PR edits `ci.yml` to always exit 0. *Mitigations:* workflow files are visible in the
 diff; branch protection on `main` requiring the `detection gate` check is the intended setting
-(documented, not enforced by the repository itself). *Not mitigated:* fork PRs are not enabled;
-if they were, `pull_request_target` must never be used with checkout of the PR head.
+(documented, not enforced by the repository itself). Since 0.3.0 every
+GitHub Action is pinned to a full commit SHA (with the tag in a comment), permissions are scoped
+per job (the workflow default is none), `actions/checkout` runs with `persist-credentials: false`,
+user-controlled expressions are passed through `env` rather than expanded into scripts, and CI
+runs `zizmor` (auditor persona) and `actionlint` on the workflows; Dependabot has a 7-day
+cooldown so pins are not bumped to a release that is hours old. *Not mitigated:* fork PRs are not
+enabled; if they were, `pull_request_target` must never be used with checkout of the PR head.
 
 ### T5. Fixture provenance laundering
 

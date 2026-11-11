@@ -14,16 +14,23 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: emulate-windows
+  cancel-in-progress: false
+
 jobs:
   emulate:
+    name: record Windows telemetry
     runs-on: windows-latest
     timeout-minutes: 45
     defaults:
       run:
         shell: pwsh
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.12"
           cache: pip
@@ -147,13 +154,15 @@ jobs:
           (Select-String -Path events.ndjson -Pattern 'tripline-marker' | Measure-Object).Count
 
       - name: Collect fixtures and assert expected rules fire
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           tripline windows collect events.ndjson `
             --run-guid "$env:RUN_GUID" `
-            --source "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" `
+            --source "$env:RUN_URL" `
             --require-all --replay
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: windows-fixtures-${{ github.run_id }}
