@@ -1,0 +1,35 @@
+{
+  "kind": "benign",
+  "plane": "linux",
+  "telemetry": "auditd (execve + cron directory watches, same rules as emulate-linux.yml)",
+  "run_guid": "4917e4e2-9dd6-46ef-a166-3974124b19e1",
+  "source": "https://github.com/samiali38183/tripline/actions/runs/43089252001",
+  "workload": "scripts/linux/benign_workload.sh",
+  "events": 481,
+  "execve_events": 360,
+  "bytes": 553611,
+  "time_window": [
+    "2026-11-11T19:40:03.503Z",
+    "2026-11-11T19:40:32.223Z"
+  ],
+  "sanitization": {
+    "dropped_event_fields": [
+      "addr",
+      "exe_hash",
+      "hostname",
+      "node",
+      "terminal"
+    ],
+    "path_fields_kept": [
+      "name",
+      "nametype",
+      "mode"
+    ],
+    "redactions": {
+      "dropped_field:terminal": 5,
+      "email": 18,
+      "hostname": 1
+    },
+    "kept_on_purpose": "generic runner account names (runner, root) and public repo URLs"
+  }
+}
