@@ -56,7 +56,7 @@ and evasion measurements. Every number below comes from a command run on this co
   points) need a rule written for this project. Shown in the Markdown, HTML report and README.
 
 ### Other
-* Tests 186 to 211, coverage 89% to 91%. Version 0.3.0.
+* Tests 186 to 212, coverage 89% to 91%. Version 0.3.0.
 
 
 ## 0.2.1 - 2026-11-10
