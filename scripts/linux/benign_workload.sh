@@ -14,9 +14,9 @@ GIT=(git -c user.name=ci -c user.email=ci@example.invalid)
 echo "::group::packages"
 sudo apt-get update -qq || true
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq jq tree || true
-# These packages drop files into /etc/cron.daily or /etc/cron.d when they install. That is ordinary
-# package-manager behaviour, kept on purpose so cron-file rules face real benign cron writes.
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends   chkrootkit rkhunter || true
+# chkrootkit drops a file into /etc/cron.daily when it installs. That is ordinary package-manager
+# behaviour, kept on purpose so cron-file rules face a real benign cron write.
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends chkrootkit || true
 python3 -m venv venv || true
 # shellcheck disable=SC1091
 . venv/bin/activate || true

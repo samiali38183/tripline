@@ -371,6 +371,53 @@ class BenignReport(BaseModel):
         )
 
 
+class RobustnessVariant(BaseModel):
+    """One generated variant of an attack command and which rules still match it."""
+
+    family: str
+    kind: str
+    """``cmdline`` (same tool, different spelling) or ``alt-tool`` (different tool, same effect)."""
+    label: str
+    caught: dict[str, bool | None]
+    """Rule id -> matched at least one event of the variant; ``None`` when the rule's logsource
+    applies to none of the variant's events (a file-event rule and a process variant)."""
+
+
+class RobustnessRule(BaseModel):
+    """How many of a scenario's variants one rule still catches."""
+
+    rule_id: str
+    title: str
+    expected: bool
+    """True when the scenario lists the rule under ``expected_rules`` (else a comparison rule)."""
+    cmdline_variants: int
+    """Command-line variants the rule's logsource applies to."""
+    cmdline_caught: int
+    alt_tool_variants: int
+    alt_tool_caught: int
+
+
+class RobustnessScenario(BaseModel):
+    """Evasion sweep for one scenario."""
+
+    scenario_id: str
+    technique: str
+    variants: list[RobustnessVariant]
+    rules: list[RobustnessRule]
+    cmdline_total: int = 0
+    cmdline_any_caught: int = 0
+    """Command-line variants caught by at least one *expected* rule (the scenario's own view)."""
+    alt_tool_total: int = 0
+    alt_tool_any_caught: int = 0
+
+
+class RobustnessReport(BaseModel):
+    """Deterministic variant sweep: how many spellings of each attack the rules still catch."""
+
+    seed: int
+    scenarios: list[RobustnessScenario]
+
+
 class GateResult(BaseModel):
     """Outcome of applying the gate to a scorecard."""
 
@@ -388,6 +435,8 @@ class Scorecard(BaseModel):
     scenarios: list[ScenarioScore]
     techniques: list[TechniqueCoverage]
     gate: GateResult
+    robustness: RobustnessReport | None = None
+    """Added in 0.3.0: variant sweep for the Linux scenarios. ``None`` when not computed."""
     benign: BenignReport | None = None
     """Added in 0.3.0: false positives on the benign corpus. ``None`` when no corpus was found."""
 
