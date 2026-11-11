@@ -1,0 +1,19 @@
+{
+  "scenario_id": "t1059-003-cmd-suspicious-redirect",
+  "run_guid": "c6808b6d-5809-4ade-9343-43223be2d3f9",
+  "source": "https://github.com/samiali38183/tripline/actions/runs/43090565998",
+  "events": 26,
+  "atomic_tests": {
+    "d0eb3597-a1b3-4d65-b33b-2cda8d397f20": 9,
+    "00682c9f-7df4-4df8-950b-6dcaaa3ad9af": 17
+  },
+  "events_by_channel_and_id": {
+    "Microsoft-Windows-Sysmon/Operational:1": 11,
+    "Microsoft-Windows-Sysmon/Operational:11": 1,
+    "Security:4688": 14
+  },
+  "time_window": [
+    "2026-11-11T20:06:37.3034075Z",
+    "2026-11-11T20:06:41.8973249Z"
+  ]
+}

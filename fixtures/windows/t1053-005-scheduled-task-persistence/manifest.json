@@ -1,0 +1,19 @@
+{
+  "scenario_id": "t1053-005-scheduled-task-persistence",
+  "run_guid": "c6808b6d-5809-4ade-9343-43223be2d3f9",
+  "source": "https://github.com/samiali38183/tripline/actions/runs/43090565998",
+  "events": 11,
+  "atomic_tests": {
+    "42f53695-ad4a-4546-abb6-7d837f644a71": 11
+  },
+  "events_by_channel_and_id": {
+    "Microsoft-Windows-Sysmon/Operational:1": 4,
+    "Microsoft-Windows-Sysmon/Operational:11": 1,
+    "Security:4688": 5,
+    "Security:4698": 1
+  },
+  "time_window": [
+    "2026-11-11T20:06:21.1833347Z",
+    "2026-11-11T20:06:21.5917464Z"
+  ]
+}

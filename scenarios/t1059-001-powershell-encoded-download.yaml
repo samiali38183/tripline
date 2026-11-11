@@ -1,5 +1,5 @@
 id: t1059-001-powershell-encoded-download
-name: "PowerShell: encoded command and download cradle"
+name: "PowerShell: encoded command"
 plane: windows
 technique: T1059.001
 tactic: execution
@@ -7,13 +7,19 @@ weight: 9
 emulation:
   kind: atomic
   description: >-
-    Atomic Red Team T1059.001: launch powershell.exe with -EncodedCommand and run a System.Net.WebClient download cradle; telemetry is Sysmon EID 1 and PowerShell 4104 script-block logs.
+    Atomic Red Team T1059.001: launch powershell.exe with -e / -EncodedCommand / -EncodedArguments; telemetry is Sysmon EID 1 and Security 4688 command lines.
   atomic_tests:
     - 0d181431-ddf3-4826-8055-2dbf63ae848b  # ART #15: ATHPowerShellCommandLineParameter -EncodedCommand variations
     - a538de64-1c74-46ed-aa60-b995ed302598  # ART #17: PowerShell Command Execution (powershell.exe -e <base64>)
 expected_rules:
   - fb843269-508c-4b76-8b8d-88679db22ce7  # Suspicious Execution of Powershell with Base64 (SigmaHQ)
-  - 403c2cc0-7f6b-4925-9423-bfa573bed7eb  # Suspicious PowerShell Download - Powershell Script (SigmaHQ)
-fixtures: []  # Phase A2: recorded on a GitHub Actions windows runner
+fixtures:
+  - path: fixtures/windows/t1059-001-powershell-encoded-download/run.ndjson
+    provenance: recorded
+    source: https://github.com/samiali38183/tripline/actions/runs/43090565998
+    notes: Sysmon, Security 4688/4698 and PowerShell logs on windows-latest (Server 2025), Invoke-AtomicTest between tripline markers; see manifest.json
 notes: >-
-  Red Canary 2026 #2.
+  Red Canary 2026 #2. Real encoded commands matched: Sysmon EID 1 `powershell.exe  -e  JgAg...` (ART #17) and -EncodedArguments (ART #15).
+  The original scenario also expected SigmaHQ 'Suspicious PowerShell Download - Powershell Script' (403c2cc0); it matched 0 of 75 script
+  blocks because the only download-cradle atomic (ART #9) is manual-only and runs nothing, so that half is dropped and the scenario
+  claims the encoded-command half only (docs/findings.md F-003).
