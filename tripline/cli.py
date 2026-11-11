@@ -528,9 +528,9 @@ def scorecard_markdown(card: Scorecard, *, heading: bool = False) -> str:
         for swept in card.robustness.scenarios:
             for r in swept.rules:
                 if r.expected:
+                    counts = f"{r.cmdline_caught}/{r.cmdline_variants}"
                     lines.append(
-                        f"- {swept.scenario_id}: {r.title}: {r.cmdline_caught}/{r.cmdline_variants} "
-                        "command-line variants"
+                        f"- {swept.scenario_id}: {r.title}: {counts} command-line variants"
                     )
     if card.gate.failures:
         lines += ["", "**Failures**", ""] + [f"- {f}" for f in card.gate.failures]

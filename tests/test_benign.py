@@ -105,3 +105,19 @@ def test_committed_benign_corpus_is_clean_and_within_budget(repo_root: Path) -> 
     assert find_secret_patterns(events) == []
     manifest = json.loads((directory / "linux" / "manifest.json").read_text("utf-8"))
     assert manifest["events"] == len(events)
+
+
+def test_cli_collect_benign_writes_corpus_and_fails_cleanly(tmp_path: Path) -> None:
+    from typer.testing import CliRunner
+
+    from tripline.cli import app
+
+    audit = tmp_path / "audit.log"
+    audit.write_text("\n".join(_log([(["ls", "-l"], "/usr/bin/ls")])) + "\n", encoding="utf-8")
+    runner = CliRunner()
+    args = ["linux", "collect-benign", str(audit), "--source", "s", "--root", str(tmp_path)]
+    ok = runner.invoke(app, [*args, "--run-guid", RUN, "--redact-host", "h"])
+    assert ok.exit_code == 0, ok.output
+    assert (tmp_path / "fixtures" / "benign" / "linux" / "run.ndjson").exists()
+    bad = runner.invoke(app, [*args, "--run-guid", "00000000-0000-4000-8000-000000000000"])
+    assert bad.exit_code == 1 and "benign collection failed" in bad.output

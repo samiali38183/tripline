@@ -197,3 +197,23 @@ def test_tactic_list_matches_attack_v20_matrix(repo_root):
 
     data = json.loads((repo_root / "docs" / "attack-v20.1-subset.json").read_text("utf-8"))
     assert [(t["shortname"], t["name"]) for t in data["tactics_matrix_order"]] == TACTICS
+
+
+def test_report_html_has_benign_and_robustness_sections(repo_root):
+    from tripline.benign import load_corpus, replay_benign
+    from tripline.cli import _extras
+    from tripline.scenarios import load_scenarios
+
+    rules = load_rules(repo_root / "rules" / "sigma")
+    scenarios = load_scenarios(repo_root / "scenarios")
+    card = build_scorecard(
+        [_scenario("a", "T1685.002", "defense-impairment", 3)],
+        [_result("a", ScenarioStatus.PASSED, fired=True, hits=1, evaluated=4)],
+        rules,
+        **_extras(repo_root, rules, scenarios),
+    )
+    assert card.benign is not None and load_corpus(repo_root / "fixtures" / "benign")
+    assert replay_benign(rules, []).events == 0
+    html = render_html(card)
+    assert "False positives on the benign corpus" in html and "Evasion sweep" in html
+    assert "False positives, benign corpus" in html

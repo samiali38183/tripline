@@ -150,3 +150,65 @@ def test_markdown_lists_failures(broken_repo, tmp_path):
     _run("score", "-o", str(out), root=broken_repo)
     text = scorecard_markdown(read_scorecard(out))
     assert "**Failures**" in text and "t1078-004-console-login-without-mfa" in text
+
+
+def test_benign_command_reports_false_positives(repo_root):
+    result = _run("benign", root=repo_root)
+    assert result.exit_code == 0, result.output
+    assert "benign corpus:" in result.output and "false-positive matches" in result.output
+    assert _run("benign", "--fail-on-match", root=repo_root).exit_code == 1
+
+
+def test_benign_command_without_corpus_exits_2(repo_root, tmp_path):
+    for folder in ("scenarios", "rules"):
+        shutil.copytree(repo_root / folder, tmp_path / folder)
+    # scenarios reference fixtures that are absent here; the benign command must still fail cleanly
+    result = _run("benign", root=tmp_path)
+    assert result.exit_code == 2
+
+
+def test_robustness_command_writes_json_and_markdown(repo_root, tmp_path):
+    out_json, out_md = tmp_path / "r.json", tmp_path / "r.md"
+    result = runner.invoke(
+        app,
+        [
+            "robustness",
+            "--root",
+            str(repo_root),
+            "--output",
+            str(out_json),
+            "--markdown",
+            str(out_md),
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    data = json.loads(out_json.read_text("utf-8"))
+    assert {s["scenario_id"] for s in data["scenarios"]} == {
+        "t1548-001-setuid-setgid",
+        "t1070-003-clear-command-history",
+        "t1053-003-cron-persistence",
+    }
+    md = out_md.read_text("utf-8")
+    assert "# Evasion sweep" in md and "Variants no expected rule catches" in md
+
+
+def test_score_includes_benign_and_robustness_sections(repo_root, tmp_path):
+    out = tmp_path / "card.json"
+    result = runner.invoke(app, ["score", "--root", str(repo_root), "-o", str(out)])
+    assert result.exit_code == 0, result.output
+    card = read_scorecard(out)
+    assert card.benign is not None and card.benign.events > 0
+    assert card.robustness is not None and card.robustness.cmdline_total > 0
+    text = scorecard_markdown(card)
+    assert "False positives on the benign corpus" in text and "Evasion sweep" in text
+
+
+def test_old_scorecards_without_new_sections_still_load(repo_root, tmp_path):
+    out = tmp_path / "card.json"
+    runner.invoke(app, ["score", "--root", str(repo_root), "-o", str(out)])
+    data = json.loads(out.read_text("utf-8"))
+    data.pop("benign"), data.pop("robustness")
+    out.write_text(json.dumps(data), encoding="utf-8")
+    card = read_scorecard(out)
+    assert card.benign is None and card.robustness is None
+    assert "False positives" not in scorecard_markdown(card)
