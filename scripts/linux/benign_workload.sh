@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Benign workload for the false-positive corpus (record-benign-linux.yml).
+# Benign workload for the false-positive corpus (emulate-linux.yml (record: benign)).
 #
 # Ordinary developer and administrator activity on a disposable GitHub-hosted runner: package
 # installs, git, a small build and test run, permission changes that do NOT set setuid/setgid,
