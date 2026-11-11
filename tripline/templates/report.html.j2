@@ -148,6 +148,20 @@ footer { margin-top: 36px; color: var(--ink-3); font-size: 12px; }
     <div class="v">{{ totals.passed }}<span style="font-size:15px;color:var(--ink-3)"> / {{ totals.scenarios }} pass</span></div>
     <div class="n">{{ totals.failed }} failed, {{ totals.pending }} pending</div>
   </div>
+  {% if card.benign %}
+  <div class="tile">
+    <div class="k">False positives, benign corpus</div>
+    <div class="v">{{ card.benign.total_matches }}<span style="font-size:15px;color:var(--ink-3)"> matches</span></div>
+    <div class="n">{{ card.benign.firing|length }} of {{ card.benign.evaluated|length }} evaluated rules fired on {{ card.benign.events }} benign events</div>
+  </div>
+  {% endif %}
+  {% if card.robustness %}
+  <div class="tile">
+    <div class="k">Evasion sweep (Linux)</div>
+    <div class="v">{{ card.robustness.cmdline_any_caught }}<span style="font-size:15px;color:var(--ink-3)"> / {{ card.robustness.cmdline_total }} variants</span></div>
+    <div class="n">command-line variants caught by an expected rule</div>
+  </div>
+  {% endif %}
   <div class="tile">
     <div class="k">Expected rules</div>
     <div class="v">{{ totals.rules }}</div>
@@ -255,10 +269,54 @@ footer { margin-top: 36px; color: var(--ink-3); font-size: 12px; }
 </table>
 </div>
 
+{% if card.benign %}
+<h2>False positives on the benign corpus</h2>
+<p class="sub">Every compiled rule replayed over {{ card.benign.events }} events recorded while ordinary work ran on a runner
+(Linux only). Rules with no applicable benign events are listed as not evaluated, not as clean.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Rule</th><th class="num">Matched</th><th class="num">Applicable events</th><th>Example matches</th></tr></thead>
+  <tbody>
+  {% for r in card.benign.evaluated %}
+    <tr>
+      <td>{{ r.title }}</td>
+      <td class="num">{{ r.matched }}</td>
+      <td class="num">{{ r.applicable }}</td>
+      <td class="mono">{% for e in r.examples %}{{ e }}{% if not loop.last %}<br>{% endif %}{% endfor %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<p class="sub">Not evaluated (no applicable benign events): {{ card.benign.rules|length - card.benign.evaluated|length }} of {{ card.benign.rules|length }} rules.</p>
+{% endif %}
+
+{% if card.robustness %}
+<h2>Evasion sweep</h2>
+<p class="sub">Deterministic variants of each Linux attack command (seed {{ card.robustness.seed }}); a rule catches a variant when it
+matches at least one event the variant produces. Counts are variants caught / variants the rule applies to.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Scenario</th><th>Rule</th><th class="num">Command-line variants</th><th class="num">Alternative-tool variants</th></tr></thead>
+  <tbody>
+  {% for s in card.robustness.scenarios %}{% for r in s.rules %}
+    <tr>
+      <td class="mono">{% if loop.first %}{{ s.scenario_id }}{% endif %}</td>
+      <td>{{ r.title }}{% if not r.expected %} <span style="color:var(--ink-3)">(comparison, not expected by the scenario)</span>{% endif %}</td>
+      <td class="num">{{ r.cmdline_caught }} / {{ r.cmdline_variants }}</td>
+      <td class="num">{% if r.alt_tool_variants %}{{ r.alt_tool_caught }} / {{ r.alt_tool_variants }}{% else %}-{% endif %}</td>
+    </tr>
+  {% endfor %}{% endfor %}
+  </tbody>
+</table>
+</div>
+{% endif %}
+
 <footer>
   <p>A pass means every expected rule fired on at least one event of the scenario's recorded fixture. It is a recall
-  check on one recording, not a false-positive or evasion test. Weights are each technique's rank in the Red Canary
-  2026 Threat Detection Report, mapped by hand (10 = most common). Source:
+  check on one recording; the benign-corpus and evasion sections above measure false positives and robustness for the
+  Linux plane only. Weight provenance (published ranking versus
+  hand-assigned values) is in docs/weights.md. Source:
   <a href="https://github.com/samiali38183/tripline">github.com/samiali38183/tripline</a>.</p>
 </footer>
 </main>

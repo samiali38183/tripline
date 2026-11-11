@@ -10,7 +10,7 @@ emulation:
     Atomic Red Team T1059.001: launch powershell.exe with -EncodedCommand and run a System.Net.WebClient download cradle; telemetry is Sysmon EID 1 and PowerShell 4104 script-block logs.
   atomic_tests:
     - 0d181431-ddf3-4826-8055-2dbf63ae848b  # ART #15: ATHPowerShellCommandLineParameter -EncodedCommand variations
-    - cc50fa2a-a4be-42af-a88f-e347ba0bf4d7  # ART #9: Powershell Invoke-DownloadCradle
+    - a538de64-1c74-46ed-aa60-b995ed302598  # ART #17: PowerShell Command Execution (powershell.exe -e <base64>)
 expected_rules:
   - fb843269-508c-4b76-8b8d-88679db22ce7  # Suspicious Execution of Powershell with Base64 (SigmaHQ)
   - 403c2cc0-7f6b-4925-9423-bfa573bed7eb  # Suspicious PowerShell Download - Powershell Script (SigmaHQ)

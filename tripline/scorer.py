@@ -23,8 +23,10 @@ from tripline.engine.compiler import CompiledRule
 from tripline.engine.rules import RuleSet
 from tripline.events import write_text_lf
 from tripline.models import (
+    BenignReport,
     GateResult,
     ReplayResult,
+    RobustnessReport,
     RuleEvidence,
     RuleOutcome,
     RuleScore,
@@ -39,9 +41,18 @@ from tripline.models import (
 
 
 def build_scorecard(
-    scenarios: list[Scenario], results: list[ReplayResult], rules: RuleSet
+    scenarios: list[Scenario],
+    results: list[ReplayResult],
+    rules: RuleSet,
+    *,
+    benign: BenignReport | None = None,
+    robustness: RobustnessReport | None = None,
 ) -> Scorecard:
-    """Aggregate replay results into a :class:`Scorecard`."""
+    """Aggregate replay results into a :class:`Scorecard`.
+
+    ``benign`` and ``robustness`` are optional extra measurements (false positives on a benign
+    corpus, evasion sweep); they are carried on the scorecard but never affect the gate.
+    """
     by_id = {r.scenario_id: r for r in results}
     missing = [s.id for s in scenarios if s.id not in by_id]
     if missing:
@@ -59,6 +70,8 @@ def build_scorecard(
         scenarios=scenario_scores,
         techniques=technique_scores,
         gate=gate,
+        benign=benign,
+        robustness=robustness,
     )
 
 

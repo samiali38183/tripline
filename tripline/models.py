@@ -417,6 +417,26 @@ class RobustnessReport(BaseModel):
     seed: int
     scenarios: list[RobustnessScenario]
 
+    @property
+    def cmdline_total(self) -> int:
+        """Command-line variants generated across all scenarios."""
+        return sum(s.cmdline_total for s in self.scenarios)
+
+    @property
+    def cmdline_any_caught(self) -> int:
+        """Command-line variants caught by at least one expected rule of their scenario."""
+        return sum(s.cmdline_any_caught for s in self.scenarios)
+
+    def summary(self) -> str:
+        """One line for the CLI, the scorecard and the README."""
+        alt = sum(s.alt_tool_total for s in self.scenarios)
+        alt_caught = sum(s.alt_tool_any_caught for s in self.scenarios)
+        return (
+            f"{self.cmdline_any_caught} of {self.cmdline_total} command-line variants caught by "
+            f"an expected rule across {len(self.scenarios)} Linux scenarios; "
+            f"{alt_caught} of {alt} alternative-tool variants"
+        )
+
 
 class GateResult(BaseModel):
     """Outcome of applying the gate to a scorecard."""

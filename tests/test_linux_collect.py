@@ -216,6 +216,16 @@ def test_setuid_rule_catches_forms_and_filter_evasions(repo_root, args):
     assert evaluate(_setuid_rule(repo_root), _chmod_event(*args)) is True, args
 
 
+def test_setuid_rule_catches_busybox_multicall_form(repo_root):
+    """Found by the evasion sweep (docs/robustness.md): the applet runs as busybox, not chmod."""
+    event = _chmod_event("chmod", "u+s", "/tmp/x", exe="/usr/bin/busybox", argv0="busybox")
+    assert evaluate(_setuid_rule(repo_root), event) is True
+    benign = _chmod_event("chmod", "644", "/tmp/x", exe="/usr/bin/busybox", argv0="busybox")
+    assert evaluate(_setuid_rule(repo_root), benign) is False
+    other_applet = _chmod_event("ls", "-l", "/tmp/chmod", exe="/usr/bin/busybox", argv0="busybox")
+    assert evaluate(_setuid_rule(repo_root), other_applet) is False
+
+
 def test_setuid_rule_catches_full_path_invocation(repo_root):
     event = _chmod_event("4755", "/tmp/x", argv0="/usr/bin/chmod")
     assert evaluate(_setuid_rule(repo_root), event) is True

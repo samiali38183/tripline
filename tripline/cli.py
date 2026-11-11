@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 import typer
 
@@ -78,6 +78,18 @@ def _load(root: Path) -> tuple[list[Scenario], RuleSet]:
     return scenarios, rules
 
 
+def _extras(root: Path, rules: RuleSet, scenarios: list[Scenario]) -> dict[str, Any]:
+    """Benign-corpus and evasion-sweep measurements for the scorecard (each optional)."""
+    from tripline.benign import load_corpus, replay_benign
+    from tripline.robustness import run_sweep
+
+    events = load_corpus(root / "fixtures" / "benign")
+    return {
+        "benign": replay_benign(rules, events) if events else None,
+        "robustness": run_sweep(scenarios, rules, root) or None,
+    }
+
+
 @app.command()
 def validate(root: RootOpt = Path()) -> None:
     """Validate scenarios, compile every Sigma rule, and check expected rule ids and fixtures."""
@@ -134,7 +146,9 @@ def replay(
         write_junit(results, chosen, junit)
         typer.echo(f"junit written to {junit}")
     if scorecard:
-        write_scorecard(build_scorecard(chosen, results, rules), scorecard)
+        write_scorecard(
+            build_scorecard(chosen, results, rules, **_extras(root, rules, chosen)), scorecard
+        )
         typer.echo(f"scorecard written to {scorecard}")
     failed = [r for r in results if r.status is ScenarioStatus.FAILED]
     if failed:
@@ -159,7 +173,7 @@ def score(
     """Replay everything, write scorecard.json (+ junit/markdown); exit 1 on gate failure."""
     scenarios, rules = _load(root)
     results = replay_all(scenarios, rules, root)
-    card = build_scorecard(scenarios, results, rules)
+    card = build_scorecard(scenarios, results, rules, **_extras(root, rules, scenarios))
     write_scorecard(card, output)
     typer.echo(f"scorecard written to {output}")
     if junit:
@@ -169,6 +183,37 @@ def score(
     typer.echo(scorecard_markdown(card))
     if not card.gate.passed:
         raise typer.Exit(code=1)
+
+
+@app.command()
+def robustness(
+    root: RootOpt = Path(),
+    output: Annotated[
+        Path | None, typer.Option("--output", "-o", help="Write the full sweep as JSON here.")
+    ] = None,
+    markdown: Annotated[
+        Path | None, typer.Option(help="Write the sweep tables as Markdown here.")
+    ] = None,
+) -> None:
+    """Sweep deterministic command-line variants of the Linux attacks through the rules."""
+    from tripline.robustness import render_markdown, run_sweep
+
+    scenarios, rules = _load(root)
+    report = run_sweep(scenarios, rules, root)
+    if not report.scenarios:
+        typer.secho("no scenario with a variant generator and a fixture", err=True, fg="red")
+        raise typer.Exit(code=2)
+    typer.echo(report.summary())
+    for s in report.scenarios:
+        for r in s.rules:
+            typer.echo(
+                f"  {s.scenario_id}  {r.title}: {r.cmdline_caught}/{r.cmdline_variants} "
+                f"command-line, {r.alt_tool_caught}/{r.alt_tool_variants} alternative-tool"
+            )
+    if output:
+        write_text_lf(output, report.model_dump_json(indent=2) + "\n")
+    if markdown:
+        write_text_lf(markdown, render_markdown(report))
 
 
 @app.command()
@@ -471,6 +516,22 @@ def scorecard_markdown(card: Scorecard, *, heading: bool = False) -> str:
             f"| {s.scenario_id} | {s.technique} | {s.plane.value} | {s.weight} | {status} | "
             f"{fired} | {s.events} |"
         )
+    if card.benign is not None:
+        lines += ["", f"**False positives on the benign corpus:** {card.benign.summary()}."]
+        lines += [
+            f"- {r.title}: {r.matched}/{r.applicable} benign events matched"
+            + (f" (e.g. `{r.examples[0]}`)" if r.examples else "")
+            for r in card.benign.firing
+        ]
+    if card.robustness is not None:
+        lines += ["", f"**Evasion sweep:** {card.robustness.summary()}."]
+        for swept in card.robustness.scenarios:
+            for r in swept.rules:
+                if r.expected:
+                    lines.append(
+                        f"- {swept.scenario_id}: {r.title}: {r.cmdline_caught}/{r.cmdline_variants} "
+                        "command-line variants"
+                    )
     if card.gate.failures:
         lines += ["", "**Failures**", ""] + [f"- {f}" for f in card.gate.failures]
     routing = [

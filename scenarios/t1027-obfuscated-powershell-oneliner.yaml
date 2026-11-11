@@ -11,6 +11,7 @@ emulation:
   atomic_tests:
     - 8b3f4ed6-077b-4bdd-891c-2d237f19410f  # ART #7: Obfuscated Command in PowerShell
     - 6683baf0-6e77-4f58-b114-814184ea8150  # ART #11: Obfuscated PowerShell Command via Character Array
+    - a50d5a97-2531-499e-a1de-5544c74432c6  # ART #2: Execute base64-encoded PowerShell (added to record what fires)
 expected_rules:
   - 44e24481-6202-4c62-9127-5a0ae8e3fe3d  # Obfuscated PowerShell OneLiner Execution (SigmaHQ)
 fixtures: []  # Phase A2: recorded on a GitHub Actions windows runner
