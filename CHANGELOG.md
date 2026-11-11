@@ -49,8 +49,14 @@ and evasion measurements. Every number below comes from a command run on this co
   (expected rule 0 of 15 events). Gate: 13 passed, 0 failed, 1 pending; weighted coverage 68% to 98%
   (42 to 61 of 62 points). Details in F-003.
 
+### Rule provenance split
+* Scorecard totals now report `passed_vendored_only`, `passed_needs_authored` and
+  `weighted_coverage_vendored`, computed from each expected rule's author field: 8 passing scenarios
+  (32 of 62 weight points, 52%) rely on unmodified SigmaHQ rules only; 5 passing scenarios (29
+  points) need a rule written for this project. Shown in the Markdown, HTML report and README.
+
 ### Other
-* Tests 186 to 211, coverage 89% to 91%. Version 0.3.0.
+* Tests 186 to 212, coverage 89% to 91%. Version 0.3.0.
 
 
 ## 0.2.1 - 2026-11-10

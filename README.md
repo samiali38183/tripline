@@ -27,11 +27,11 @@ a production backend, it covers 14 techniques, and it is not a substitute for an
 |---|---|
 | Scenarios | 14 ATT&CK techniques: 4 AWS (public replay), 3 Linux, 7 Windows (recorded on runners) |
 | Gate today | 13 of 14 scenarios pass (AWS 4/4, Linux 3/3, Windows 6/7); 1 Windows scenario pending |
-| Weighted coverage | 98% of all 14 scenarios (61 of 62 weight points); 45 of the 62 points follow a published ranking, 17 are hand-assigned ([weights](docs/weights.md)) |
+| Weighted coverage | 98% of weight points have a passing scenario (61 of 62); **52% of weight points (32 of 62, 8 scenarios) pass on unmodified SigmaHQ rules alone**, the other 5 passing scenarios (29 points) need at least one rule written for this project. 45 of the 62 points follow a published ranking, 17 are hand-assigned ([weights](docs/weights.md)) |
 | False positives | 2 matches from 1 of 6 evaluated rules on a 675-event benign Linux corpus; 20 of 26 rules not evaluated ([benign corpus](docs/benign-corpus.md)) |
 | Evasion sweep | 200 of 251 command-line variants of the three Linux attacks caught by an expected rule ([robustness](docs/robustness.md)) |
 | Gaps found | SigmaHQ *Setuid and Setgid* matched 0 of 36 Atomic events ([F-001](docs/findings.md)); 3 Windows rules that miss their Atomic tests ([F-003](docs/findings.md)) |
-| Code | 211 tests, 91% coverage, ruff and mypy strict clean, ATT&CK v20 ([version notes](docs/attack-version.md)) |
+| Code | 212 tests, 91% coverage, ruff and mypy strict clean, ATT&CK v20 ([version notes](docs/attack-version.md)) |
 
 [![tripline coverage report](docs/img/report.png)](docs/report.html)
 
@@ -80,8 +80,11 @@ All figures were produced by the commands in [Quick start](#quick-start) on 2026
 | Linux | auditd (execve + cron watches) | **3 / 3** | **Recorded** with Atomic Red Team on a GitHub-hosted `ubuntu-latest` runner |
 | Windows | Sysmon / Security / PowerShell | **6 / 7** (1 pending) | **Recorded** with Atomic Red Team on a GitHub-hosted `windows-latest` runner: T1003.001, T1047, T1105 from [run 42917025570](https://github.com/samiali38183/tripline/actions/runs/42917025570); T1059.001, T1059.003, T1053.005 from [run 43090565998](https://github.com/samiali38183/tripline/actions/runs/43090565998) |
 
-- **Prevalence-weighted coverage: 98% of all 14 scenarios, 100% of the scenarios that have
-  fixtures** (61 of 62 weight points; the pending scenario counts as zero). Two of the Windows
+- **Prevalence-weighted coverage: 98% of weight points have a passing scenario (61 of 62; the
+  pending scenario counts as zero), but only 52% (32 of 62) pass on unmodified SigmaHQ rules alone.**
+  Eight scenarios pass on vendored rules only; five need a rule written here: the custom AWS
+  rules (T1078.004, T1530), the setuid replacement (T1548.001) and the two Windows replacements
+  (T1059.003, T1053.005). `tripline score` computes the split from each expected rule's author field. Two of the Windows
   passes rest on tripline replacement rules and one on a narrowed scenario, not on the vendored
   SigmaHQ rule: see [F-003](docs/findings.md).
 - `tripline replay --all`: 13 passed, 0 failed, 1 pending; 26 rules compiled, 21 expected rules.
@@ -91,7 +94,7 @@ All figures were produced by the commands in [Quick start](#quick-start) on 2026
 - **Evasion sweep:** for the three Linux scenarios, 200 of 251 command-line variants are caught by
   at least one expected rule (setuid 106/108, history clearing 71/103, cron 23/40); alternative
   tools 0 of 4. The variant lists are hand-written and not exhaustive.
-- Test suite: **211 tests, 91% coverage**. `ruff format`, `ruff check`, `mypy` (strict),
+- Test suite: **212 tests, 91% coverage**. `ruff format`, `ruff check`, `mypy` (strict),
   `sigma check rules/` (0 issues), `actionlint` and `zizmor` are clean.
 - The scorecard also exports an ATT&CK Navigator layer (layer format 4.5, ATT&CK v20):
   [`docs/navigator_layer.json`](docs/navigator_layer.json), plus
@@ -343,6 +346,7 @@ Stated plainly so the numbers are read correctly (full text in
 - **Small, project-chosen coverage.** 14 techniques; ATT&CK Enterprise has 600+ (sub-)techniques.
   The 98% is progress against this repo's own scenario list weighted by prevalence, not a claim
   about any organisation's coverage. Seven of the weights are hand-assigned.
+  Only 52% of weight points pass on unmodified SigmaHQ rules alone; the rest need rules written here.
 - **Three of the six Windows passes are conditional.** T1059.003 and T1053.005 pass on tripline
   replacement rules written for the gaps F-003 found (the vendored rules matched 0 events on
   the same recordings), and T1059.001 passes on its encoded-command half only (the download-cradle
@@ -382,7 +386,7 @@ rules/sigma/      Sigma rules by plane (vendored SigmaHQ + tripline_*), DRL 1.1 
 fixtures/         recorded NDJSON telemetry + manifest.json (aws, linux, windows, benign)
 tripline/         CLI, compiler, router, replay, scorer, heatmap, collectors
 scripts/windows/  winlog NDJSON exporter used by the Windows workflow
-tests/            211 tests
+tests/            212 tests
 docs/             findings, limitations, threat model, gate proof, committed scorecard, layer,
                   HTML report, badge
 .github/workflows ci.yml (lint/types/tests + gate), pages.yml (HTML report to Pages),

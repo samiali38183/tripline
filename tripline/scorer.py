@@ -58,7 +58,7 @@ def build_scorecard(
     if missing:
         raise ValueError(f"no replay result for scenario(s): {', '.join(missing)}")
 
-    scenario_scores = [_score_scenario(s, by_id[s.id]) for s in scenarios]
+    scenario_scores = [_score_scenario(s, by_id[s.id], rules) for s in scenarios]
     rule_scores = _score_rules(scenarios, by_id, rules)
     technique_scores = _score_techniques(scenarios, scenario_scores)
     totals = _totals(scenario_scores, rule_scores)
@@ -166,7 +166,13 @@ def read_scorecard(path: Path) -> Scorecard:
 # --------------------------------------------------------------------------- internals
 
 
-def _score_scenario(scenario: Scenario, result: ReplayResult) -> ScenarioScore:
+def is_authored(compiled: CompiledRule | None) -> bool:
+    """True for rules written for this project: their ``author`` field names tripline."""
+    author = (compiled.rule.author or "") if compiled else ""
+    return "tripline" in author.lower()
+
+
+def _score_scenario(scenario: Scenario, result: ReplayResult, rules: RuleSet) -> ScenarioScore:
     fired = [h.rule_id for h in result.rules if h.fired]
     return ScenarioScore(
         scenario_id=scenario.id,
@@ -179,6 +185,7 @@ def _score_scenario(scenario: Scenario, result: ReplayResult) -> ScenarioScore:
         provenance=sorted({f.provenance for f in scenario.fixtures}),
         events=result.events,
         expected_rules=list(scenario.expected_rules),
+        needs_authored_rule=any(is_authored(rules.by_id(r)) for r in scenario.expected_rules),
         fired_rules=fired,
         missing_rules=[] if result.status is ScenarioStatus.PENDING else result.missing_rules,
         evidence=[
@@ -227,6 +234,7 @@ def _score_rules(
                 rule_id=rule_id,
                 title=compiled.title if compiled else "<rule not loaded>",
                 level=str(level.name).lower() if level else None,
+                authored=is_authored(compiled),
                 logsource=_logsource_text(compiled) if compiled else "",
                 techniques=list(compiled.techniques) if compiled else [],
                 expected_scenarios=[s.id for s in expecting[rule_id]],
@@ -287,6 +295,8 @@ def _totals(scenario_scores: list[ScenarioScore], rule_scores: list[RuleScore]) 
     scored = [
         (s.weight, value(s)) for s in scenario_scores if s.status is not ScenarioStatus.PENDING
     ]
+    passed = [s for s in scenario_scores if s.status is ScenarioStatus.PASSED]
+    vendored = [s for s in passed if not s.needs_authored_rule]
     return ScorecardTotals(
         scenarios=len(scenario_scores),
         passed=sum(1 for s in scenario_scores if s.status is ScenarioStatus.PASSED),
@@ -295,4 +305,10 @@ def _totals(scenario_scores: list[ScenarioScore], rule_scores: list[RuleScore]) 
         rules=len(rule_scores),
         weighted_coverage=weighted_coverage(everything) or 0.0,
         weighted_coverage_scored=weighted_coverage(scored),
+        passed_vendored_only=sum(1 for s in passed if not s.needs_authored_rule),
+        passed_needs_authored=sum(1 for s in passed if s.needs_authored_rule),
+        weighted_coverage_vendored=weighted_coverage(
+            [(s.weight, 1.0 if s in vendored else 0.0) for s in scenario_scores]
+        )
+        or 0.0,
     )

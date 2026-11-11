@@ -6,7 +6,7 @@
     "layer": "4.5"
   },
   "domain": "enterprise-attack",
-  "description": "Prevalence-weighted Sigma coverage from tripline scorecard (13/14 scenarios passed, 1 pending). Weighted coverage 98% overall, 100% over scenarios with fixtures.",
+  "description": "Prevalence-weighted Sigma coverage from tripline scorecard (13/14 scenarios passed, 1 pending). Weighted coverage 98% overall, 100% over scenarios with fixtures. 52% of weight points pass on unmodified SigmaHQ rules alone; the rest need rules written for this project.",
   "sorting": 3,
   "layout": {
     "layout": "side",
@@ -440,7 +440,7 @@
   "metadata": [
     {
       "name": "generated_at",
-      "value": "2026-11-11T20:16:23.606532+00:00"
+      "value": "2026-11-11T21:08:04.620055+00:00"
     },
     {
       "name": "tripline_version",

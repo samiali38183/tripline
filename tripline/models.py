@@ -246,6 +246,8 @@ class RuleScore(BaseModel):
     level: str | None
     logsource: str
     techniques: list[str]
+    authored: bool = False
+    """True when written for this project (author names tripline); False for vendored rules."""
     expected_scenarios: list[str]
     detected_scenarios: list[str]
     missed_scenarios: list[str]
@@ -286,6 +288,8 @@ class ScenarioScore(BaseModel):
     provenance: list[Provenance]
     events: int
     expected_rules: list[str]
+    needs_authored_rule: bool = False
+    """True when at least one expected rule was written for this project, not vendored."""
     fired_rules: list[str]
     missing_rules: list[str]
     evidence: list[RuleEvidence] = Field(default_factory=list)
@@ -324,6 +328,12 @@ class ScorecardTotals(BaseModel):
     weighted_coverage: float
     """sum(weight x coverage) / sum(weight) over every scenario (pending counts as 0)."""
     weighted_coverage_scored: float | None
+    passed_vendored_only: int | None = None
+    """Passing scenarios whose expected rules are all vendored SigmaHQ rules. Added in 0.3.0."""
+    passed_needs_authored: int | None = None
+    """Passing scenarios with at least one expected rule written for this project."""
+    weighted_coverage_vendored: float | None = None
+    """sum(weight of passing vendored-only scenarios) / sum(weight of all scenarios)."""
     """Same, restricted to scenarios that have fixtures. ``None`` if nothing is scored."""
 
 

@@ -25,6 +25,10 @@ is a recall check on a known-good recording. It says nothing about:
   Canary's published 2026 top 10 the weight is 11 minus the rank, and the other seven weights
   are hand-assigned low values with no source ([`weights.md`](weights.md)). They are a proxy for
   prevalence in one vendor's customer base, not a measurement of this environment.
+* The headline blends rule provenance: a scenario that passes only because of a rule written for
+  this project counts the same as one that passes on an unmodified SigmaHQ rule. The scorecard
+  reports both: 52% of weight points (8 scenarios) pass on vendored rules alone, 98% including
+  rules authored here.
 * "Weighted coverage of all scenarios" treats *pending* scenarios as 0 - it is a progress metric
   for this repository, not a claim about an organisation's coverage.
 * 14 scenarios cover 14 techniques. ATT&CK Enterprise has over 600 (sub-)techniques; the heatmap

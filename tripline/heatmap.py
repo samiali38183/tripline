@@ -48,6 +48,12 @@ def build_layer(scorecard: Scorecard, *, name: str = "tripline coverage") -> dic
             if totals.weighted_coverage_scored is not None
             else "."
         )
+        + (
+            f" {totals.weighted_coverage_vendored:.0%} of weight points pass on unmodified "
+            "SigmaHQ rules alone; the rest need rules written for this project."
+            if totals.weighted_coverage_vendored is not None
+            else ""
+        )
     )
     return {
         "name": name,
