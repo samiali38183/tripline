@@ -78,7 +78,7 @@ def test_replay_all_passes_on_committed_repo(repo_root, tmp_path):
     )
     assert result.exit_code == 0, result.output
     assert "gate passed" in result.output
-    assert result.output.count("[   PASS]") == 10 and result.output.count("[PENDING]") == 4
+    assert result.output.count("[   PASS]") == 13 and result.output.count("[PENDING]") == 1
     assert "t1078-004-console-login-without-mfa (T1078.004, aws) - 7 events" in result.output
     assert (tmp_path / "j.xml").exists()
 
@@ -120,7 +120,7 @@ def test_score_writes_artifacts_and_markdown(repo_root, tmp_path):
     )
     assert result.exit_code == 0, result.output
     card = read_scorecard(out)
-    assert card.totals.passed == 10 and card.totals.pending == 4 and card.gate.passed
+    assert card.totals.passed == 13 and card.totals.pending == 1 and card.gate.passed
     text = md.read_text(encoding="utf-8")
     assert (
         "| Scenario |" in text
