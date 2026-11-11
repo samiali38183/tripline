@@ -26,3 +26,4 @@ own environment, scrub account ids, ARNs, hostnames and usernames first.
 Open a private security advisory on GitHub (Security > Advisories > Report a vulnerability) or
 email samiali38183@gmail.com. Please include the commit hash and reproduction steps. You will get
 an acknowledgement within 72 hours.
+
