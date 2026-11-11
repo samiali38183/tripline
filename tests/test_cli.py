@@ -212,3 +212,38 @@ def test_old_scorecards_without_new_sections_still_load(repo_root, tmp_path):
     card = read_scorecard(out)
     assert card.benign is None and card.robustness is None
     assert "False positives" not in scorecard_markdown(card)
+
+
+def test_provenance_split_matches_rule_authorship(repo_root, tmp_path):
+    """Vendored-only coverage is computed from each expected rule's author, not estimated."""
+    from tripline.engine.rules import load_rules
+    from tripline.scenarios import load_scenarios
+    from tripline.scorer import is_authored
+
+    out = tmp_path / "card.json"
+    runner.invoke(app, ["score", "--root", str(repo_root), "-o", str(out)])
+    card = read_scorecard(out)
+    rules = load_rules(repo_root / "rules" / "sigma")
+    scenarios = {s.id: s for s in load_scenarios(repo_root / "scenarios")}
+    authored = {r.id for r in rules.rules if is_authored(r)}
+    assert authored
+    vendored_weight = 0
+    for s in card.scenarios:
+        needs = any(r in authored for r in scenarios[s.scenario_id].expected_rules)
+        assert s.needs_authored_rule is needs
+        if s.status.value == "passed" and not needs:
+            vendored_weight += s.weight
+    total = sum(s.weight for s in card.scenarios)
+    t = card.totals
+    assert t.weighted_coverage_vendored == vendored_weight / total
+    assert (t.passed_vendored_only or 0) + (t.passed_needs_authored or 0) == t.passed
+    assert t.weighted_coverage_vendored <= t.weighted_coverage
+    text = scorecard_markdown(card)
+    assert "unmodified SigmaHQ rules alone" in text
+    assert "SigmaHQ rules alone" in render_html_for(card)
+
+
+def render_html_for(card):
+    from tripline.report import render_html
+
+    return render_html(card)

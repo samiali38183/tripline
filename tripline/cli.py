@@ -24,6 +24,7 @@ from tripline.models import (
     Scenario,
     ScenarioStatus,
     Scorecard,
+    ScorecardTotals,
     describe_outcome,
 )
 from tripline.replay import replay_all, replay_scenario
@@ -486,6 +487,18 @@ def windows_collect(
 # --------------------------------------------------------------------------- rendering
 
 
+def provenance_sentence(t: ScorecardTotals) -> str:
+    """Plain split of the headline: vendored-only passes versus passes that need authored rules."""
+    if t.weighted_coverage_vendored is None or t.passed_vendored_only is None:
+        return ""
+    return (
+        f"**Rule provenance:** {t.weighted_coverage:.0%} of weight points have a passing scenario; "
+        f"{t.weighted_coverage_vendored:.0%} of weight points pass on unmodified SigmaHQ rules "
+        f"alone ({t.passed_vendored_only} scenarios); the other {t.passed_needs_authored} passing "
+        "scenarios need at least one rule written for this project."
+    )
+
+
 def scorecard_markdown(card: Scorecard, *, heading: bool = False) -> str:
     """Render the scorecard as GitHub-flavoured Markdown."""
     t = card.totals
@@ -501,6 +514,7 @@ def scorecard_markdown(card: Scorecard, *, heading: bool = False) -> str:
         f"of {t.scenarios} scenarios; {t.rules} expected rules.",
         f"**Prevalence-weighted coverage:** {t.weighted_coverage:.0%} of all scenarios, "
         f"{scored} of scenarios with fixtures.",
+        provenance_sentence(t),
         "",
         "| Scenario | Technique | Plane | Weight | Status | Rules fired | Events |",
         "|---|---|---|---|---|---|---|",

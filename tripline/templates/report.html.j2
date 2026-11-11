@@ -138,6 +138,13 @@ footer { margin-top: 36px; color: var(--ink-3); font-size: 12px; }
     <div class="v">{{ "%.0f"|format(totals.weighted_coverage * 100) }}%</div>
     <div class="n">pending scenarios count as zero</div>
   </div>
+  {% if totals.weighted_coverage_vendored is not none %}
+  <div class="tile">
+    <div class="k">Weighted coverage on unmodified SigmaHQ rules alone</div>
+    <div class="v">{{ "%.0f"|format(totals.weighted_coverage_vendored * 100) }}%</div>
+    <div class="n">{{ totals.passed_vendored_only }} scenarios; the other {{ totals.passed_needs_authored }} passing scenarios need a rule written for this project</div>
+  </div>
+  {% endif %}
   <div class="tile">
     <div class="k">Weighted coverage, scenarios with fixtures</div>
     <div class="v">{% if totals.weighted_coverage_scored is not none %}{{ "%.0f"|format(totals.weighted_coverage_scored * 100) }}%{% else %}n/a{% endif %}</div>

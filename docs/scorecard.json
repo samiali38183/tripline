@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-11T20:16:23.606532Z",
+  "generated_at": "2026-11-11T21:08:04.620055Z",
   "tripline_version": "0.3.0",
   "totals": {
     "scenarios": 14,
@@ -8,7 +8,10 @@
     "pending": 1,
     "rules": 21,
     "weighted_coverage": 0.9838709677419355,
-    "weighted_coverage_scored": 1.0
+    "weighted_coverage_scored": 1.0,
+    "passed_vendored_only": 8,
+    "passed_needs_authored": 5,
+    "weighted_coverage_vendored": 0.5161290322580645
   },
   "rules": [
     {
@@ -19,6 +22,7 @@
       "techniques": [
         "T1098"
       ],
+      "authored": false,
       "expected_scenarios": [
         "t1098-001-iam-backdoor-access-key"
       ],
@@ -37,6 +41,7 @@
       "techniques": [
         "T1565.001"
       ],
+      "authored": false,
       "expected_scenarios": [
         "t1070-003-clear-command-history"
       ],
@@ -56,6 +61,7 @@
         "T1027",
         "T1105"
       ],
+      "authored": false,
       "expected_scenarios": [
         "t1105-certutil-bitsadmin-download"
       ],
@@ -74,6 +80,7 @@
       "techniques": [
         "T1078.004"
       ],
+      "authored": true,
       "expected_scenarios": [
         "t1078-004-console-login-without-mfa"
       ],
@@ -93,6 +100,7 @@
         "T1059.001",
         "T1685"
       ],
+      "authored": false,
       "expected_scenarios": [
         "t1027-obfuscated-powershell-oneliner"
       ],
@@ -111,6 +119,7 @@
       "techniques": [
         "T1059.003"
       ],
+      "authored": true,
       "expected_scenarios": [
         "t1059-003-cmd-suspicious-redirect"
       ],
@@ -129,6 +138,7 @@
       "techniques": [
         "T1685.002"
       ],
+      "authored": false,
       "expected_scenarios": [
         "t1562-008-cloudtrail-stop"
       ],
@@ -147,6 +157,7 @@
       "techniques": [
         "T1047"
       ],
+      "authored": false,
       "expected_scenarios": [
         "t1047-wmic-process-call-create"
       ],
@@ -166,6 +177,7 @@
         "T1530",
         "T1580"
       ],
+      "authored": true,
       "expected_scenarios": [
         "t1530-s3-bucket-exposure"
       ],
@@ -184,6 +196,7 @@
       "techniques": [
         "T1003.001"
       ],
+      "authored": false,
       "expected_scenarios": [
         "t1003-001-lsass-memory-dump"
       ],
@@ -203,6 +216,7 @@
         "T1036",
         "T1003.001"
       ],
+      "authored": false,
       "expected_scenarios": [
         "t1003-001-lsass-memory-dump"
       ],
@@ -221,6 +235,7 @@
       "techniques": [
         "T1053.003"
       ],
+      "authored": false,
       "expected_scenarios": [
         "t1053-003-cron-persistence"
       ],
@@ -239,6 +254,7 @@
       "techniques": [
         "T1053.003"
       ],
+      "authored": false,
       "expected_scenarios": [
         "t1053-003-cron-persistence"
       ],
@@ -257,6 +273,7 @@
       "techniques": [
         "T1548.001"
       ],
+      "authored": true,
       "expected_scenarios": [
         "t1548-001-setuid-setgid"
       ],
@@ -275,6 +292,7 @@
       "techniques": [
         "T1078.004"
       ],
+      "authored": false,
       "expected_scenarios": [
         "t1078-004-console-login-without-mfa"
       ],
@@ -293,6 +311,7 @@
       "techniques": [
         "T1530"
       ],
+      "authored": true,
       "expected_scenarios": [
         "t1530-s3-bucket-exposure"
       ],
@@ -311,6 +330,7 @@
       "techniques": [
         "T1053.005"
       ],
+      "authored": false,
       "expected_scenarios": [
         "t1053-005-scheduled-task-persistence"
       ],
@@ -331,6 +351,7 @@
         "T1036.003",
         "T1105"
       ],
+      "authored": false,
       "expected_scenarios": [
         "t1105-certutil-bitsadmin-download"
       ],
@@ -349,6 +370,7 @@
       "techniques": [
         "T1053.005"
       ],
+      "authored": true,
       "expected_scenarios": [
         "t1053-005-scheduled-task-persistence"
       ],
@@ -367,6 +389,7 @@
       "techniques": [
         "T1059.001"
       ],
+      "authored": false,
       "expected_scenarios": [
         "t1059-001-powershell-encoded-download"
       ],
@@ -385,6 +408,7 @@
       "techniques": [
         "T1070.003"
       ],
+      "authored": false,
       "expected_scenarios": [
         "t1070-003-clear-command-history"
       ],
@@ -413,6 +437,7 @@
         "646ea171-dded-4578-8a4d-65e9822892e3",
         "5ef9853e-4d0e-4a70-846f-a9ca37d876da"
       ],
+      "needs_authored_rule": false,
       "fired_rules": [
         "646ea171-dded-4578-8a4d-65e9822892e3",
         "5ef9853e-4d0e-4a70-846f-a9ca37d876da"
@@ -452,6 +477,7 @@
       "expected_rules": [
         "44e24481-6202-4c62-9127-5a0ae8e3fe3d"
       ],
+      "needs_authored_rule": false,
       "fired_rules": [],
       "missing_rules": [],
       "evidence": [
@@ -481,6 +507,7 @@
       "expected_rules": [
         "526be59f-a573-4eea-b5f7-f0973207634d"
       ],
+      "needs_authored_rule": false,
       "fired_rules": [
         "526be59f-a573-4eea-b5f7-f0973207634d"
       ],
@@ -513,6 +540,7 @@
         "6b14bac8-3e3a-4324-8109-42f0546a347f",
         "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05"
       ],
+      "needs_authored_rule": false,
       "fired_rules": [
         "6b14bac8-3e3a-4324-8109-42f0546a347f",
         "6c4e2f43-d94d-4ead-b64d-97e53fa2bd05"
@@ -555,6 +583,7 @@
         "92626ddd-662c-49e3-ac59-f6535f12d189",
         "eb3f5405-928e-441c-a867-0612f0f66dc9"
       ],
+      "needs_authored_rule": true,
       "fired_rules": [
         "92626ddd-662c-49e3-ac59-f6535f12d189",
         "eb3f5405-928e-441c-a867-0612f0f66dc9"
@@ -596,6 +625,7 @@
       "expected_rules": [
         "fb843269-508c-4b76-8b8d-88679db22ce7"
       ],
+      "needs_authored_rule": false,
       "fired_rules": [
         "fb843269-508c-4b76-8b8d-88679db22ce7"
       ],
@@ -627,6 +657,7 @@
       "expected_rules": [
         "467585b7-9de8-40e5-bb2a-6626902ae295"
       ],
+      "needs_authored_rule": true,
       "fired_rules": [
         "467585b7-9de8-40e5-bb2a-6626902ae295"
       ],
@@ -659,6 +690,7 @@
         "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e",
         "1182f3b3-e716-4efa-99ab-d2685d04360f"
       ],
+      "needs_authored_rule": false,
       "fired_rules": [
         "fdc88d25-96fb-4b7c-9633-c0e417fdbd4e",
         "1182f3b3-e716-4efa-99ab-d2685d04360f"
@@ -701,6 +733,7 @@
         "3b1f0d2e-7c4a-4d5b-9e8f-2a6c1d0b9f41",
         "8ad1600d-e9dc-4251-b0ee-a65268f29add"
       ],
+      "needs_authored_rule": true,
       "fired_rules": [
         "3b1f0d2e-7c4a-4d5b-9e8f-2a6c1d0b9f41",
         "8ad1600d-e9dc-4251-b0ee-a65268f29add"
@@ -742,6 +775,7 @@
       "expected_rules": [
         "0a5177f4-6ca9-44c2-aacf-d3f3d8b6e4d2"
       ],
+      "needs_authored_rule": false,
       "fired_rules": [
         "0a5177f4-6ca9-44c2-aacf-d3f3d8b6e4d2"
       ],
@@ -774,6 +808,7 @@
         "19b08b1c-861d-4e75-a1ef-ea0c1baf202b",
         "d059842b-6b9d-4ed1-b5c3-5b89143c6ede"
       ],
+      "needs_authored_rule": false,
       "fired_rules": [
         "19b08b1c-861d-4e75-a1ef-ea0c1baf202b",
         "d059842b-6b9d-4ed1-b5c3-5b89143c6ede"
@@ -816,6 +851,7 @@
         "8f6a2c41-5d7e-4b0a-a3c9-1e2f3d4c5b6a",
         "5c0d9e7b-3a21-4f68-b8d4-7e9f0a1b2c3d"
       ],
+      "needs_authored_rule": true,
       "fired_rules": [
         "8f6a2c41-5d7e-4b0a-a3c9-1e2f3d4c5b6a",
         "5c0d9e7b-3a21-4f68-b8d4-7e9f0a1b2c3d"
@@ -857,6 +893,7 @@
       "expected_rules": [
         "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d"
       ],
+      "needs_authored_rule": true,
       "fired_rules": [
         "7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d"
       ],
@@ -888,6 +925,7 @@
       "expected_rules": [
         "4db60cc0-36fb-42b7-9b58-a5b53019fb74"
       ],
+      "needs_authored_rule": false,
       "fired_rules": [
         "4db60cc0-36fb-42b7-9b58-a5b53019fb74"
       ],

@@ -2,6 +2,7 @@
 
 **Gate:** passed - 13 passed, 0 failed, 1 pending of 14 scenarios; 21 expected rules.
 **Prevalence-weighted coverage:** 98% of all scenarios, 100% of scenarios with fixtures.
+**Rule provenance:** 98% of weight points have a passing scenario; 52% of weight points pass on unmodified SigmaHQ rules alone (8 scenarios); the other 5 passing scenarios need at least one rule written for this project.
 
 | Scenario | Technique | Plane | Weight | Status | Rules fired | Events |
 |---|---|---|---|---|---|---|
@@ -30,4 +31,4 @@
 - t1070-003-clear-command-history: History File Deletion: 34/103 command-line variants
 - t1548-001-setuid-setgid: Setuid or Setgid Bit Set via Chmod (Any Mode Form): 106/108 command-line variants
 
-_tripline 0.3.0, generated 2026-11-11 20:16 UTC_
+_tripline 0.3.0, generated 2026-11-11 21:08 UTC_
