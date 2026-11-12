@@ -21,16 +21,18 @@ the rule that should have fired, why it did not, and what changed.
   requires `CommandLine|contains: ' chmod u+s'` or `' chmod g+s'` **and** `'chown root'`.
 * **Why it missed:** the atomic uses the combined mode `u+xs` / `g+xs`. A `contains` match on the
   literal ` chmod u+s` cannot see it. Any attacker typing `chmod 4755`, `chmod ug+s` or
-  `chmod a+s` is equally invisible to the rule. Result on the recorded fixture: 0 of 36 applicable
-  events.
+  `chmod a+s` is equally invisible to the rule. Result on the recorded fixture: 0 of the 2 attack events.
+  All 36 recorded events apply to the rule: 2 are the attack (the two `chmod` executions), 4 are
+  `sudo`/`dash` wrapper lines that mention `chmod`, 30 are unrelated.
 * **Fix:** `rules/sigma/linux/tripline_lnx_chmod_setuid_setgid_any_form.yml`
   (`7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d`) matches `Image|endswith: /chmod` with a regex over the
-  symbolic form `[ugoa]*[+=][rwxXt]*s` or an octal mode. On the same fixture: 2 of 36 applicable
-  events (the two `chmod` executions), the wrapper `sh -c` line is not double-counted because the
+  symbolic form `[ugoa]*[+=][rwxXt]*s` or an octal mode. On the same fixture: 2 of 2 attack events
+  (the two `chmod` executions; the replay prints this as 2/36 applicable events, 36 being all
+  recorded events). The wrapper lines are not counted because the
   `Image` must be `chmod` itself.
 * **Revision in 0.2.1 (review findings).** The first version of the rule had its own gaps, found
   by reading the regexes against hand-built command lines (synthetic events in
-  `tests/test_linux_collect.py`, not recorded telemetry; the committed fixtures and the 2 of 36
+  `tests/test_linux_collect.py`, not recorded telemetry; the committed fixtures and the 2 of 2
   result are unchanged):
   * The octal branch matched only `[2467][0-7]{3}`. The special-bits digit is a bitmask (4 setuid,
     2 setgid, 1 sticky), so `3755` (setgid+sticky) and `5755` (setuid+sticky) were missed, and a

@@ -30,7 +30,7 @@ a production backend, it covers 14 techniques, and it is not a substitute for an
 | Weighted coverage | 98% of weight points have a passing scenario (61 of 62); **52% of weight points (32 of 62, 8 scenarios) pass on unmodified SigmaHQ rules alone**, the other 5 passing scenarios (29 points) need at least one rule written for this project. 45 of the 62 points follow a published ranking, 17 are hand-assigned ([weights](docs/weights.md)) |
 | False positives | 2 matches from 1 of 6 evaluated rules on a 675-event benign Linux corpus; 20 of 26 rules not evaluated ([benign corpus](docs/benign-corpus.md)) |
 | Evasion sweep | 200 of 251 command-line variants of the three Linux attacks caught by an expected rule ([robustness](docs/robustness.md)) |
-| Gaps found | SigmaHQ *Setuid and Setgid* matched 0 of 36 Atomic events ([F-001](docs/findings.md)); 3 Windows rules that miss their Atomic tests ([F-003](docs/findings.md)) |
+| Gaps found | SigmaHQ *Setuid and Setgid* flagged 0 of the 2 attack events among 36 recorded Atomic events ([F-001](docs/findings.md)); 3 Windows rules that miss their Atomic tests ([F-003](docs/findings.md)) |
 | Code | 212 tests, 91% coverage, ruff and mypy strict clean, ATT&CK v20 ([version notes](docs/attack-version.md)) |
 
 [![tripline coverage report](docs/img/report.png)](docs/report.html)
@@ -41,9 +41,9 @@ the benign-corpus table and the evasion table. It is one self-contained HTML fil
 ([`docs/report.html`](docs/report.html)), and [`pages.yml`](.github/workflows/pages.yml) rebuilds and
 publishes it to GitHub Pages from `main`.
 
-It already caught a real gap: the stock SigmaHQ *Setuid and Setgid* rule matched 0 of 36
-events recorded from Atomic Red Team's own T1548.001 tests. A replacement rule matches 2 of 36
-([finding F-001](docs/findings.md)).
+It already caught a real gap: the stock SigmaHQ *Setuid and Setgid* rule flagged 0 of the 2
+attack events (the two `chmod` executions) among the 36 events recorded from Atomic Red Team's own
+T1548.001 tests. A replacement rule flags 2 of 2 ([finding F-001](docs/findings.md)).
 
 No SIEM is required. Rules are compiled to Python predicates and evaluated against NDJSON
 fixtures committed to the repo, so `tripline replay --all` is deterministic and runs offline in
@@ -103,14 +103,16 @@ All figures were produced by the commands in [Quick start](#quick-start) on 2026
 
 ### What it caught
 
-On the first Linux recording the vendored SigmaHQ rule `c21c4eaa` *Setuid and Setgid* matched
-**0 of 36** applicable events. It looks for the literal text ` chmod u+s`; the Atomic test ran
+On the first Linux recording the vendored SigmaHQ rule `c21c4eaa` *Setuid and Setgid* flagged
+**0 of the 2 attack events**. All 36 recorded events apply to the rule; 2 are the attack itself (the two
+`chmod` executions), 4 are `sudo`/`dash` wrapper lines that mention `chmod`, and 30 are unrelated. It looks for the literal text ` chmod u+s`; the Atomic test ran
 `chmod u+xs`, and `chmod 4755`, `chmod ug+s` or `chmod a+s` would be missed the same way. The
 emulation run that recorded it ([run 41838714456](https://github.com/samiali38183/tripline/actions/runs/41838714456))
 failed its own gate for exactly this reason. The repo includes a replacement rule,
 `tripline_lnx_chmod_setuid_setgid_any_form.yml`, that anchors on the `chmod` binary and matches
-symbolic forms and octal modes with the setuid or setgid bit set: **2 of 36**, the two `chmod`
-executions. Reproduced:
+symbolic forms and octal modes with the setuid or setgid bit set: **2 of 2**, the two `chmod`
+executions. The "applicable 36" below is the whole recorded event count; the denominator that
+matters is the 2 attack events. Reproduced:
 
 ```
 Setuid and Setgid                                  applicable 36  matched 0

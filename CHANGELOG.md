@@ -95,7 +95,7 @@ Fixes from a code review. Each item was reproduced with a failing test first.
   octal modes (`04755`), symbolic mode lists such as `g+w,u+s`, and a full-path `chmod`. The
   `/usr/share/doc/` exclusion applies only when every file operand is under that directory and
   none contains `..`; appending that path to another target no longer suppresses the event.
-  Result on the recorded fixture is unchanged (2 of 36). Details in `docs/findings.md` F-001.
+  Result on the recorded fixture is unchanged (2 of 2 attack events). Details in `docs/findings.md` F-001.
 * Two Windows rules for the gaps in F-003: `tripline_win_cmd_redirect_relative_in_suspicious_cwd.yml`
   (T1059.003) and `tripline_win_security_scheduled_task_interpreter_action.yml` (T1053.005). They
   are tested on synthetic events only (`tests/test_windows_rules.py`), are not expected by any
