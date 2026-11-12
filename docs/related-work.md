@@ -20,7 +20,7 @@ A small, self-contained gate for a consumer repo: scenarios (technique, tactic, 
 fixtures) live next to the rules, the evaluator is plain Python over NDJSON so it runs offline on
 a stock runner in seconds, and the output is a scorecard with prevalence-weighted coverage, a
 Navigator layer, an HTML report and a JUnit file. It also publishes findings from using it, such
-as the SigmaHQ *Setuid and Setgid* rule matching 0 of 36 events recorded from Atomic Red Team's
+as the SigmaHQ *Setuid and Setgid* rule flagging 0 of the 2 attack events among 36 recorded from Atomic Red Team's
 own T1548.001 tests ([F-001](findings.md)). Since 0.3.0 it also replays all rules against a
 benign corpus and sweeps command-line variants.
 
