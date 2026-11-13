@@ -2,8 +2,8 @@
 
 ## 0.3.0 - 2026-11-11
 
-Credibility pass: accurate framing, current ATT&CK, a hardened pipeline, and the first false-positive
-and evasion measurements. Every number below comes from a command run on this commit.
+Corrected framing, current ATT&CK, a hardened pipeline, and the first false-positive and evasion
+measurements. Every number below comes from a command run on this commit.
 
 ### Framing
 * README opening, `docs/related-work.md` and `docs/limitations.md` state the purpose against
@@ -24,9 +24,8 @@ and evasion measurements. Every number below comes from a command run on this co
 ### Pipeline hygiene
 * Every GitHub Action pinned by full commit SHA with a version comment; per-job `permissions`
   (workflow default none); `persist-credentials: false`; expressions passed through `env`;
-  concurrency groups; Dependabot cooldown; `zizmor` (auditor persona) added to CI.
-  zizmor 1.32.0 on `.github`: 42 findings before (19 high, 3 medium, 5 low; 15 more shown only by
-  the pedantic persona), 0 after on every persona. actionlint clean.
+  concurrency groups; Dependabot cooldown; `zizmor` (auditor persona) added to CI. zizmor 1.32.0
+  and actionlint report nothing on `.github`.
 
 ### False positives
 * `tripline benign`, `tripline linux collect-benign`, `emulate-linux.yml` input `record: benign` and
@@ -61,7 +60,7 @@ and evasion measurements. Every number below comes from a command run on this co
 
 ## 0.2.1 - 2026-11-10
 
-Fixes from a code review. Each item was reproduced with a failing test first.
+Bug fixes. Each one was reproduced with a failing test first.
 
 ### Recorded Windows telemetry
 
@@ -98,13 +97,13 @@ Fixes from a code review. Each item was reproduced with a failing test first.
   Result on the recorded fixture is unchanged (2 of 2 attack events). Details in `docs/findings.md` F-001.
 * Two Windows rules for the gaps in F-003: `tripline_win_cmd_redirect_relative_in_suspicious_cwd.yml`
   (T1059.003) and `tripline_win_security_scheduled_task_interpreter_action.yml` (T1053.005). They
-  are tested on synthetic events only (`tests/test_windows_rules.py`), are not expected by any
-  scenario, and all Windows scenarios remain pending.
+  are tested on synthetic events only (`tests/test_windows_rules.py`) and no scenario expects them
+  in this release.
 
 ### Numbers
 
-* 186 tests (was 113), 89 % line+branch coverage. Scorecard totals unchanged: 7 passed, 0 failed,
-  7 pending, 47 % weighted. 26 rules compiled (was 24).
+* 186 tests (was 113), 89 % line+branch coverage. After the Windows fixtures above the scorecard
+  reads 10 passed, 0 failed, 4 pending, 68 % weighted. 26 rules compiled (was 24).
 
 ## 0.2.0 - 2026-11-10
 
@@ -135,7 +134,7 @@ Fixes from a code review. Each item was reproduced with a failing test first.
 * `docs/findings.md` F-003: why 6 of 7 Windows scenarios failed, split into runner problems
   (fixed above) and rule/atomic mismatches that still need a scenario decision.
 
-### Linux plane (Phase A2)
+### Linux plane
 
 * `tripline/linux/collect.py`: auditd log parser (records merged by serial, EXECVE hex decoding,
   chunked-argument joining, `TargetFilename` from PATH CREATE), tripline marker slicing, per-scenario
@@ -147,7 +146,7 @@ Fixes from a code review. Each item was reproduced with a failing test first.
 * New rule `tripline_lnx_chmod_setuid_setgid_any_form` closing finding F-001 (SigmaHQ 'Setuid and
   Setgid' misses `chmod u+xs`). `docs/findings.md` started.
 
-## 0.1.0 - Phase A1 (2026-11-04)
+## 0.1.0 - 2026-11-04
 
 First release: container-free detection gate with a real cloud plane.
 
@@ -156,7 +155,7 @@ First release: container-free detection gate with a real cloud plane.
   wildcards; `and`/`or`/`not`/parens, `1 of`/`all of`, keywords). Unsupported features raise.
 * Logsource router for Fluent Bit `winlog` and `Get-WinEvent | ConvertTo-Json` Windows shapes
   (Sysmon, Security, PowerShell), auditd, CloudTrail.
-* Strict pydantic scenario schema; 14 scenarios from the design table (4 AWS, 7 Windows, 3 Linux)
+* Strict pydantic scenario schema; 14 scenarios (4 AWS, 7 Windows, 3 Linux)
   with real Atomic Red Team test GUIDs.
 * Cloud plane: recipes over Stratus Red Team detonation logs and the flaws.cloud dataset,
   timestamp rebase + run GUID, 4 committed fixtures with manifests; all 4 AWS scenarios pass.

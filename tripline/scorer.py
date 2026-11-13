@@ -112,7 +112,7 @@ def write_junit(results: list[ReplayResult], scenarios: list[Scenario], path: Pa
     """Write a JUnit XML report: one testcase per scenario, failures name the missed rules.
 
     GitHub renders this natively through test-reporter actions, and the failure message is
-    what a reviewer reads first - so it names the scenario, the technique and the rule.
+    what gets read first - so it names the scenario, the technique and the rule.
     """
     by_id = {s.id: s for s in scenarios}
     suite = ET.Element("testsuite", name="tripline.replay")

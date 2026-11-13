@@ -1,6 +1,6 @@
 name: emulate-windows
 
-# Phase A2: run the Windows Atomic Red Team tests on a disposable windows-latest runner with
+# Run the Windows Atomic Red Team tests on a disposable windows-latest runner with
 # Sysmon (SwiftOnSecurity config), Security process auditing (4688 + command line, 4698 task
 # creation) and PowerShell script-block logging, export the three channels as NDJSON, slice by
 # tripline markers into fixtures, and assert the expected Sigma rules fire. Fixtures are uploaded

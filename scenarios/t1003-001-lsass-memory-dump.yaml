@@ -19,4 +19,4 @@ fixtures:
     source: https://github.com/samiali38183/tripline/actions/runs/42917025570
     notes: Sysmon, Security 4688 and PowerShell logs on windows-latest (Server 2025), Invoke-AtomicTest between tripline markers; see manifest.json
 notes: >-
-  Interview staple. Requires the runner to have Sysmon with process-access logging for lsass.exe.
+  Needs Sysmon on the runner with process-access logging for lsass.exe.

@@ -15,20 +15,20 @@ The only places code executes with privileges are the disposable GitHub-hosted r
 | Asset | Why it matters |
 |---|---|
 | Rule verdicts (`tripline replay --all` exit code) | A wrong *pass* lets a detection regression merge. This is the asset the whole project exists to protect. |
-| Committed fixtures (`fixtures/**/run.ndjson`) | They are the ground truth the gate replays. Tampered or stale fixtures silently weaken every verdict. |
+| Committed fixtures (`fixtures//run.ndjson`) | They are the ground truth the gate replays. Tampered or stale fixtures silently weaken every verdict. |
 | Scorecard / heatmap artifacts | Consumed by humans to decide where to invest; wrong numbers misdirect effort. |
 | The repository's CI identity (`GITHUB_TOKEN`) | Could publish or alter artifacts if a workflow were hijacked. |
 
 ## Trust boundaries
 
-1. **Pull request author -> CI.** Anyone with write access (or a fork PR, if ever enabled) can
+1. Pull request author -> CI. Anyone with write access (or a fork PR, if ever enabled) can
    change rules, scenarios, fixtures and the workflows themselves.
-2. **Upstream content -> repository.** SigmaHQ rules, Atomic Red Team tests, Invoke-AtomicRedTeam,
+2. Upstream content -> repository. SigmaHQ rules, Atomic Red Team tests, Invoke-AtomicRedTeam,
    Sysmon, the SwiftOnSecurity config, Stratus Red Team and flaws.cloud datasets are all fetched
    from the public internet at build or emulation time.
-3. **Emulation runner -> artifacts.** Atomics execute as root / Administrator on the runner;
+3. Emulation runner -> artifacts. Atomics execute as root / Administrator on the runner;
    everything they emit is untrusted data until a maintainer reviews the artifact.
-4. **Fixture bytes -> evaluator.** NDJSON is parsed with strict JSON and routed by shape; unknown
+4. Fixture bytes -> evaluator. NDJSON is parsed with strict JSON and routed by shape; unknown
    shapes get *no* logsource and are therefore never evaluated.
 
 ## Threats and mitigations
@@ -39,7 +39,7 @@ The only places code executes with privileges are the disposable GitHub-hosted r
 *Mitigations:* scenarios and fixtures are reviewed in the same PR as the rule change; CODEOWNERS is
 recommended for `scenarios/`, `fixtures/` and `rules/`; `tests/test_replay.py` asserts every
 committed fixture matches its `manifest.json` event count and run GUID, so silent edits of one
-file without the other fail the unit suite. *Not mitigated:* a reviewer approving a bad change.
+file without the other fail the unit suite. *Not mitigated:* a maintainer approving a bad change.
 The gate makes the weakening visible in the diff; it cannot stop a determined insider.
 
 ### T2. Rule that compiles but never evaluates
@@ -69,7 +69,7 @@ diff; branch protection on `main` requiring the `detection gate` check is the in
 GitHub Action is pinned to a full commit SHA (with the tag in a comment), permissions are scoped
 per job (the workflow default is none), `actions/checkout` runs with `persist-credentials: false`,
 user-controlled expressions are passed through `env` rather than expanded into scripts, and CI
-runs `zizmor` (auditor persona) and `actionlint` on the workflows; Dependabot has a 7-day
+runs `zizmor` (auditor persona) on the workflows (I run `actionlint` by hand); Dependabot has a 7-day
 cooldown so pins are not bumped to a release that is hours old. *Not mitigated:* fork PRs are not
 enabled; if they were, `pull_request_target` must never be used with checkout of the PR head.
 
@@ -87,8 +87,8 @@ carry it in `userAgent`, and `tests/test_replay.py` checks the tags match the ma
 *Example:* the Python compiler treats a modifier differently from the production backend, so the
 gate passes while the SIEM rule misses. *Mitigations:* the compiler walks pySigma's parsed
 condition tree rather than re-parsing rules, each modifier has unit tests, and unsupported
-features raise. *Not mitigated:* there is no parity test against a real backend yet (OpenSearch
-parity is Phase B). Treat tripline's verdict as *necessary*, not *sufficient*, until that lands.
+features raise. *Not mitigated:* there is no parity test against a real backend yet (an OpenSearch
+parity test is planned). Treat tripline's verdict as necessary, not sufficient, until that exists.
 
 ### T7. Secrets and credentials
 
@@ -103,14 +103,14 @@ Atomics disable logging, dump LSASS, add cron jobs and set setuid bits. *Mitigat
 only on disposable hosted runners that are destroyed after the job; `SECURITY.md` forbids running
 them on a workstation; the workflows have no `pull_request` trigger so a PR cannot schedule a
 detonation. *Not mitigated:* running the workflows on a self-hosted runner would execute the
-atomics on that host — do not register one for this repository.
+atomics on that host. Do not register one for this repository.
 
 ## Residual risk summary
 
 | Risk | Level | Owner action |
 |---|---|---|
-| Reviewer approves a weakened scenario | Medium | Add CODEOWNERS + required review on `scenarios/`, `fixtures/`, `rules/` |
+| A maintainer approves a weakened scenario | Medium | Add CODEOWNERS and required review on `scenarios/`, `fixtures/`, `rules/` |
 | Unpinned upstream installers | Medium | Pin Invoke-AtomicRedTeam / Sysmon versions and checksums |
-| No SIEM parity | Medium | Phase B OpenSearch parity test |
+| No SIEM parity | Medium | Write an OpenSearch parity test |
 | No artifact attestation | Low | `actions/attest-build-provenance` on fixture artifacts |
-| Zero-applicable-event rules do not fail the gate | Low | Add `--strict-logsource` flag (tracked in Limitations) |
+| Zero-applicable-event rules do not fail the gate | Low | Add a strict-logsource option (not built) |

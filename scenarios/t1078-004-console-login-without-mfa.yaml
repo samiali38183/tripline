@@ -21,4 +21,4 @@ fixtures:
       ConsoleLogin records from the flaws.cloud public CloudTrail dataset
       (https://summitroute.com/downloads/flaws_cloudtrail_logs.tar, Summit Route); see manifest.json.
 notes: >-
-  Red Canary 2026 #1 technique. The MFAUsed=No signal is the single-event detection; new-ASN / impossible-travel baselining is a Phase B item.
+  Red Canary 2026 #1 technique. The MFAUsed=No signal is the single-event detection; new-ASN / impossible-travel baselining is not built.

@@ -1,6 +1,6 @@
 name: emulate-linux
 
-# Phase A2: run the Linux Atomic Red Team tests on a disposable ubuntu runner with auditd,
+# Run the Linux Atomic Red Team tests on a disposable ubuntu runner with auditd,
 # slice the audit log by tripline markers into fixtures, and assert the expected Sigma rules fire.
 # The fixtures are uploaded as an artifact; a maintainer reviews and commits them.
 

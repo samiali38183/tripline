@@ -20,4 +20,4 @@ fixtures:
     source: https://github.com/samiali38183/tripline/actions/runs/41838714456
     notes: auditd (execve + cron watches) on ubuntu-latest, Invoke-AtomicTest between tripline markers; see manifest.json
 notes: >-
-  Linux file_event rules are evaluated against auditd PATH records with name=create in Phase A2.
+  Linux file_event rules are evaluated against auditd PATH records with name=create.

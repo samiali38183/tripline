@@ -20,4 +20,4 @@ fixtures:
     source: https://github.com/samiali38183/tripline/actions/runs/41838714456
     notes: auditd (execve + cron watches) on ubuntu-latest, Invoke-AtomicTest between tripline markers; see manifest.json
 notes: >-
-  Shell builtins (history -c) never reach auditd; the keyword rule relies on the PROCTITLE record. Documented as a telemetry gap for the write-up.
+  Shell builtins (history -c) never reach auditd; the keyword rule relies on the PROCTITLE record. This is a telemetry gap.
