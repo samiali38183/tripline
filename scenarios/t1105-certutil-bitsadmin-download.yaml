@@ -20,4 +20,4 @@ fixtures:
     source: https://github.com/samiali38183/tripline/actions/runs/42917025570
     notes: Sysmon, Security 4688 and PowerShell logs on windows-latest (Server 2025), Invoke-AtomicTest between tripline markers; see manifest.json
 notes: >-
-  Red Canary 2026 #5. The windash modifier in the certutil rule is the robustness talking point for Phase B.
+  Red Canary 2026 #5. The certutil rule uses the windash modifier, which is a good candidate for evasion variants.

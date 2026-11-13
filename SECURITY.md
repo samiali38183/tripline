@@ -2,14 +2,14 @@
 
 ## What this repository does
 
-tripline runs **adversary emulation** (Atomic Red Team tests, Stratus Red Team detonation
-replays) and evaluates Sigma rules against the resulting telemetry. The emulation side is
-intentionally hostile to the host it runs on.
+tripline runs adversary emulation (Atomic Red Team tests, Stratus Red Team detonation
+replays) and evaluates Sigma rules against the resulting telemetry. The emulation side does hostile
+things to the host it runs on, on purpose.
 
 ## Where atomics may run
 
-* Atomic Red Team tests are executed **only** on ephemeral GitHub Actions runners or in a
-  disposable VM you own and will destroy afterwards. Never run `scenarios/*.yaml` atomics on a
+* Atomic Red Team tests run only on ephemeral GitHub Actions runners or in a disposable VM you
+  own and will destroy afterwards. Never run `scenarios/*.yaml` atomics on a
   workstation, a shared host, or anything joined to a production directory.
 * The cloud plane never touches a live AWS account. All CloudTrail telemetry is replayed from
   public datasets (`fixtures/cloud/SOURCES.md`); `tripline` holds no cloud credentials.

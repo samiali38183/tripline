@@ -14,6 +14,6 @@ emulation:
     - a50d5a97-2531-499e-a1de-5544c74432c6  # ART #2: Execute base64-encoded PowerShell (added to record what fires)
 expected_rules:
   - 44e24481-6202-4c62-9127-5a0ae8e3fe3d  # Obfuscated PowerShell OneLiner Execution (SigmaHQ)
-fixtures: []  # Phase A2: recorded on a GitHub Actions windows runner
+fixtures: []  # recorded on a GitHub Actions windows runner
 notes: >-
-  Red Canary 2026 #10. Primary target of the Phase B mutator.
+  Red Canary 2026 #10.

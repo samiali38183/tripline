@@ -1,7 +1,7 @@
 """Recipes that turn public CloudTrail datasets into the committed cloud fixtures.
 
 Every recipe names its upstream source and licence, and selects records with a plain
-predicate so a reviewer can see exactly which real events were kept. ``tripline cloud build``
+predicate so you can see exactly which real events were kept. ``tripline cloud build``
 downloads the sources into a cache directory, applies the recipes, replays the records
 (timestamp rebase + run GUID) and writes ``fixtures/cloud/<scenario>/run.ndjson`` next to a
 ``manifest.json`` describing where each event came from.

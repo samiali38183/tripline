@@ -1,7 +1,7 @@
 # Cloud fixture provenance
 
-Every file under `fixtures/cloud/<scenario>/run.ndjson` is **recorded** AWS CloudTrail telemetry
-from a public dataset, passed through `tripline cloud build` (`tripline/cloud/sources.py`), which:
+Every file under `fixtures/cloud/<scenario>/run.ndjson` is real AWS CloudTrail telemetry from
+a public dataset, passed through `tripline cloud build` (`tripline/cloud/sources.py`), which:
 
 1. selects records with the predicate shown in the recipe (reviewable Python, not hand edits);
 2. rebases every `eventTime` so the oldest record lands at build time with original offsets kept;
@@ -20,11 +20,11 @@ account ids, ARNs and IPs are whatever the publishers released.
 
 ## Sources
 
-* **Stratus Red Team detonation logs** - DataDog, <https://github.com/DataDog/stratus-red-team/tree/main/docs/detonation-logs>,
+* Stratus Red Team detonation logs - DataDog, <https://github.com/DataDog/stratus-red-team/tree/main/docs/detonation-logs>,
   captured with Grimoire. Licence: Apache-2.0 (<https://github.com/DataDog/stratus-red-team/blob/main/LICENSE>).
-* **flaws.cloud CloudTrail dataset** - Scott Piper / Summit Route,
-  <https://summitroute.com/downloads/flaws_cloudtrail_logs.tar> (~2M records, 2017-2020), published for
+* flaws.cloud CloudTrail dataset - Scott Piper / Summit Route,
+  <https://summitroute.com/downloads/flaws_cloudtrail_logs.tar> (2017-2020), published for
   public analysis: <https://summitroute.com/blog/2020/10/09/public_dataset_of_cloudtrail_logs_from_flaws_cloud/>.
 
-Rebuild from upstream with `tripline cloud build` (downloads ~450 MB into `.cache/`); the run GUID
+Rebuild from upstream with `tripline cloud build` (downloads about 250 MB into `.cache/`); the run GUID
 and timestamps will differ, the selected records will not unless upstream changes.

@@ -23,7 +23,7 @@ How variants are built
 Limits (also in ``docs/robustness.md``): the lists are hand-written from known shell and
 coreutils behaviour, not exhaustive; variants are evaluated at the event level, not by running
 them; the child event of a wrapper is assumed to be recorded (auditd records every execve).
-A high catch rate here is not a proof of robustness, and a low one is a documented gap.
+A high catch rate here does not mean the rules are hard to evade, and a low one is a gap on record.
 """
 
 from __future__ import annotations

@@ -1,7 +1,7 @@
 # Benign corpus (false-positive measurement)
 
 `fixtures/benign/linux/run.ndjson` holds auditd telemetry recorded while ordinary work ran on a
-GitHub-hosted `ubuntu-latest` runner. `tripline benign` replays **every** compiled rule over it
+GitHub-hosted `ubuntu-latest` runner. `tripline benign` replays every compiled rule over it
 and reports, per rule, how many benign events matched. A rule that matches is a false positive
 on this corpus and is reported, never hidden. The scorecard, the Markdown PR comment and the HTML
 report carry the same numbers.
@@ -55,7 +55,7 @@ written. What was removed or changed (counts are in `manifest.json`):
 | Rules that matched benign events | 1 |
 | False-positive matches | 2 |
 
-The one false positive is **New Cron File Created** (SigmaHQ `6c4e2f43`), 2 of 2 applicable file
+The one false positive is New Cron File Created (SigmaHQ `6c4e2f43`), 2 of 2 applicable file
 events: `/etc/cron.daily/chkrootkit` and `/etc/cron.daily/chkrootkit.dpkg-new`, written by the
 `chkrootkit` package install. That is the package-manager false positive the rule's own
 `falsepositives` field warns about (its built-in filter only exempts `apt`, `dpkg`, `passwd`). It

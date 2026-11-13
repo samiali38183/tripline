@@ -17,6 +17,7 @@ mypy tripline                     # strict
 pytest --cov=tripline
 sigma check rules/
 tripline replay --all             # the detection gate; exit 1 = an expected rule missed
+zizmor --offline --persona auditor .github    # workflow lint (pip install zizmor)
 ```
 
 ## Adding a scenario
@@ -32,7 +33,7 @@ tripline replay --all             # the detection gate; exit 1 = an expected rul
 4. Endpoint scenarios: list the Atomic Red Team test GUIDs; leave `fixtures: []` until a recorded
    fixture exists. Pending scenarios are reported, never gate.
 5. `tripline validate` must pass and `tests/test_scenarios.py` must be updated if the scenario
-   count or technique set changes (the design table is asserted).
+   count or technique set changes (it asserts the full scenario list).
 
 ## Changing the engine
 
@@ -43,5 +44,5 @@ returning `False`.
 
 ## Commits and PRs
 
-Small, single-purpose commits; CI must be green. A PR that makes `tripline replay --all` fail is a
-detection regression and will be blocked by the gate - that is the point.
+Keep commits small and single-purpose, and keep CI green. A PR that makes `tripline replay --all`
+fail is a detection regression, and the gate blocks it. That is what it is for.
