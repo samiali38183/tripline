@@ -5,23 +5,9 @@
 ![python](https://img.shields.io/badge/python-3.12-blue)
 [![weighted coverage](docs/coverage.svg)](docs/scorecard.md)
 
-tripline is a small, self-contained CI gate for Sigma detection rules. It replays recorded
-telemetry (auditd, Sysmon/Security/PowerShell, CloudTrail) through the rules on every pull
-request, fails the build when a rule that is supposed to fire on a technique does not, and reports
-prevalence-weighted coverage, false positives on a benign corpus and a first evasion-variant sweep.
+tripline is a CI gate for Sigma detection rules. Each ATT&CK technique has recorded telemetry (auditd, Sysmon/Security/PowerShell, CloudTrail) committed in the repo. On every pull request tripline replays it through the rules and fails the build when a rule that is supposed to fire on that technique does not. It also reports prevalence-weighted coverage, false positives on a benign corpus and a first evasion-variant sweep.
 
-It is not the first tool that tests detections against recorded or generated telemetry.
-SigmaHQ's own [regression tests](https://github.com/SigmaHQ/sigma/tree/master/regression_data)
-replay EVTX/JSON samples against rules in CI, [rsigma `backtest`](https://rsigma.io/cli/rule/backtest/)
-replays a corpus against per-rule expectations and flags unexpected fires, SCYTHE's
-[pipeline](https://scythe.io/sigma) runs Atomic Red Team tests and queries a live Splunk, and Splunk's
-[attack_data](https://github.com/splunk/attack_data) publishes recorded Atomic telemetry. What
-tripline adds is a small scenario layer on top of the same idea: a technique, the rules expected to
-catch it and the recorded fixture live in one repo, the evaluator is plain Python that runs offline
-on a stock runner, the output is an ATT&CK-weighted scorecard, and it publishes what it finds, such
-as the setuid rule gap below. What it does not do: it evaluates rules with its own compiler rather than
-a production backend, it covers 14 techniques, and it is not a substitute for any of the tools above
-([comparison](docs/related-work.md)).
+It already caught a real gap: the stock SigmaHQ *Setuid and Setgid* rule flagged 0 of the 2 attack events (the two `chmod` executions) among the 36 events recorded from Atomic Red Team's own T1548.001 tests. A replacement rule flags 2 of 2 ([finding F-001](docs/findings.md)).
 
 | | |
 |---|---|
@@ -33,6 +19,14 @@ a production backend, it covers 14 techniques, and it is not a substitute for an
 | Gaps found | SigmaHQ *Setuid and Setgid* flagged 0 of the 2 attack events among 36 recorded Atomic events ([F-001](docs/findings.md)); 3 Windows rules that miss their Atomic tests ([F-003](docs/findings.md)) |
 | Code | 212 tests, 91% coverage, ruff and mypy strict clean, ATT&CK v20 ([version notes](docs/attack-version.md)) |
 
+Try it (Python 3.12+, no SIEM, offline, a few seconds):
+
+```bash
+git clone https://github.com/samiali38183/tripline && cd tripline
+python -m venv .venv && . .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -e ".[dev]" && tripline replay --all    # exit 1 if an expected rule misses
+```
+
 [![tripline coverage report](docs/img/report.png)](docs/report.html)
 
 The report above is `tripline report` run on the committed scorecard: an ATT&CK-style matrix by
@@ -41,13 +35,9 @@ the benign-corpus table and the evasion table. It is one self-contained HTML fil
 ([`docs/report.html`](docs/report.html)), and [`pages.yml`](.github/workflows/pages.yml) rebuilds and
 publishes it to GitHub Pages from `main`.
 
-It already caught a real gap: the stock SigmaHQ *Setuid and Setgid* rule flagged 0 of the 2
-attack events (the two `chmod` executions) among the 36 events recorded from Atomic Red Team's own
-T1548.001 tests. A replacement rule flags 2 of 2 ([finding F-001](docs/findings.md)).
+Related tools: SigmaHQ's [regression tests](https://github.com/SigmaHQ/sigma/tree/master/regression_data) and [rsigma `backtest`](https://rsigma.io/cli/rule/backtest/) also replay samples against rules in CI, SCYTHE's [pipeline](https://scythe.io/sigma) runs Atomic tests against a live Splunk, and Splunk's [attack_data](https://github.com/splunk/attack_data) publishes recorded Atomic telemetry. tripline does not replace any of them. What it adds is a small scenario layer (technique, expected rules, fixture and weight in one repo), an evaluator in plain Python that runs on a stock runner, an ATT&CK-weighted scorecard, and published findings such as the setuid gap. It evaluates rules with its own compiler rather than a production backend and covers 14 techniques ([comparison](docs/related-work.md)).
 
-No SIEM is required. Rules are compiled to Python predicates and evaluated against NDJSON
-fixtures committed to the repo, so `tripline replay --all` is deterministic and runs offline in
-a few seconds.
+No SIEM is required. Rules are compiled to Python predicates and evaluated against NDJSON fixtures committed to the repo, so `tripline replay --all` is deterministic.
 
 ## Contents
 
