@@ -5,6 +5,16 @@
 ![python](https://img.shields.io/badge/python-3.12-blue)
 [![weighted coverage](docs/coverage.svg)](docs/scorecard.md)
 
+**tripline automatically checks that security detection rules still catch the attacks they are written for, and fails the code review when one stops.**
+
+![Left: a published SigmaHQ rule flagged 0 of 2 recorded setuid attack commands while the replacement rule written in this repo flagged 2 of 2. Right: weighted coverage across 14 ATT&CK scenarios is 52% on unmodified SigmaHQ rules and 98% with the rules written in this repo.](docs/img/hero.png)
+
+*A stock SigmaHQ rule flagged 0 of 2 real setuid attacks I recorded on a GitHub runner. The replacement rule written here flags 2 of 2 ([finding F-001](docs/findings.md)).*
+
+**What it does, in plain terms.** Security teams write rules that raise an alert when an attacker does something specific, such as making a program run as root. A rule can look right and still never fire, and nobody finds out until a real attack happens. tripline keeps recordings of real attack activity in the repo and replays them through the rules on every pull request. If a rule that should fire does not, the build goes red and names the rule.
+
+## Technical overview
+
 tripline is a CI gate for Sigma detection rules. Each ATT&CK technique has recorded telemetry (auditd, Sysmon/Security/PowerShell, CloudTrail) committed in the repo. On every pull request tripline replays that telemetry through the rules and fails the build if a rule that should fire on the technique does not. It also reports prevalence-weighted coverage, false positives on a benign corpus and a first sweep of evasion variants.
 
 It has already found a real gap. The stock SigmaHQ *Setuid and Setgid* rule flagged 0 of the 2 attack events (the two `chmod` executions) among the 36 events I recorded from Atomic Red Team's own T1548.001 tests. A replacement rule flags 2 of 2 ([finding F-001](docs/findings.md)).
