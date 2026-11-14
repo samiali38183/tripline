@@ -335,7 +335,7 @@ def _finish_collect(
 
 @app.command("atomics")
 def list_atomics(
-    plane: Annotated[Plane, typer.Argument(help="windows or linux")],
+    plane: Annotated[Plane, typer.Argument(help="windows, linux or aws")],
     root: RootOpt = Path(),
 ) -> None:
     """Print '<scenario-id> <atomic-test-guid> <technique>' per line for the emulation workflows."""
