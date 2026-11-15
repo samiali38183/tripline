@@ -113,7 +113,7 @@ Variants no expected rule catches (32):
 | Rule | Command-line variants caught | Alternative-tool variants caught |
 |---|---|---|
 | Setuid or Setgid Bit Set via Chmod (Any Mode Form) | 106 / 108 | 0 / 4 |
-| Setuid and Setgid (comparison: not expected by the scenario) | 0 / 108 | 0 / 4 |
+| Setuid and Setgid (comparison only; generated events carry no `chown root`, which this rule needs in the same command line, so a 0 here is not a fair comparison) | 0 / 108 | 0 / 4 |
 
 Any expected rule: 106 of 108 command-line variants, 0 of 4 alternative-tool variants.
 

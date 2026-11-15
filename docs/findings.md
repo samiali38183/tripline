@@ -3,33 +3,46 @@
 Detection gaps surfaced by replaying real emulation telemetry. Each entry names the telemetry,
 the rule that should have fired, why it did not, and what changed.
 
-## F-001 - SigmaHQ "Setuid and Setgid" misses `chmod u+xs`
+## F-001 - SigmaHQ "Setuid and Setgid" does not match `chmod u+xs` / `g+xs`
 
 * Scenario: `t1548-001-setuid-setgid` (T1548.001, Linux)
-* Telemetry: auditd EXECVE from `ubuntu-latest`, Atomic Red Team T1548.001-3 and -5,
-  recorded in [emulate-linux run 41838714456](https://github.com/samiali38183/tripline/actions/runs/41838714456)
-  and committed under `fixtures/linux/t1548-001-setuid-setgid/`.
-* Observed command lines:
+* Existing rule: `c21c4eaa-ba2e-419a-92b2-8371703cbe21` *Setuid and Setgid* (SigmaHQ, vendored
+  unmodified, `status: test`, level low). It needs `CommandLine|contains: 'chown root'` and one of
+  ` chmod u+s` / ` chmod g+s` in the same command line. Its detection logic has not changed since
+  2022-10-05. The vendored copy is identical to SigmaHQ `master` and to release r2026-07-01 (checked
+  2026-11-14; later upstream commits are tag and metadata updates).
+* Recorded telemetry: auditd from `ubuntu-latest`, Atomic Red Team T1548.001-3 and -5, in
+  [emulate-linux run 41838714456](https://github.com/samiali38183/tripline/actions/runs/41838714456),
+  committed under `fixtures/linux/t1548-001-setuid-setgid/`. 84 audit events, 36 of them `execve`:
+  2 attack commands, 4 `sudo`/`sh -c` wrapper lines that mention `chmod`, 30 unrelated. Commands
+  that mention `chmod`:
 
   ```
   sh -c sudo touch /tmp/evilBinary; sudo chown root /tmp/evilBinary; sudo chmod u+xs /tmp/evilBinary
-  chmod u+xs /tmp/evilBinary
-  chmod g+xs /tmp/evilBinary
+  sudo chmod u+xs /tmp/evilBinary
+  chmod u+xs /tmp/evilBinary          <- attack event
+  (and the same three lines with g+xs)
   ```
 
-* Rule: `c21c4eaa-ba2e-419a-92b2-8371703cbe21` *Setuid and Setgid* (SigmaHQ, vendored unmodified)
-  requires `CommandLine|contains: ' chmod u+s'` or `' chmod g+s'` and `'chown root'`.
-* Why it missed: the atomic uses the combined mode `u+xs` / `g+xs`. A `contains` match on the
-  literal ` chmod u+s` cannot see it. Any attacker typing `chmod 4755`, `chmod ug+s` or
-  `chmod a+s` is equally invisible to the rule. Result on the recorded fixture: 0 of the 2 attack events.
-  All 36 recorded events apply to the rule: 2 are the attack (the two `chmod` executions), 4 are
-  `sudo`/`dash` wrapper lines that mention `chmod`, 30 are unrelated.
-* Fix: `rules/sigma/linux/tripline_lnx_chmod_setuid_setgid_any_form.yml`
+* Why the Atomic and the rule disagree: the Atomic test the rule cites (at the commit in its
+  `references`) ran `chmod u+s` / `chmod g+s`. The current Atomics run `u+xs` / `g+xs`. A `contains`
+  match on the literal ` chmod u+s` cannot see the combined mode.
+* Measured: the SigmaHQ rule matched 0 of the 36 `execve` events. Because it needs `chown root` in the
+  same line as `chmod`, the only events it could match are the two `sh -c` wrapper lines, and it
+  misses those. Adding ` chmod u+xs` and ` chmod g+xs` to its list makes it match exactly those two
+  lines (verified locally with tripline; nothing was submitted upstream). The same rule does match a
+  synthetic `sh -c "chown root f; chmod u+s f"`, so the miss is the `xs` spelling plus the
+  single-command-line design, not a broken rule. Bare `chmod u+s f` or `chmod 4755 f` without
+  `chown root` in the same line also does not match it (synthetic events, not recorded).
+* Replacement: `rules/sigma/linux/tripline_lnx_chmod_setuid_setgid_any_form.yml`
   (`7f3c2b1a-6d4e-4a9b-9c8d-1e2f3a4b5c6d`) matches `Image|endswith: /chmod` with a regex over the
-  symbolic form `[ugoa]*[+=][rwxXt]*s` or an octal mode. On the same fixture: 2 of 2 attack events
-  (the two `chmod` executions; the replay prints this as 2/36 applicable events, 36 being all
-  recorded events). The wrapper lines are not counted because the
-  `Image` must be `chmod` itself.
+  symbolic form `[ugoa]*[+=][rwxXt]*s` or an octal mode. On the recorded fixture it matches both
+  `chmod` execution events (the replay prints 2/36 applicable events, 36 being all recorded `execve`
+  events). The wrapper lines are not counted because the `Image` must be `chmod` itself.
+* Scope: this is one recording of two commands. It does not show that SigmaHQ's setuid coverage is
+  poor. Other SigmaHQ rules, such as *Suspicious Activity in Shell Commands* (`2aa1440c`, keyword
+  `*/chmod u+s *`) and the auditd *File or Folder Permissions Change* (`74c01ace`, any chmod), cover
+  some chmod activity and were not compared.
 * Revision in 0.2.1. The first version of the rule had its own gaps, found
   by reading the regexes against hand-built command lines (synthetic events in
   `tests/test_linux_collect.py`, not recorded telemetry; the committed fixtures and the 2 of 2
@@ -51,7 +64,7 @@ the rule that should have fired, why it did not, and what changed.
     `..`. Residual risk: a symlink inside `/usr/share/doc` that points elsewhere is still
     excluded; the rule sees the command line, not the resolved path.
 * Status: scenario now expects the tripline rule; the SigmaHQ rule stays in the rule set so a
-  future upstream fix is picked up by `tripline replay` automatically. Upstream issue: to be filed.
+  future upstream fix is picked up by `tripline replay` automatically. Upstream: no existing SigmaHQ issue or PR about this rule was found (2026-11-14). A draft issue is prepared but has not been filed.
 
 ## F-002 - auditd SYSCALL registers leak into command lines (collector bug)
 

@@ -674,7 +674,12 @@ def render_markdown(report: RobustnessReport) -> str:
             "|---|---|---|",
         ]
         for r in scenario.rules:
-            tag = "" if r.expected else " (comparison: not expected by the scenario)"
+            tag = (
+                ""
+                if r.expected
+                else " (comparison only; generated events carry no `chown root`, which this rule "
+                "needs in the same command line, so a 0 here is not a fair comparison)"
+            )
             alt = f"{r.alt_tool_caught} / {r.alt_tool_variants}" if r.alt_tool_variants else "-"
             lines.append(f"| {r.title}{tag} | {r.cmdline_caught} / {r.cmdline_variants} | {alt} |")
         lines += [
