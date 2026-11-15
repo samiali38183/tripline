@@ -45,7 +45,7 @@ tripline treats a detection like code under test. A scenario (`scenarios/*.yaml`
 
 ## Current results
 
-Everything below was produced by the commands in [Quick start](#quick-start) and re-run on 2026-11-14.
+Everything below was produced by the commands in [Quick start](#quick-start) (see [Status](#status) for dates).
 
 | Plane | Telemetry | Scenarios passing | Where the fixtures come from |
 |---|---|---|---|
@@ -53,10 +53,10 @@ Everything below was produced by the commands in [Quick start](#quick-start) and
 | Linux | auditd (execve + cron watches) | 3 / 3 | Recorded with Atomic Red Team on a GitHub-hosted `ubuntu-latest` runner |
 | Windows | Sysmon / Security / PowerShell | 6 / 7 (1 pending) | Recorded with Atomic Red Team on a GitHub-hosted `windows-latest` runner: T1003.001, T1047 and T1105 from [run 42917025570](https://github.com/samiali38183/tripline/actions/runs/42917025570), and T1059.001, T1059.003 and T1053.005 from [run 43090565998](https://github.com/samiali38183/tripline/actions/runs/43090565998) |
 
-- Weighted coverage is 98% of weight points with a passing scenario (61 of 62, counting the pending scenario as zero). Only 52% (32 of 62) pass on unmodified SigmaHQ rules. Eight scenarios pass on vendored rules only. Five need a rule written here: the custom AWS rules (T1078.004, T1530), the setuid replacement (T1548.001) and the two Windows replacements (T1059.003, T1053.005). `tripline score` works out the split from each expected rule's author field. Two of the Windows passes rest on my replacement rules and one on a narrowed scenario, not on the vendored SigmaHQ rule. See [F-003](docs/findings.md).
+- Weighted coverage is 98% of weight points with a passing scenario (61 of 62, counting the pending scenario as zero). Five of the passing scenarios need a rule written here: the custom AWS rules (T1078.004, T1530), the setuid replacement (T1548.001) and the two Windows replacements (T1059.003, T1053.005). `tripline score` works out the split from each expected rule's author field.
 - `tripline replay --all` prints one line per scenario (13 PASS, 1 PENDING) and ends with `gate passed`. `tripline score` reports the same split as 13 passed, 0 failed, 1 pending. 26 rules compile, 21 of them expected by a scenario.
 - False positives: 2 matches from 1 of 6 evaluated rules (SigmaHQ *New Cron File Created*, on a `chkrootkit` package install) over 675 benign events from one 33-second runner recording. The 20 Windows and AWS rules have no benign corpus and were not evaluated.
-- Evasion sweep: for the three Linux scenarios, 200 of 251 command-line variants are caught by at least one expected rule (setuid 106/108, history clearing 71/103, cron 23/40). The 4 alternative-tool variants are all missed. I wrote the variant lists by hand and they are not exhaustive.
+- Evasion sweep: for the three Linux scenarios, 200 of 251 command-line variants are caught by at least one expected rule (setuid 106/108, history clearing 71/103, cron 23/40). The 4 alternative-tool variants are all missed.
 - Test suite: 212 tests, 91% coverage. `ruff format`, `ruff check`, `mypy` (strict), `sigma check rules/` (0 issues), `actionlint` and `zizmor` are clean.
 - The scorecard also exports an ATT&CK Navigator layer (layer format 4.5, ATT&CK v20): [`docs/navigator_layer.json`](docs/navigator_layer.json). The other outputs are [`docs/scorecard.md`](docs/scorecard.md), [`docs/scorecard.json`](docs/scorecard.json), the HTML report [`docs/report.html`](docs/report.html) and the badge [`docs/coverage.svg`](docs/coverage.svg).
 
@@ -64,7 +64,7 @@ Everything below was produced by the commands in [Quick start](#quick-start) and
 
 The case study is on one rule, one recording and two commands. Details and the upstream check are in [`docs/findings.md`](docs/findings.md) (F-001).
 
-**Existing rule.** SigmaHQ *Setuid and Setgid* (`c21c4eaa`, `status: test`, level low) is vendored unmodified. It fires when one command line contains `chown root` and either ` chmod u+s` or ` chmod g+s`. Its detection logic is unchanged since October 2022 and is identical in SigmaHQ release r2026-07-01, checked 2026-11-14. The Atomic Red Team test it references, at the commit it cites, ran `chmod u+s` and `chmod g+s`. The current atomics run `chmod u+xs` and `chmod g+xs`.
+**Existing rule.** SigmaHQ *Setuid and Setgid* (`c21c4eaa`, `status: test`, level low) is vendored unmodified. It fires when one command line contains `chown root` and either ` chmod u+s` or ` chmod g+s`. Its detection logic is unchanged since October 2022 and is identical in SigmaHQ release r2026-07-01. The Atomic Red Team test it references, at the commit it cites, ran `chmod u+s` and `chmod g+s`. The current atomics run `chmod u+xs` and `chmod g+xs`.
 
 **Recorded scenario.** On a GitHub-hosted `ubuntu-latest` runner with auditd, I ran Atomic tests T1548.001-3 and -5 ([run 41838714456](https://github.com/samiali38183/tripline/actions/runs/41838714456)). The fixture holds 84 audit events, 36 of them `execve`. Two `execve` events are the attack commands (`chmod u+xs /tmp/evilBinary`, `chmod g+xs /tmp/evilBinary`). Four more are `sudo` and `sh -c` wrapper lines that mention `chmod`, and 30 are unrelated.
 
@@ -146,7 +146,7 @@ If the compiler cannot evaluate something, it raises. `UnsupportedRuleError` cov
 
 Results count only applicable events. A rule is evaluated only on events its logsource matches, and the output reads `1/7 applicable events`. A rule with no applicable events at all is reported as a routing problem (`no applicable events`, usually the wrong product, category or service). `0/7 applicable events (rule did not match)` is a real miss. These are separate outcomes in `scorecard.json` (`outcome`), the CLI, the JUnit file and the HTML report.
 
-Coverage is weighted by technique prevalence: `sum(weight x coverage) / sum(weight)`. For the seven scenario techniques in Red Canary's published 2026 top 10, the weight is 11 minus the rank. That is 45 of 62 points, checked against the public chart on 2026-11-11. The other seven weights are low hand-assigned values with no source ([`docs/weights.md`](docs/weights.md)). Breaking T1078.004 (weight 10) moves the headline number more than breaking T1027 (weight 1). [`docs/gate-proof.md`](docs/gate-proof.md) records a PR where one edited line dropped weighted coverage from 37% to 21% and turned CI red. Pending scenarios count as zero, so scenarios without evidence cannot inflate the number.
+Coverage is weighted by technique prevalence: `sum(weight x coverage) / sum(weight)`. For the seven scenario techniques in Red Canary's published 2026 top 10, the weight is 11 minus the rank. That is 45 of 62 points. The other seven weights are low hand-assigned values with no source ([`docs/weights.md`](docs/weights.md)). Breaking T1078.004 (weight 10) moves the headline number more than breaking T1027 (weight 1). [`docs/gate-proof.md`](docs/gate-proof.md) records a PR where one edited line dropped weighted coverage from 37% to 21% and turned CI red. Pending scenarios count as zero, so scenarios without evidence cannot inflate the number.
 
 I replace vendored rules instead of patching them. The SigmaHQ rule stays byte-for-byte (DRL 1.1, attribution header) and the scenario expects a separate tripline rule. If upstream fixes the rule, `tripline replay` picks that up without a merge conflict.
 
@@ -265,6 +265,12 @@ The full text is in [`docs/limitations.md`](docs/limitations.md). The short vers
 - Linux telemetry is narrow: auditd `execve` plus cron watches on a single-user runner VM, with tens of unrelated events recorded next to each atomic.
 - The evaluator is not a production backend. There is no parity test against a real SIEM yet, so treat a tripline pass as necessary, not sufficient.
 - Emulation workflows are not bit-reproducible, because Atomic Red Team, Sysmon and the runner image move. The committed fixtures pin one snapshot. Installers are fetched unpinned from upstream `master` ([threat model](docs/threat-model.md), T3).
+
+## Status
+
+- Results above were re-run on 2026-11-14 at tripline 0.3.0.
+- The SigmaHQ *Setuid and Setgid* rule logic was compared with SigmaHQ release r2026-07-01 on 2026-11-14.
+- The weight ranking was checked against Red Canary's public 2026 top 10 chart on 2026-11-11.
 
 ## Roadmap
 
