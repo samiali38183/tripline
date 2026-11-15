@@ -5,19 +5,13 @@
 ![python](https://img.shields.io/badge/python-3.12-blue)
 [![weighted coverage](docs/coverage.svg)](docs/scorecard.md)
 
-**tripline automatically checks that security detection rules still catch the attacks they are written for, and fails the code review when one stops.**
+**tripline replays recorded attack telemetry through Sigma detection rules on every pull request and fails the build when a rule that should fire does not.**
 
-![Left: a published SigmaHQ rule flagged 0 of 2 recorded setuid attack commands while the replacement rule written in this repo flagged 2 of 2. Right: weighted coverage across 14 ATT&CK scenarios is 52% on unmodified SigmaHQ rules and 98% with the rules written in this repo.](docs/img/hero.png)
+![Left: a SigmaHQ rule matched 0 of 36 recorded setuid execve events, while the replacement rule in this repo matched the 2 chmod attack commands. Right: weighted coverage across 14 ATT&CK scenarios is 52% on unmodified SigmaHQ rules and 98% with the rules written in this repo.](docs/img/hero.png)
 
-*A stock SigmaHQ rule flagged 0 of 2 real setuid attacks I recorded on a GitHub runner. The replacement rule written here flags 2 of 2 ([finding F-001](docs/findings.md)).*
+Each ATT&CK technique in the repo has a scenario: the technique, the Sigma rules expected to fire, a fixture of recorded telemetry (auditd, Sysmon/Security/PowerShell, CloudTrail) and a weight. CI replays the fixture through the rules offline with a small Python evaluator and exits non-zero if an expected rule misses. It also reports prevalence-weighted coverage, false positives on a benign corpus and a sweep of generated command-line variants.
 
-**What it does, in plain terms.** Security teams write rules that raise an alert when an attacker does something specific, such as making a program run as root. A rule can look right and still never fire, and nobody finds out until a real attack happens. tripline keeps recordings of real attack activity in the repo and replays them through the rules on every pull request. If a rule that should fire does not, the build goes red and names the rule.
-
-## Technical overview
-
-tripline is a CI gate for Sigma detection rules. Each ATT&CK technique has recorded telemetry (auditd, Sysmon/Security/PowerShell, CloudTrail) committed in the repo. On every pull request tripline replays that telemetry through the rules and fails the build if a rule that should fire on the technique does not. It also reports prevalence-weighted coverage, false positives on a benign corpus and a first sweep of evasion variants.
-
-It has already found a real gap. The stock SigmaHQ *Setuid and Setgid* rule flagged 0 of the 2 attack events (the two `chmod` executions) among the 36 events I recorded from Atomic Red Team's own T1548.001 tests. A replacement rule flags 2 of 2 ([finding F-001](docs/findings.md)).
+The first thing it caught was in the SigmaHQ *Setuid and Setgid* rule. I recorded Atomic Red Team's T1548.001 setuid and setgid tests on a GitHub runner (36 `execve` events, two of them the `chmod u+xs` and `chmod g+xs` attack commands). The rule matched none of the 36, and a replacement rule written here matches both attack commands ([the case study](#case-study-setuid-and-setgid) has the details and what this does not show).
 
 | | |
 |---|---|
@@ -26,7 +20,7 @@ It has already found a real gap. The stock SigmaHQ *Setuid and Setgid* rule flag
 | Weighted coverage | 98% of weight points have a passing scenario (61 of 62). Only 52% (32 of 62, 8 scenarios) pass on unmodified SigmaHQ rules alone. The other 5 passing scenarios (29 points) need at least one rule I wrote. 45 of the 62 points follow a published ranking and 17 are hand-assigned ([weights](docs/weights.md)). |
 | False positives | 2 matches from 1 of 6 evaluated rules on a 675-event benign Linux corpus. The other 20 of 26 rules were not evaluated ([benign corpus](docs/benign-corpus.md)). |
 | Evasion sweep | 200 of 251 command-line variants of the three Linux attacks are caught by an expected rule ([robustness](docs/robustness.md)). |
-| Gaps found | SigmaHQ *Setuid and Setgid* missed both attack events ([F-001](docs/findings.md)). Three Windows rules missed their Atomic tests ([F-003](docs/findings.md)). |
+| Gaps found | SigmaHQ *Setuid and Setgid* matched none of the 36 recorded events ([F-001](docs/findings.md)). Three Windows rules missed their Atomic tests ([F-003](docs/findings.md)). |
 | Code | 212 tests, 91% coverage, ruff and mypy (strict) clean, ATT&CK v20 ([version notes](docs/attack-version.md)) |
 
 Try it (Python 3.12+, no SIEM, offline, about a second):
@@ -51,7 +45,7 @@ tripline treats a detection like code under test. A scenario (`scenarios/*.yaml`
 
 ## Current results
 
-Everything below was produced by the commands in [Quick start](#quick-start) on 2026-11-13.
+Everything below was produced by the commands in [Quick start](#quick-start) and re-run on 2026-11-14.
 
 | Plane | Telemetry | Scenarios passing | Where the fixtures come from |
 |---|---|---|---|
@@ -66,18 +60,32 @@ Everything below was produced by the commands in [Quick start](#quick-start) on 
 - Test suite: 212 tests, 91% coverage. `ruff format`, `ruff check`, `mypy` (strict), `sigma check rules/` (0 issues), `actionlint` and `zizmor` are clean.
 - The scorecard also exports an ATT&CK Navigator layer (layer format 4.5, ATT&CK v20): [`docs/navigator_layer.json`](docs/navigator_layer.json). The other outputs are [`docs/scorecard.md`](docs/scorecard.md), [`docs/scorecard.json`](docs/scorecard.json), the HTML report [`docs/report.html`](docs/report.html) and the badge [`docs/coverage.svg`](docs/coverage.svg).
 
-### The setuid gap
+## Case study: setuid and setgid
 
-On the first Linux recording, the vendored SigmaHQ rule `c21c4eaa` (*Setuid and Setgid*) flagged 0 of the 2 attack events. All 36 recorded events apply to the rule. Two are the attack itself (the two `chmod` executions), 4 are `sudo`/`dash` wrapper lines that mention `chmod`, and 30 are unrelated. The rule looks for the literal text ` chmod u+s`, and the Atomic test ran `chmod u+xs`. `chmod 4755`, `chmod ug+s` or `chmod a+s` would be missed the same way.
+The case study is on one rule, one recording and two commands. Details and the upstream check are in [`docs/findings.md`](docs/findings.md) (F-001).
 
-The emulation run that recorded it ([run 41838714456](https://github.com/samiali38183/tripline/actions/runs/41838714456)) failed its own gate for exactly this reason. The repo now includes a replacement rule, `tripline_lnx_chmod_setuid_setgid_any_form.yml`. It anchors on the `chmod` binary and matches symbolic forms and octal modes that set the setuid or setgid bit, and it catches 2 of 2 (the two `chmod` executions). The 36 below is the whole recorded event count. The denominator that matters is the 2 attack events.
+**Existing rule.** SigmaHQ *Setuid and Setgid* (`c21c4eaa`, `status: test`, level low) is vendored unmodified. It fires when one command line contains `chown root` and either ` chmod u+s` or ` chmod g+s`. Its detection logic is unchanged since October 2022 and is identical in SigmaHQ release r2026-07-01, checked 2026-11-14. The Atomic Red Team test it references, at the commit it cites, ran `chmod u+s` and `chmod g+s`. The current atomics run `chmod u+xs` and `chmod g+xs`.
+
+**Recorded scenario.** On a GitHub-hosted `ubuntu-latest` runner with auditd, I ran Atomic tests T1548.001-3 and -5 ([run 41838714456](https://github.com/samiali38183/tripline/actions/runs/41838714456)). The fixture holds 84 audit events, 36 of them `execve`. Two `execve` events are the attack commands (`chmod u+xs /tmp/evilBinary`, `chmod g+xs /tmp/evilBinary`). Four more are `sudo` and `sh -c` wrapper lines that mention `chmod`, and 30 are unrelated.
+
+**Measured blind spot.** The SigmaHQ rule matched 0 of the 36 `execve` events. Only the two `sh -c` wrapper lines contain both `chown root` and `chmod`, so they are the only events it could ever match, and it misses them because `u+xs` does not contain ` chmod u+s`. Adding ` chmod u+xs` and ` chmod g+xs` to its list makes it match those two lines (checked locally, not submitted anywhere). That run failed its own gate, which is how the gap was found.
+
+**Replacement.** `tripline_lnx_chmod_setuid_setgid_any_form.yml` keys on the `chmod` binary instead of a combined command line. It matches symbolic modes that set the setuid or setgid bit and octal modes from `2xxx` to `7xxx`, and matches both attack commands. The scenario expects this rule, and the SigmaHQ rule stays in the rule set so an upstream fix shows up in `tripline replay`. The replay prints the result as `2/36 applicable events`.
 
 ```
 Setuid and Setgid                                  applicable 36  matched 0
 Setuid or Setgid Bit Set via Chmod (Any Mode Form) applicable 36  matched 2
 ```
 
-A second finding (F-002) was a bug in my own auditd collector: SYSCALL `a0..a3` register values were being hex-decoded into command lines. It is fixed and has a regression test. Full write-ups are in [`docs/findings.md`](docs/findings.md).
+![Left: the replacement rule matches both recorded chmod attack events. Right: it matches 106 of 108 generated spellings of the command, which are not recorded telemetry.](docs/img/evidence.png)
+
+**Regression tests.** `tests/test_linux_collect.py` checks the replacement against the recorded fixture and against hand-built events: octal modes with sticky bits and a leading zero, comma-separated symbolic clauses, full-path and busybox invocations, filter evasion with a `/usr/share/doc/` argument, and benign modes that must not match. These are synthetic events, not recordings. The replay gate itself is tested in `tests/test_cli.py`.
+
+**False-positive and variant evaluation.** Over the 675-event benign Linux corpus (one 33-second runner recording) the replacement matched 0 of 488 applicable events, and so did the SigmaHQ rule. That workload deliberately contains no setuid `chmod`, so this checks for stray matches and says nothing about legitimate setuid use such as package installs. Separately, `tripline robustness` generates 108 spellings of the setuid command (modes, flags, paths, argument order). The replacement catches 106. The two misses are a renamed copy of `chmod` and a target under `/usr/share/doc/`, which the rule excludes on purpose. Four alternative tools (`install -m 4755`, `python3 os.chmod`, `perl chmod`) are missed. These variants are generated, not recorded. They are bare `chmod` events with no `chown root`, so the SigmaHQ rule cannot match them and its 0 of 108 is not a comparison.
+
+**Limits.** This shows one rule missing two spellings on one recording. It does not show that SigmaHQ's setuid coverage is weak: other SigmaHQ rules (for example *Suspicious Activity in Shell Commands* and the auditd *File or Folder Permissions Change* rule) cover some chmod activity and were not part of this comparison. The replacement is `experimental`, covers `chmod` only, reads the command line and not the resolved path, and has run against one short benign recording on one runner.
+
+A second finding (F-002) was a bug in my own auditd collector, fixed with a regression test.
 
 ## How it works
 

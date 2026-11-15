@@ -43,6 +43,9 @@ def measure() -> dict:
     cmds = [normalize(e)["CommandLine"] for e in attacks]
     stock = [bool(evaluate(by_id[STOCK], e)) for e in attacks]
     mine = [bool(evaluate(by_id[MINE], e)) for e in attacks]
+    execve = [e for e in events if e.get("type") == "EXECVE"]
+    stock_n = sum(1 for e in execve if evaluate(by_id[STOCK], e) is True)
+    mine_n = sum(1 for e in execve if evaluate(by_id[MINE], e) is True)
     card = json.loads((ROOT / "docs" / "scorecard.json").read_text(encoding="utf-8"))
     total = sum(s["weight"] for s in card["scenarios"])
     passed = sum(s["weight"] for s in card["scenarios"] if s["status"] == "passed")
@@ -53,6 +56,8 @@ def measure() -> dict:
     )
     return dict(
         cmds=cmds,
+        n_exec=len(execve),
+        counts=(stock_n, mine_n),
         stock=stock,
         mine=mine,
         total=total,
@@ -80,7 +85,7 @@ def main() -> None:
     ax.text(
         6,
         101,
-        "A published Sigma rule missed both real attacks",
+        "A SigmaHQ rule matched 0 of 36 recorded events",
         fontsize=20,
         fontweight="bold",
         color=TEXT,
@@ -100,24 +105,24 @@ def main() -> None:
     ax.text(
         10,
         75,
-        "The 2 real attack commands (T1548.001)",
+        f"{m['n_exec']} recorded events, 2 attack commands shown",
         fontsize=10.5,
         color=TEXT,
         fontweight="bold",
         va="center",
     )
     rows = [
-        ("SigmaHQ rule, as published", m["stock"]),
-        ("Replacement rule from this repo", m["mine"]),
+        ("SigmaHQ rule, as published", m["stock"], m["counts"][0]),
+        ("Replacement rule from this repo", m["mine"], m["counts"][1]),
     ]
-    for i, (name, res) in enumerate(rows):
+    for i, (name, res, n_hit) in enumerate(rows):
         y = 64 - i * 24
         ax.text(10, y, name, fontsize=10, color=TEXT, va="center")
-        ok_all = all(res)
+        ok_all = n_hit > 0
         ax.text(
             94,
             y,
-            f"{sum(res)} of {len(res)} caught",
+            f"{n_hit} of {m['n_exec']} matched",
             fontsize=11,
             fontweight="bold",
             color=GOOD if ok_all else BAD,
@@ -130,7 +135,7 @@ def main() -> None:
             ax.text(
                 x + 2.5,
                 y - 9,
-                "caught" if ok else "MISSED",
+                "matched" if ok else "no match",
                 fontsize=10,
                 color=GOOD if ok else BAD,
                 fontweight="bold",
@@ -184,7 +189,7 @@ def main() -> None:
     ax.text(
         6,
         14,
-        'Why it missed: the rule looks for the literal text " chmod u+s", but the real test ran '
+        'Why it missed: the rule looks for the literal text " chmod u+s", but the recorded test ran '
         '"chmod u+xs".',
         fontsize=10.5,
         color=TEXT,
