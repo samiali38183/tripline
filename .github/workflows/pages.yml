@@ -36,6 +36,8 @@ jobs:
       # failure is visible, and ci.yml is what turns the commit red.
       - run: tripline score -o site/scorecard.json || true
       - run: tripline report site/scorecard.json --html site/index.html --badge site/coverage.svg
+      # canonical and Open Graph tags are specific to the published page, so they are added here rather than in the generic template
+      - run: python -c "import pathlib; p = pathlib.Path('site/index.html'); h = pathlib.Path('.github/pages-head.html').read_text(encoding='utf-8'); p.write_text(p.read_text(encoding='utf-8').replace('</head>', h + '</head>', 1), encoding='utf-8')"
       - run: tripline heatmap site/scorecard.json -o site/navigator_layer.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
