@@ -21,8 +21,8 @@ classifiers = [
 dependencies = [
   "pydantic>=2.14.3",
   "PyYAML>=6.0.3",
-  "pySigma>=2.0.2",
-  "typer>=0.28.0",
+  "pySigma>=2.1.0",
+  "typer>=0.29.1",
   "Jinja2>=3.1.6",
 ]
 
@@ -30,10 +30,10 @@ dependencies = [
 dev = [
   "pytest>=9.2.0",
   "pytest-cov>=7.1.0",
-  "ruff>=0.17.4",
+  "ruff>=0.17.5",
   "mypy>=2.4.1",
   "types-PyYAML",
-  "sigma-cli>=4.0.0",
+  "sigma-cli>=4.0.1",
 ]
 
 [project.scripts]
